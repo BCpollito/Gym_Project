@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from './Login';
-import Register from './register';
+import Register from './Register';
 import Adminpage from './adminpage';
 import Userpage from './userpage';
 
@@ -11,7 +11,7 @@ function app(){
         <Route path="/" element={<Login />}/>
         <Route path="/Register.jsx" element={<Register />}/>
         <Route path="/adminpage.jsx" element={<Adminpage />}/>
-        <Route path="/userpage" element={<Userpage />}/>
+        <Route path="/userpage.jsx" element={<Userpage />}/>
       </Routes>
     </Router>
   )

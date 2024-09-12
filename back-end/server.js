@@ -15,11 +15,16 @@ app.use(cors({
     allowedHeaders: ['Content-Type'],  // Encabezados permitidos
 }));
 
-const sequelize = new Sequelize('gym_project', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    port: 3306
-});
+const sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+        host: process.env.DB_HOST,
+        dialect: process.env.DB_DIALECT,
+        port: process.env.DB_PORT
+    }
+);
 
 const registro = sequelize.define('registro', {
     id: {
@@ -97,22 +102,22 @@ app.delete('/registros/:id', async (req, res) => {
             await eliminarRegistro.destroy();
             res.status(204).send();
         } else {
-            res.status(400).json({error: 'Producto no encontrado'});
+            res.status(400).json({ error: 'Producto no encontrado' });
         }
     } catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({ error: err.message })
     }
 })
 
 //Ruta para editar un registro
-app.put('/registros/:id', async (req, res) =>{
+app.put('/registros/:id', async (req, res) => {
     try {
         const editarRegistro = await registro.findByPk(req.params.id);
         if (editarRegistro) {
             await editarRegistro.update(req.body);
             res.json(editarRegistro);
         } else {
-            res.status(400).json({error: 'Producto no encontrado'});
+            res.status(400).json({ error: 'Producto no encontrado' });
         }
     } catch (err) {
         res.status(400).json({ error: err.message });
