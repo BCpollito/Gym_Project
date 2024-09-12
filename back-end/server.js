@@ -80,6 +80,9 @@ app.post('/registros', async (req, res) => {
     try {
         const { usuario, password } = req.body;
 
+        if (!usuario.trim() || !password.trim()) {
+            return res.json({success: false});
+        }
         // Hash de la contraseña
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 

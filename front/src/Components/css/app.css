@@ -5,13 +5,13 @@
     height: 100vh;
 }
 
-.login{
+.login, .register{
     text-align: center;
     box-shadow: 0px 0px 5px black;
     width: 500px;
 }
 
-.inputs{
+.inputs, .formulario{
     width: 100%;
 }
 
@@ -23,6 +23,6 @@
     margin-bottom: 20px;
 }
 
-.ingresar{
+.ingresar, .registerbtn{
     margin-right: 20px;
 }
