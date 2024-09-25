@@ -1,31 +1,35 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom"
-import { useNavigate } from 'react-router-dom';
 import './css/app.css'
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const [user, setUsuario] = useState("");
     const [password, setContraseña] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        axios.post("http://localhost:3000/registros", {
-            usuario: user,
+const handleSubmit = async () => {
+    try {
+        const response = await axios.post('http://localhost:3000/registros', {
+            usuario : user,
             password: password,
-        })
-            .then(response => {
-                console.log("registro agregado con exito", response.data);
-            })
-            .catch(error => {
-                console.error("Error al agregar el registro:", error);
-            })
+        });
+        if (response.data.success) {
+            alert('Los campos no pueden estar vacios');
+        } else {
+            alert(`Registrado exitosamente Usuario ${user}`);
+            navigate('../Login.jsx');
+        }
+    } catch (error) {
+        console.error('Error al registrarse', error);
+        alert('Hubo un error al intentar registrarse');
     }
+};
 
     return (
         <div className="contenedor">
             <div className="register">
-                <form onSubmit={handleSubmit}>
                     <h1>Registrarse</h1>
                     <table className='formulario'>
                         <tbody>
@@ -55,9 +59,8 @@ export default function Register() {
                             </tr>
                         </tbody>
                     </table>
-                    <button className="registerbtn" type="submit">Crear cuenta</button>
-                    <Link to="./Login.jsx">Regresar</Link>
-                </form>
+                    <button className="registerbtn" onClick={handleSubmit}>Crear cuenta</button>
+                    <Link to="../Login.jsx">Regresar</Link>
             </div>
         </div>
     )

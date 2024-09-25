@@ -4,9 +4,6 @@ const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
 require('dotenv').config();
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-
 app.use(express.json());
 
 app.use(cors({
@@ -76,14 +73,18 @@ app.get('/registros', async (req, res) => {
 });
 
 // Ruta para crear un nuevo registro
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 app.post('/registros', async (req, res) => {
     try {
         const { usuario, password } = req.body;
 
         if (!usuario.trim() || !password.trim()) {
-            return res.json({success: false});
-        }
-        // Hash de la contraseña
+            return res.json({success: true});
+        }else{
+            // Hash de la contraseña
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Crear un nuevo registro en la base de datos con el hash de la contraseña
@@ -92,6 +93,7 @@ app.post('/registros', async (req, res) => {
             password: hashedPassword
         });
         res.status(201).json(nuevoRegistro);
+        }
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
