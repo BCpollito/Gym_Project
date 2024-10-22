@@ -134,24 +134,15 @@ app.post('/login', async (req, res) => {
     const { usuario, password } = req.body;
 
     try {
-        // Buscar el registro de usuario en la base de datos
         const usuarioEncontrado = await registro.findOne({ where: { usuario } });
-        if (usuarioEncontrado) {
-            // Comparar la contraseña proporcionada con el hash almacenado
-            const match = await bcrypt.compare(password, usuarioEncontrado.password);
+        if (!usuarioEncontrado) return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
 
-            if (match) {
-                if (usuarioEncontrado.isAdmin) {
-                    return res.json({ success: true, message: 'Inicio de sesión exitoso', role: 'admin' });
-                } else {
-                    return res.json({ success: true, message: 'Inicio de sesión exitoso', role: 'user' });
-                }
-            } else {
-                return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
-            }
-        } else {
-            return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
-        }
+        const match = await bcrypt.compare(password, usuarioEncontrado.password);
+        if (!match) return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
+        
+        const role = usuarioEncontrado.isAdmin ? 'admin' : 'user';
+        return res.json({ success: true, message: 'Inicio de sesión exitoso', role });
+        
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
