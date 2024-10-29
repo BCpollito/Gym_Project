@@ -38,6 +38,26 @@ const registro = sequelize.define('registro', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    name:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    weight:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    height:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    age:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    sex:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false // Por defecto, no es administrador
@@ -79,9 +99,9 @@ const saltRounds = 10;
 
 app.post('/registros', async (req, res) => {
     try {
-        const { usuario, password } = req.body;
+        const { usuario, password, name, weight, height, age, sex } = req.body;
 
-        if (!usuario.trim() || !password.trim()) {
+        if (!usuario.trim() || !password.trim() || !name.trim() || !weight.trim() || !height.trim() || !age.trim() || !sex.trim()) {
             return res.json({success: true});
         }else{
             // Hash de la contraseña
@@ -90,7 +110,12 @@ app.post('/registros', async (req, res) => {
         // Crear un nuevo registro en la base de datos con el hash de la contraseña
         const nuevoRegistro = await registro.create({
             usuario,
-            password: hashedPassword
+            password: hashedPassword,
+            name,
+            weight,
+            height,
+            age,
+            sex
         });
         res.status(201).json(nuevoRegistro);
         }

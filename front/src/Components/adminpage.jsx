@@ -1,42 +1,45 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function Adminpage(){
+export default function AdminPage() {
+    const [clientes, setClientes] = useState([]);
 
-    async function getclient() {
-        try {
-            const response  = await fetch(axios.get("http://localhost:3000/registros"));
-            const clientes = await response.json();
+    useEffect(() => {
+        async function getClients() {
+            try {
+                // Realiza la solicitud a la API
+                const response = await axios.get("http://localhost:3000/registros");
+                
+                // No hay 'results', solo necesitas acceder directamente a los datos
+                const clientsData = response.data; // Aquí asignamos directamente la respuesta
+                
+                setClientes(clientsData); // Almacena los clientes en el estado
+            } catch (error) {
+                console.error('Error al obtener los clientes:', error);
+            } 
+        }
 
-            const promises = clientes.results.map(cliente => fetch(cliente.url).then(response => response.json()));
-            const clientsData = await Promise.all(promises);
+        getClients();
+    }, []); // Solo se ejecuta una vez al montar el componente
 
-            return(
-                <div className="contenedor">
-                    <div className="clientes">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>CLIENTES</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {clientsData.forEach(element => {
-                                    <tr>
-                                        <td>Usuario</td>
-                                        <td>{element.usuario}</td>
-                                    </tr>
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )
-
-        } catch (error) {
-            console.error(error);
-        }   
-    }
-
-getclient();
-
+    return (
+        <div className="contenedor">
+            <div className="clientes">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CLIENTES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {clientes.map(element => (
+                            <tr key={element.id}> 
+                                <td>{element.usuario}</td> 
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
 }
