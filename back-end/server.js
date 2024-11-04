@@ -23,6 +23,7 @@ const sequelize = new Sequelize(
     }
 );
 
+//modelo de la tabla registro de cliente
 const registro = sequelize.define('registro', {
     id: {
         type: DataTypes.INTEGER,
@@ -65,6 +66,294 @@ const registro = sequelize.define('registro', {
 }, {
     timestamps: false, //desactivar la creacion de las columnas "CreateAt" y "UpdateAt"
 });
+
+//modelo de la tabla semana para gestionar las semanas de las rutinas
+const Semana = sequelize.define('Semana', {
+    ID_semana: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    Nombre: {
+        type: DataTypes.STRING,
+        allowNull: false // Por ejemplo: "Semana 1", "Semana 2", etc.
+    }
+}, {
+    tableName: 'Semanas'
+});
+
+//modelo de la tabla para los dias a los que se asignaran las rutinas
+const Dia = sequelize.define('Dia', {
+    ID_dia: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ID_semana: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Semana,
+            key: 'ID_semana'
+        }
+    },
+    Dia: {
+        type: DataTypes.STRING,
+        allowNull: false // Por ejemplo: "Lunes", "Martes", etc.
+    }
+}, {
+    tableName: 'Dias'
+});
+
+//modelo de la tabla ejercicios
+const Ejercicio = sequelize.define('Ejercicio', {
+    ID_ejercicio: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    Nombre: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    Descripcion: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    ID_dia: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Dia,
+            key: 'ID_dia'
+        }
+    }
+}, {
+    tableName: 'Ejercicios'
+});
+
+//modelo de la tabla para la asignacion de rutinas
+const Asignacion = sequelize.define('Asignacion', {
+    ID_asignacion: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ID_cliente: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: registro,
+            key: 'id'
+        }
+    },
+    ID_semana: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Semana,
+            key: 'ID_semana'
+        }
+    },
+    ID_ejercicio: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Ejercicio,
+            key: 'ID_ejercicio'
+        }
+    }
+}, {
+    tableName: 'Asignaciones'
+});
+
+//relaciones entre las tablas
+Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
+Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
+registro.hasMany(Asignacion, { foreignKey: 'ID_cliente', onDelete: 'CASCADE' });
+Semana.hasMany(Asignacion, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
+Ejercicio.hasMany(Asignacion, { foreignKey: 'ID_ejercicio', onDelete: 'CASCADE' });
+
+// Crear una nueva semana
+app.post('/semana', async (req, res) => {
+    try {
+        const { Nombre } = req.body;
+        const nuevaSemana = await Semana.create({ Nombre });
+        res.status(201).json(nuevaSemana);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear la semana' });
+    }
+});
+
+// Obtener todas las semanas
+app.get('/semana', async (req, res) => {
+    try {
+        const semanas = await Semana.findAll();
+        res.json(semanas);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las semanas' });
+    }
+});
+
+// Actualizar una semana
+app.put('/semana/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Nombre } = req.body;
+        await Semana.update({ Nombre }, { where: { ID_semana: id } });
+        res.json({ message: 'Semana actualizada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar la semana' });
+    }
+});
+
+// Eliminar una semana
+app.delete('/semana/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Semana.destroy({ where: { ID_semana: id } });
+        res.json({ message: 'Semana eliminada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar la semana' });
+    }
+});
+
+// Crear un nuevo día
+app.post('/dia', async (req, res) => {
+    try {
+        const { ID_semana, Dia } = req.body;
+        const nuevoDia = await Dia.create({ ID_semana, Dia });
+        res.status(201).json(nuevoDia);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el día' });
+    }
+});
+
+// Obtener todos los días de una semana
+app.get('/dia/:id_semana', async (req, res) => {
+    try {
+        const { id_semana } = req.params;
+        const dias = await Dia.findAll({ where: { ID_semana: id_semana } });
+        res.json(dias);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener los días' });
+    }
+});
+
+// Actualizar un día
+app.put('/dia/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Dia } = req.body;
+        await Dia.update({ Dia }, { where: { ID_dia: id } });
+        res.json({ message: 'Día actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el día' });
+    }
+});
+
+// Eliminar un día
+app.delete('/dia/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Dia.destroy({ where: { ID_dia: id } });
+        res.json({ message: 'Día eliminado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar el día' });
+    }
+});
+
+// Crear un nuevo ejercicio
+app.post('/ejercicio', async (req, res) => {
+    try {
+        const { Nombre, Descripcion, ID_dia } = req.body;
+        const nuevoEjercicio = await Ejercicio.create({ Nombre, Descripcion, ID_dia });
+        res.status(201).json(nuevoEjercicio);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el ejercicio' });
+    }
+});
+
+// Obtener todos los ejercicios de un día
+app.get('/ejercicio/:id_dia', async (req, res) => {
+    try {
+        const { id_dia } = req.params;
+        const ejercicios = await Ejercicio.findAll({ where: { ID_dia: id_dia } });
+        res.json(ejercicios);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener los ejercicios' });
+    }
+});
+
+// Actualizar un ejercicio
+app.put('/ejercicio/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Nombre, Descripcion } = req.body;
+        await Ejercicio.update({ Nombre, Descripcion }, { where: { ID_ejercicio: id } });
+        res.json({ message: 'Ejercicio actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el ejercicio' });
+    }
+});
+
+// Eliminar un ejercicio
+app.delete('/ejercicio/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Ejercicio.destroy({ where: { ID_ejercicio: id } });
+        res.json({ message: 'Ejercicio eliminado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar el ejercicio' });
+    }
+});
+
+// Crear una nueva asignación
+app.post('/asignacion', async (req, res) => {
+    try {
+        const { ID_cliente, ID_semana, ID_ejercicio } = req.body;
+        const nuevaAsignacion = await Asignacion.create({ ID_cliente, ID_semana, ID_ejercicio });
+        res.status(201).json(nuevaAsignacion);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear la asignación' });
+    }
+});
+
+// Obtener todas las asignaciones de un usuario
+app.get('/asignacion/:id_cliente', async (req, res) => {
+    try {
+        const { id_cliente } = req.params;
+        const asignaciones = await Asignacion.findAll({ where: { ID_cliente: id_cliente } });
+        res.json(asignaciones);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las asignaciones' });
+    }
+});
+
+// Actualizar una asignación
+app.put('/asignacion/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { ID_semana, ID_ejercicio } = req.body;
+        await Asignacion.update({ ID_semana, ID_ejercicio }, { where: { ID_asignacion: id } });
+        res.json({ message: 'Asignación actualizada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar la asignación' });
+    }
+});
+
+// Eliminar una asignación
+app.delete('/asignacion/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Asignacion.destroy({ where: { ID_asignacion: id } });
+        res.json({ message: 'Asignación eliminada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar la asignación' });
+    }
+});
+
+
 
 // Sincronizar el modelo con la base de datos
 sequelize.sync().then(() => {
