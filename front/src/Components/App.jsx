@@ -3,6 +3,7 @@ import Login from './Login';
 import Register from './Register';
 import Adminpage from './adminpage';
 import Userpage from './userpage';
+import AddRoutine from './addroutine';
 
 function app(){
   return(
@@ -13,6 +14,7 @@ function app(){
         <Route path="/Register.jsx" element={<Register />}/>
         <Route path="/adminpage.jsx" element={<Adminpage />}/>
         <Route path="/userpage.jsx" element={<Userpage />}/>
+        <Route path="/addrutine/:clientId" element={<AddRoutine />} />
       </Routes>
     </Router>
   )

@@ -1,101 +1,91 @@
-/* Estilos generales */
-body {
-    font-family: Arial, sans-serif;
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    background-color: #f0f2f5; /* Fondo suave */
-    overflow: hidden; /* Oculta la scrollbar */
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #111; /* Fondo negro */
+    color: #f8c300; /* Texto amarillo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .contenedor {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Usa toda la altura de la ventana */
+    flex-direction: column;
+    background-color: #222; /* Fondo gris oscuro */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .login {
-    background-color: #ffffff; /* Fondo blanco para el formulario */
-    padding: 40px; /* Espaciado interno */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */
-    width: 100%;
-    max-width: 400px; /* Limita el ancho en pantallas grandes */
+    text-align: center;
 }
 
-h1 {
-    text-align: center; /* Centra el título */
-    color: #333; /* Color del texto */
-    margin-bottom: 20px; /* Espacio debajo del título */
+.login h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #f8c300; /* Tono amarillo para el encabezado */
 }
 
 .inputs {
-    width: 100%; /* Ocupa todo el ancho del contenedor */
+    width: 100%;
+    margin-bottom: 20px;
 }
 
-td {
-    padding: 10px 0; /* Espaciado entre filas */
+.inputs td {
+    padding: 10px;
 }
 
 input[type="text"],
 input[type="password"] {
-    width: 100%; /* Ancho completo para las entradas */
-    padding: 10px; /* Espaciado interno */
-    border: 1px solid #ccc; /* Borde sutil */
-    border-radius: 4px; /* Bordes redondeados */
-    font-size: 16px; /* Tamaño de letra */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
-    transition: border-color 0.2s; /* Transición suave en el borde */
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #f8c300; /* Borde amarillo */
+    border-radius: 5px;
+    background-color: #333; /* Fondo de los inputs */
+    color: #f8c300; /* Texto en los inputs */
+    font-size: 1em;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-color: #4CAF50; /* Color del borde al enfocar */
-    outline: none; /* Sin borde de enfoque predeterminado */
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: #f8c300; /* Color del placeholder */
+    opacity: 0.7; /* Para darle un tono más suave */
 }
 
-.ingresar {
-    width: 100%; /* Ancho completo para el botón */
-    padding: 10px; /* Espaciado interno */
-    background-color: #4CAF50; /* Color de fondo del botón */
-    color: white; /* Color del texto */
-    border: none; /* Sin borde */
-    border-radius: 4px; /* Bordes redondeados */
-    font-size: 16px; /* Tamaño de letra */
-    cursor: pointer; /* Cambia el cursor al pasar el mouse */
-    transition: background-color 0.3s; /* Transición suave en el color de fondo */
-    margin-top: 20px; /* Espacio superior para el botón */
+input[type="button"].ingresar {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f8c300; /* Fondo amarillo para el botón */
+    color: #111; /* Texto negro */
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.ingresar:hover {
-    background-color: #45a049; /* Color del botón al pasar el mouse */
+input[type="button"].ingresar:hover {
+    background-color: #e0b800; /* Amarillo más oscuro en hover */
 }
 
 a {
-    display: block; /* Hace que el enlace ocupe todo el ancho */
-    text-align: center; /* Centra el enlace */
-    margin-top: 20px; /* Espacio superior */
-    color: #4CAF50; /* Color del enlace */
-    text-decoration: none; /* Sin subrayado */
-    font-size: 16px; /* Tamaño de letra */
+    display: block;
+    margin-top: 15px;
+    color: #f8c300; /* Color del enlace */
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s;
 }
 
 a:hover {
-    text-decoration: underline; /* Subraya el enlace al pasar el mouse */
-}
-
-/* Ajustes para pantallas pequeñas */
-@media (max-width: 480px) {
-    .login {
-        padding: 20px; /* Reduce el espaciado interno en pantallas pequeñas */
-    }
-
-    h1 {
-        font-size: 24px; /* Tamaño de letra del título en pantallas pequeñas */
-    }
-
-    input[type="text"], input[type="password"], .ingresar {
-        font-size: 14px; /* Tamaño de letra más pequeño */
-    }
+    color: #e0b800; /* Amarillo más oscuro al pasar el mouse */
 }

@@ -76,7 +76,7 @@ const Semana = sequelize.define('Semana', {
     },
     Nombre: {
         type: DataTypes.STRING,
-        allowNull: false // Por ejemplo: "Semana 1", "Semana 2", etc.
+        allowNull: false
     }
 }, {
     tableName: 'Semanas'
@@ -99,7 +99,7 @@ const Dia = sequelize.define('Dia', {
     },
     Dia: {
         type: DataTypes.STRING,
-        allowNull: false // Por ejemplo: "Lunes", "Martes", etc.
+        allowNull: false
     }
 }, {
     tableName: 'Dias'
@@ -132,47 +132,12 @@ const Ejercicio = sequelize.define('Ejercicio', {
     tableName: 'Ejercicios'
 });
 
-//modelo de la tabla para la asignacion de rutinas
-const Asignacion = sequelize.define('Asignacion', {
-    ID_asignacion: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    ID_cliente: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: registro,
-            key: 'id'
-        }
-    },
-    ID_semana: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Semana,
-            key: 'ID_semana'
-        }
-    },
-    ID_ejercicio: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Ejercicio,
-            key: 'ID_ejercicio'
-        }
-    }
-}, {
-    tableName: 'Asignaciones'
-});
-
 //relaciones entre las tablas
 Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
 Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
 registro.hasMany(Asignacion, { foreignKey: 'ID_cliente', onDelete: 'CASCADE' });
 Semana.hasMany(Asignacion, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
-Ejercicio.hasMany(Asignacion, { foreignKey: 'ID_ejercicio', onDelete: 'CASCADE' });
+
 
 // Crear una nueva semana
 app.post('/semana', async (req, res) => {
@@ -307,52 +272,6 @@ app.delete('/ejercicio/:id', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar el ejercicio' });
     }
 });
-
-// Crear una nueva asignación
-app.post('/asignacion', async (req, res) => {
-    try {
-        const { ID_cliente, ID_semana, ID_ejercicio } = req.body;
-        const nuevaAsignacion = await Asignacion.create({ ID_cliente, ID_semana, ID_ejercicio });
-        res.status(201).json(nuevaAsignacion);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al crear la asignación' });
-    }
-});
-
-// Obtener todas las asignaciones de un usuario
-app.get('/asignacion/:id_cliente', async (req, res) => {
-    try {
-        const { id_cliente } = req.params;
-        const asignaciones = await Asignacion.findAll({ where: { ID_cliente: id_cliente } });
-        res.json(asignaciones);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al obtener las asignaciones' });
-    }
-});
-
-// Actualizar una asignación
-app.put('/asignacion/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { ID_semana, ID_ejercicio } = req.body;
-        await Asignacion.update({ ID_semana, ID_ejercicio }, { where: { ID_asignacion: id } });
-        res.json({ message: 'Asignación actualizada' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar la asignación' });
-    }
-});
-
-// Eliminar una asignación
-app.delete('/asignacion/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Asignacion.destroy({ where: { ID_asignacion: id } });
-        res.json({ message: 'Asignación eliminada' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar la asignación' });
-    }
-});
-
 
 
 // Sincronizar el modelo con la base de datos

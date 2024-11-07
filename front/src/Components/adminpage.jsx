@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import './css/admin.css'
@@ -11,7 +12,7 @@ export default function AdminPage() {
                 // Realiza la solicitud a la API
                 const response = await axios.get("http://localhost:3000/registros");
                 
-                const clientsData = response.data; // Aquí asignamos directamente la respuesta
+                const clientsData = response.data; // Aquí asigno directamente la respuesta
                 
                 setClientes(clientsData); // Almacena los clientes en el estado
             } catch (error) {
@@ -20,7 +21,7 @@ export default function AdminPage() {
         }
 
         getClients();
-    }, []); // Solo se ejecuta una vez al montar el componente
+    }, []);
 
     return (
         <div className="contenedor">
@@ -45,8 +46,8 @@ export default function AdminPage() {
                                 <td>{element.age}</td>
                                 <td>{element.sex}</td>
                                 <td><div className="contenedorbtn">
-                                    <a href="#" className="editbtn">Editar</a>
-                                    <a href="#" className="editbtn">Ver</a>
+                                    <Link to={`/addrutine/${element.id}`} className="editbtn">Editar</Link>
+                                    <Link to={`#`} className="editbtn">Eliminar</Link>
                                     </div></td>
                             </tr>
                         ))}
