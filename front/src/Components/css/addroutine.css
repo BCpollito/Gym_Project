@@ -1,0 +1,145 @@
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-toggle {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.menu {
+    display: none;
+    background-color: #f9f9f9;
+    position: absolute;
+    top: 40px;
+    /* Ajusta la posición */
+    left: 0;
+    border: 1px solid #ccc;
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.menu.open {
+    display: block;
+}
+
+.menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu ul li {
+    padding: 8px 0;
+}
+
+.menu ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.menu ul li a:hover {
+    color: #4CAF50;
+}
+
+.añadirnuevasemana {
+    position: fixed;
+    /* Fija el botón en la pantalla */
+    bottom: 20px;
+    /* Ajusta la distancia desde el borde inferior */
+    right: 20px;
+    /* Ajusta la distancia desde el borde derecho */
+    background-color: #FFCC00;
+    /* Color de fondo amarillo */
+    color: black;
+    /* Color del texto negro */
+    border: none;
+    /* Sin borde */
+    padding: 15px 30px;
+    /* Tamaño del botón */
+    font-size: 16px;
+    /* Tamaño de la fuente */
+    font-weight: bold;
+    /* Hace el texto más grueso */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    cursor: pointer;
+    /* Cambia el cursor al pasar por encima */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra suave */
+    transition: all 0.3s ease;
+    /* Transición suave para efectos */
+}
+
+.añadirnuevasemana:hover {
+    background-color: #FFB300;
+    /* Cambia a un amarillo más oscuro al pasar el mouse */
+    transform: scale(1.05);
+    /* Agranda ligeramente el botón */
+}
+
+.añadirnuevasemana:focus {
+    outline: none;
+    /* Quita el contorno del botón al hacer clic */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    /* Sombra más prominente al hacer clic */
+}
+
+/* Estilos para el modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fondo oscuro para el modal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: black;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form button {
+    padding: 10px 20px;
+    background-color: #FFCC00;
+    border: none;
+    color: black;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #FFB300;
+}

@@ -77,6 +77,14 @@ const Semana = sequelize.define('Semana', {
     Nombre: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    ClienteID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: registro,
+            key: 'id'
+        }
     }
 }, {
     tableName: 'Semanas'
@@ -133,17 +141,16 @@ const Ejercicio = sequelize.define('Ejercicio', {
 });
 
 //relaciones entre las tablas
+registro.hasMany(Semana, { foreignKey: 'id', onDelete: 'CASCADE'})
 Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
 Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
-registro.hasMany(Asignacion, { foreignKey: 'ID_cliente', onDelete: 'CASCADE' });
-Semana.hasMany(Asignacion, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
 
 
 // Crear una nueva semana
 app.post('/semana', async (req, res) => {
     try {
-        const { Nombre } = req.body;
-        const nuevaSemana = await Semana.create({ Nombre });
+        const { Nombre, ClienteID } = req.body;
+        const nuevaSemana = await Semana.create({ Nombre, ClienteID });
         res.status(201).json(nuevaSemana);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la semana' });
@@ -299,6 +306,23 @@ app.get('/registros', async (req, res) => {
     const registros = await registro.findAll();
     res.json(registros);
 });
+
+// Obtener un registro por ID
+app.get('/registros/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const registroEncontrado = await registro.findByPk(id);
+
+        if (registroEncontrado) {
+            res.json(registroEncontrado);
+        } else {
+            res.status(404).json({ error: 'Registro no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener el registro' });
+    }
+});
+
 
 // Ruta para crear un nuevo registro
 
