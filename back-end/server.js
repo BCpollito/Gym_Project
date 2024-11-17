@@ -23,6 +23,7 @@ const sequelize = new Sequelize(
     }
 );
 
+//modelo de la tabla registro de cliente
 const registro = sequelize.define('registro', {
     id: {
         type: DataTypes.INTEGER,
@@ -38,6 +39,26 @@ const registro = sequelize.define('registro', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    name:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    weight:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    height:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    age:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    sex:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false // Por defecto, no es administrador
@@ -45,6 +66,220 @@ const registro = sequelize.define('registro', {
 }, {
     timestamps: false, //desactivar la creacion de las columnas "CreateAt" y "UpdateAt"
 });
+
+//modelo de la tabla semana para gestionar las semanas de las rutinas
+const Semana = sequelize.define('Semana', {
+    ID_semana: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    Nombre: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    ClienteID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: registro,
+            key: 'id'
+        }
+    }
+}, {
+    tableName: 'Semanas'
+});
+
+//modelo de la tabla para los dias a los que se asignaran las rutinas
+const Dia = sequelize.define('Dia', {
+    ID_dia: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ID_semana: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Semana,
+            key: 'ID_semana'
+        }
+    },
+    Dia: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, {
+    tableName: 'Dias'
+});
+
+//modelo de la tabla ejercicios
+const Ejercicio = sequelize.define('Ejercicio', {
+    ID_ejercicio: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    Nombre: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    Descripcion: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    ID_dia: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Dia,
+            key: 'ID_dia'
+        }
+    }
+}, {
+    tableName: 'Ejercicios'
+});
+
+//relaciones entre las tablas
+registro.hasMany(Semana, { foreignKey: 'id', onDelete: 'CASCADE'})
+Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
+Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
+
+
+// Crear una nueva semana
+app.post('/semana', async (req, res) => {
+    try {
+        const { Nombre, ClienteID } = req.body;
+        const nuevaSemana = await Semana.create({ Nombre, ClienteID });
+        res.status(201).json(nuevaSemana);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear la semana' });
+    }
+});
+
+// Obtener todas las semanas
+app.get('/semana', async (req, res) => {
+    try {
+        const semanas = await Semana.findAll();
+        res.json(semanas);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las semanas' });
+    }
+});
+
+// Actualizar una semana
+app.put('/semana/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Nombre } = req.body;
+        await Semana.update({ Nombre }, { where: { ID_semana: id } });
+        res.json({ message: 'Semana actualizada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar la semana' });
+    }
+});
+
+// Eliminar una semana
+app.delete('/semana/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Semana.destroy({ where: { ID_semana: id } });
+        res.json({ message: 'Semana eliminada' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar la semana' });
+    }
+});
+
+// Crear un nuevo día
+app.post('/dia', async (req, res) => {
+    try {
+        const { ID_semana, Dia } = req.body;
+        const nuevoDia = await Dia.create({ ID_semana, Dia });
+        res.status(201).json(nuevoDia);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el día' });
+    }
+});
+
+// Obtener todos los días de una semana
+app.get('/dia/:id_semana', async (req, res) => {
+    try {
+        const { id_semana } = req.params;
+        const dias = await Dia.findAll({ where: { ID_semana: id_semana } });
+        res.json(dias);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener los días' });
+    }
+});
+
+// Actualizar un día
+app.put('/dia/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Dia } = req.body;
+        await Dia.update({ Dia }, { where: { ID_dia: id } });
+        res.json({ message: 'Día actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el día' });
+    }
+});
+
+// Eliminar un día
+app.delete('/dia/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Dia.destroy({ where: { ID_dia: id } });
+        res.json({ message: 'Día eliminado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar el día' });
+    }
+});
+
+// Crear un nuevo ejercicio
+app.post('/ejercicio', async (req, res) => {
+    try {
+        const { Nombre, Descripcion, ID_dia } = req.body;
+        const nuevoEjercicio = await Ejercicio.create({ Nombre, Descripcion, ID_dia });
+        res.status(201).json(nuevoEjercicio);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el ejercicio' });
+    }
+});
+
+// Obtener todos los ejercicios de un día
+app.get('/ejercicio/:id_dia', async (req, res) => {
+    try {
+        const { id_dia } = req.params;
+        const ejercicios = await Ejercicio.findAll({ where: { ID_dia: id_dia } });
+        res.json(ejercicios);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener los ejercicios' });
+    }
+});
+
+// Actualizar un ejercicio
+app.put('/ejercicio/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Nombre, Descripcion } = req.body;
+        await Ejercicio.update({ Nombre, Descripcion }, { where: { ID_ejercicio: id } });
+        res.json({ message: 'Ejercicio actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el ejercicio' });
+    }
+});
+
+// Eliminar un ejercicio
+app.delete('/ejercicio/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Ejercicio.destroy({ where: { ID_ejercicio: id } });
+        res.json({ message: 'Ejercicio eliminado' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar el ejercicio' });
+    }
+});
+
 
 // Sincronizar el modelo con la base de datos
 sequelize.sync().then(() => {
@@ -72,6 +307,23 @@ app.get('/registros', async (req, res) => {
     res.json(registros);
 });
 
+// Obtener un registro por ID
+app.get('/registros/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const registroEncontrado = await registro.findByPk(id);
+
+        if (registroEncontrado) {
+            res.json(registroEncontrado);
+        } else {
+            res.status(404).json({ error: 'Registro no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener el registro' });
+    }
+});
+
+
 // Ruta para crear un nuevo registro
 
 const bcrypt = require('bcrypt');
@@ -79,9 +331,9 @@ const saltRounds = 10;
 
 app.post('/registros', async (req, res) => {
     try {
-        const { usuario, password } = req.body;
+        const { usuario, password, name, weight, height, age, sex } = req.body;
 
-        if (!usuario.trim() || !password.trim()) {
+        if (!usuario.trim() || !password.trim() || !name.trim() || !weight.trim() || !height.trim() || !age.trim() || !sex.trim()) {
             return res.json({success: true});
         }else{
             // Hash de la contraseña
@@ -90,7 +342,12 @@ app.post('/registros', async (req, res) => {
         // Crear un nuevo registro en la base de datos con el hash de la contraseña
         const nuevoRegistro = await registro.create({
             usuario,
-            password: hashedPassword
+            password: hashedPassword,
+            name,
+            weight,
+            height,
+            age,
+            sex
         });
         res.status(201).json(nuevoRegistro);
         }

@@ -1,0 +1,91 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #111; /* Fondo negro */
+    color: #f8c300; /* Texto amarillo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #222; /* Fondo gris oscuro */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.login {
+    text-align: center;
+}
+
+.login h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #f8c300; /* Tono amarillo para el encabezado */
+}
+
+.inputs {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.inputs td {
+    padding: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #f8c300; /* Borde amarillo */
+    border-radius: 5px;
+    background-color: #333; /* Fondo de los inputs */
+    color: #f8c300; /* Texto en los inputs */
+    font-size: 1em;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: #f8c300; /* Color del placeholder */
+    opacity: 0.7; /* Para darle un tono más suave */
+}
+
+input[type="button"].ingresar {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f8c300; /* Fondo amarillo para el botón */
+    color: #111; /* Texto negro */
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="button"].ingresar:hover {
+    background-color: #e0b800; /* Amarillo más oscuro en hover */
+}
+
+a {
+    display: block;
+    margin-top: 15px;
+    color: #f8c300; /* Color del enlace */
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #e0b800; /* Amarillo más oscuro al pasar el mouse */
+}
