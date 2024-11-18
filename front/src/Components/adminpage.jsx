@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import axios from "axios";
-import './css/admin.css'
 
 export default function AdminPage() {
     const [clientes, setClientes] = useState([]);

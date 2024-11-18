@@ -91,7 +91,7 @@ const Semana = sequelize.define('Semana', {
 });
 
 //modelo de la tabla para los dias a los que se asignaran las rutinas
-const Dia = sequelize.define('Dia', {
+const DiaSchema = sequelize.define('DiaSchema', {
     ID_dia: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -132,7 +132,7 @@ const Ejercicio = sequelize.define('Ejercicio', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Dia,
+            model: DiaSchema,
             key: 'ID_dia'
         }
     }
@@ -141,17 +141,23 @@ const Ejercicio = sequelize.define('Ejercicio', {
 });
 
 //relaciones entre las tablas
-registro.hasMany(Semana, { foreignKey: 'id', onDelete: 'CASCADE'})
-Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
-Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
+registro.hasMany(Semana, { foreignKey: 'ClienteID', onDelete: 'CASCADE'})
+
+Semana.hasMany(DiaSchema, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
+Semana.belongsTo(registro, {foreignKey: 'ClienteID'});
+
+DiaSchema.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
+DiaSchema.belongsTo(Semana, { foreignKey: 'ID_semana'})
 
 
 // Crear una nueva semana
 app.post('/semana', async (req, res) => {
     try {
         const { Nombre, ClienteID } = req.body;
+
         const nuevaSemana = await Semana.create({ Nombre, ClienteID });
-        res.status(201).json(nuevaSemana);
+        res.status(201).json(nuevaSemana);   
+
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la semana' });
     }
@@ -166,6 +172,33 @@ app.get('/semana', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener las semanas' });
     }
 });
+
+// Obtener las semanas de un cliente específico
+app.get('/clientes/:id/semanas', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Buscar las semanas correspondientes al cliente por su ID
+        const semanas = await Semana.findAll({
+            where: { ClienteID: id },
+            include: [
+                {
+                    model: DiaSchema,
+                    include: [Ejercicio]
+                }
+            ]
+        });
+
+        if (semanas.length > 0) {
+            res.json(semanas);
+        } else {
+            res.status(404).json({ message: 'No se encontraron semanas para este cliente' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las semanas del cliente' });
+    }
+});
+
 
 // Actualizar una semana
 app.put('/semana/:id', async (req, res) => {
@@ -194,7 +227,7 @@ app.delete('/semana/:id', async (req, res) => {
 app.post('/dia', async (req, res) => {
     try {
         const { ID_semana, Dia } = req.body;
-        const nuevoDia = await Dia.create({ ID_semana, Dia });
+        const nuevoDia = await DiaSchema.create({ ID_semana, Dia });
         res.status(201).json(nuevoDia);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el día' });
@@ -205,7 +238,7 @@ app.post('/dia', async (req, res) => {
 app.get('/dia/:id_semana', async (req, res) => {
     try {
         const { id_semana } = req.params;
-        const dias = await Dia.findAll({ where: { ID_semana: id_semana } });
+        const dias = await DiaSchema.findAll({ where: { ID_semana: id_semana } });
         res.json(dias);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener los días' });
@@ -217,7 +250,7 @@ app.put('/dia/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { Dia } = req.body;
-        await Dia.update({ Dia }, { where: { ID_dia: id } });
+        await DiaSchema.update({ Dia }, { where: { ID_dia: id } });
         res.json({ message: 'Día actualizado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el día' });
@@ -228,7 +261,7 @@ app.put('/dia/:id', async (req, res) => {
 app.delete('/dia/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        await Dia.destroy({ where: { ID_dia: id } });
+        await DiaSchema.destroy({ where: { ID_dia: id } });
         res.json({ message: 'Día eliminado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el día' });
