@@ -15,6 +15,7 @@ export default function AddRoutine() {
     const [semanas, setSemanas] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenDay, setIsModalOpenDia] = useState(false);
+    const [isModalOpenEjercicio, setIsModalOpenEjercicio] = useState(false);
 
     const [open, setOpen] = useState();
     const [openDia, setOpenDia] = useState();
@@ -55,15 +56,21 @@ export default function AddRoutine() {
         setIsModalOpenDia(true);
     };
 
+    const handleOpenModalEjercicio = () => {
+        setIsModalOpenEjercicio(true);
+    };
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIsModalOpenDia(false);
+        setIsModalOpenEjercicio(false);
     };
 
     const handleOutsideClick = (event) => {
         if (event.target === event.currentTarget) {
             setIsModalOpen(false);
             setIsModalOpenDia(false);
+            setIsModalOpenEjercicio(false);
         }
     };
 
@@ -93,7 +100,7 @@ export default function AddRoutine() {
         console.log("foreinKeyWeek: ", foreinKeyWeek)
         try {
             await axios.post('http://localhost:3000/dia', {
-                Dia: input.value,
+                name: input.value,
                 ID_semana: foreinKeyWeek
             })
             alert('Dia añadida con éxito');
@@ -104,6 +111,26 @@ export default function AddRoutine() {
             alert('Hubo un error al añadir Dia');
         }
         setIsModalOpenDia(false)
+    }
+
+    const handleSubmitEjercicio = async (event, foreinKeyDay) => {
+        event.preventDefault();
+        const tituloEjercicio = event.target.elements.namedItem("nombreEjercicio")
+        const DescripcionEjercicio = event.target.elements.namedItem("DescripcionEjercicio")
+        try {
+            await axios.post('http://localhost:3000/ejercicio',{
+                Nombre: tituloEjercicio.value,
+                Descripcion: DescripcionEjercicio.value,
+                ID_dia: foreinKeyDay
+            })
+            alert('ejercicio añadido con éxito');
+            tituloEjercicio.value = '';
+            DescripcionEjercicio.value = '';
+            window.location.reload(); // Recargar la página para actualizar datos
+        } catch (error) {
+            console.error('Error al añadir ejercicio:', error);
+            alert('Hubo un error al añadir ejercicio');
+        }
     }
 
     return (
@@ -154,21 +181,65 @@ export default function AddRoutine() {
                 </div>
             )}
 
+            {/*Modal añadir ejercicio*/}
+            {isModalOpenEjercicio && (
+                <div className="modal" onClick={handleOutsideClick}>
+                    <div className="modal-content">
+                        <span className="close" onClick={handleCloseModal}>&times;</span>
+                        <h2>Introduce Informacion del Ejercicio</h2>
+                        <form onSubmit={(event) => handleSubmitEjercicio(event, openDia)}>
+                            <input
+                                type="text"
+                                placeholder="Nombre del Ejercicio"
+                                name="nombreEjercicio"
+                                required
+                            />
+                            <textarea
+                            className="block w-full"
+                            placeholder="DESCRIPCION"
+                            name="DescripcionEjercicio"
+                            required 
+                            />
+                            <button type="submit">Guardar</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            <h1 className="">SEMANAS</h1>
             {semanas.map((semana) => (
                 <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
-                    <AccordionHeader className="hover:text-inherit pointer-events">
-                        <p className="w-full" onClick={() => handleOpen(semana.ID_semana)}>{semana.Nombre}</p>
-                        
+                    <AccordionHeader className="text-white uppercase "
+                        onClick={() => handleOpen(semana.ID_semana)}>
+                        {semana.Nombre}
                     </AccordionHeader>
 
                     <AccordionBody>
                         <div className="w-full flex justify-end"> <Button onClick={handleOpenModalDia}
                             className="whitespace-nowrap">agregar dia</Button></div>
-                        {semana.DiaSchemas.map((dia) => (
+                        {semana.Dia.map((dia) => (
                             <Accordion key={dia.ID_dia} open={openDia === dia.ID_dia}>
                                 <AccordionHeader onClick={() => handleOpenDia(dia.ID_dia)}>{dia.Dia}</AccordionHeader>
                                 <AccordionBody>
-                                    <h1>Ejercico 1</h1>
+                                    <table>
+                                        <thead>
+                                            <th>Nombre</th>
+                                            <th>Descipción</th>
+                                            <th>Archivo adjunto</th>
+                                        </thead>
+                                        {dia.Ejercicios.map((ejercicio) => (
+                                            <tr key={ejercicio.ID_ejercicio}>
+                                                <td>{ejercicio.Nombre}</td>
+                                                <td>{ejercicio.Descripcion}</td>
+                                                <td>Archivo Adjunto</td>
+                                            </tr>
+
+                                        ))}
+                                        <tfoot>
+                                            <tr><td className="bg-black" colSpan={4}>
+                                                <Button onClick={handleOpenModalEjercicio}>Añadir Ejercicio</Button></td></tr>
+                                        </tfoot>
+                                    </table>
                                 </AccordionBody>
                             </Accordion>
                         ))}
