@@ -133,6 +133,17 @@ export default function AddRoutine() {
         }
     }
 
+    const HandleDelete = async (key) => {
+        try {
+            await axios.delete(`http://localhost:3000/ejercicio/${key}`)
+            alert('ejercicio eliminado');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al eliminar ejercicio:', error);
+            alert('Hubo un error al eliminar ejercicio');
+        }
+    }
+
     return (
         <div className="contenedorRutina">
             <h1>Asignar Rutina a Cliente {cliente.name}</h1>
@@ -225,13 +236,13 @@ export default function AddRoutine() {
                                         <thead>
                                             <th>Nombre</th>
                                             <th>Descipción</th>
-                                            <th>Archivo adjunto</th>
+                                            <th>Acciones</th>
                                         </thead>
                                         {dia.Ejercicios.map((ejercicio) => (
                                             <tr key={ejercicio.ID_ejercicio}>
                                                 <td>{ejercicio.Nombre}</td>
                                                 <td>{ejercicio.Descripcion}</td>
-                                                <td>Archivo Adjunto</td>
+                                                <td><Button onClick={() => HandleDelete(ejercicio.ID_ejercicio)}>Eliminar</Button></td>
                                             </tr>
 
                                         ))}
