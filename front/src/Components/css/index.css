@@ -42,6 +42,13 @@
         background-color: #222;
     }
 
+    tfoot{
+        background-color: #111;
+        font-size: 1.1em;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
     .añadirnuevasemana {
         position: fixed;
         /* Fija el botón en la pantalla */

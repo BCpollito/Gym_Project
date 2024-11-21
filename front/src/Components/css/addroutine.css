@@ -50,6 +50,7 @@
 }
 
 .añadirnuevasemana {
+    z-index: 10;
     position: fixed;
     /* Fija el botón en la pantalla */
     bottom: 20px;

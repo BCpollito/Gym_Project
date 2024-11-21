@@ -91,7 +91,7 @@ const Semana = sequelize.define('Semana', {
 });
 
 //modelo de la tabla para los dias a los que se asignaran las rutinas
-const DiaSchema = sequelize.define('DiaSchema', {
+const Dia = sequelize.define('Dia', {
     ID_dia: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -132,7 +132,7 @@ const Ejercicio = sequelize.define('Ejercicio', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: DiaSchema,
+            model: Dia,
             key: 'ID_dia'
         }
     }
@@ -143,11 +143,11 @@ const Ejercicio = sequelize.define('Ejercicio', {
 //relaciones entre las tablas
 registro.hasMany(Semana, { foreignKey: 'ClienteID', onDelete: 'CASCADE'})
 
-Semana.hasMany(DiaSchema, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
+Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
 Semana.belongsTo(registro, {foreignKey: 'ClienteID'});
 
-DiaSchema.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
-DiaSchema.belongsTo(Semana, { foreignKey: 'ID_semana'})
+Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
+Dia.belongsTo(Semana, { foreignKey: 'ID_semana'})
 
 
 // Crear una nueva semana
@@ -183,7 +183,7 @@ app.get('/clientes/:id/semanas', async (req, res) => {
             where: { ClienteID: id },
             include: [
                 {
-                    model: DiaSchema,
+                    model: Dia,
                     include: [Ejercicio]
                 }
             ]
@@ -226,8 +226,8 @@ app.delete('/semana/:id', async (req, res) => {
 // Crear un nuevo día
 app.post('/dia', async (req, res) => {
     try {
-        const { ID_semana, Dia } = req.body;
-        const nuevoDia = await DiaSchema.create({ ID_semana, Dia });
+        const { ID_semana, name } = req.body;
+        const nuevoDia = await Dia.create({ ID_semana, Dia: name });
         res.status(201).json(nuevoDia);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el día' });
@@ -238,7 +238,7 @@ app.post('/dia', async (req, res) => {
 app.get('/dia/:id_semana', async (req, res) => {
     try {
         const { id_semana } = req.params;
-        const dias = await DiaSchema.findAll({ where: { ID_semana: id_semana } });
+        const dias = await Dia.findAll({ where: { ID_semana: id_semana } });
         res.json(dias);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener los días' });
@@ -250,7 +250,7 @@ app.put('/dia/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { Dia } = req.body;
-        await DiaSchema.update({ Dia }, { where: { ID_dia: id } });
+        await Dia.update({ Dia }, { where: { ID_dia: id } });
         res.json({ message: 'Día actualizado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el día' });
@@ -261,7 +261,7 @@ app.put('/dia/:id', async (req, res) => {
 app.delete('/dia/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        await DiaSchema.destroy({ where: { ID_dia: id } });
+        await Dia.destroy({ where: { ID_dia: id } });
         res.json({ message: 'Día eliminado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el día' });
