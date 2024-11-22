@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import {
+    Button,
+    Card, Checkbox, Input, List, Typography
+} from "@material-tailwind/react";
 import axios from 'axios';
-import { Link } from "react-router-dom"
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
     const [user, setUsuario] = useState("");
@@ -42,105 +45,90 @@ export default function Register() {
     };
 
     return (
-        <div className="contenedor">
-            <div className="register">
-                <h1>Registro</h1>
-                <table className='formulario'>
-                    <tbody>
-                        <tr>
-                            <td>
-                                {/*USUARIO*/}
-                                <input
-                                    className='registerinput'
-                                    id="usuario"
-                                    name="usuario"
-                                    type="text"
-                                    placeholder="Usuario"
-                                    onChange={(e) => setUsuario(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {/*CONTRASEÑA*/}
-                                <input
-                                    className='registerinput'
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="Contraseña"
-                                    onChange={(e) => setContraseña(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {/*NOMBRE Y APELLIDO*/}
-                                <input
-                                    className='registerinput'
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    placeholder="Nombre y Apellido"
-                                    onChange={(e) => setNombreApellido(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {/*PESO*/}
-                                <input
-                                    className='registerinput'
-                                    id="weight"
-                                    name="weight"
-                                    type="text"
-                                    placeholder="Peso"
-                                    onChange={(e) => setPeso(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {/*ESTATURA*/}
-                                <input
-                                    className='registerinput'
-                                    id="height"
-                                    name="height"
-                                    type="text"
-                                    placeholder="Estatura"
-                                    onChange={(e) => setEstatura(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {/*EDAD*/}
-                                <input
-                                    className='registerinput'
-                                    id="age"
-                                    name="age"
-                                    type="text"
-                                    placeholder="Edad"
-                                    onChange={(e) => setEdad(e.target.value)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="checkbox-group">
-                                <label>Masculino</label>
-                                <input
-                                    className='registerinput'
-                                    checked={sex === "Masculino"}
-                                    type="checkbox"
-                                    onChange={() => handleGeneroChange("Masculino")} />
+        <Card color="transparent" shadow={false}>
+            <Typography variant="h4">
+                Registro
+            </Typography>
+            <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 flex flex-col gap-2">
+                <Input
+                    size="lg"
+                    label="Usuario"
+                    id="usuario"
+                    name="usuario"
+                    type="text"
+                    onChange={(e) => setUsuario(e.target.value)}
+                />
+                <Input
+                    type="password"
+                    size="lg"
+                    label="Contraseña"
+                    id="password"
+                    name="password"
+                    onChange={(e) => setContraseña(e.target.value)}
+                />
+                <Input
+                    size="lg"
+                    id="name"
+                    name="name"
+                    type="text"
+                    label="Nombre y Apellido"
+                    onChange={(e) => setNombreApellido(e.target.value)}
 
-                                <label>Femenino</label>
-                                <input
-                                    className='registerinput'
-                                    checked={sex === "Femenino"}
-                                    type="checkbox"
-                                    onChange={() => handleGeneroChange("Femenino")} />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button className="registerbtn" onClick={handleSubmit}>Crear cuenta</button>
-                <Link to="../Login.jsx">Regresar</Link>
-            </div>
-        </div>
+                />
+                <Input
+                    size="lg"
+                    id="weight"
+                    name="weight"
+                    type="text"
+                    label="Peso"
+                    onChange={(e) => setPeso(e.target.value)}
+
+                />
+                <Input
+                    size="lg"
+                    id="height"
+                    name="height"
+                    type="text"
+                    label="Estatura"
+                    onChange={(e) => setEstatura(e.target.value)}
+
+                />
+                <Input
+                    size="lg"
+                    id="age"
+                    name="age"
+                    type="text"
+                    label="Edad"
+                    onChange={(e) => setEdad(e.target.value)}
+
+                />
+                <List className="flex-row justify-around">
+
+                    <Checkbox
+                        checked={sex === "Masculino"}
+                        type="checkbox"
+                        label="Masculino"
+                        onChange={() => handleGeneroChange("Masculino")} />
+
+
+                    <Checkbox
+                        checked={sex === "Femenino"}
+                        label="Femenino"
+                        type="checkbox"
+                        onChange={() => handleGeneroChange("Femenino")} />
+
+                </List>
+
+                <Button className="mt-6" fullWidth onClick={handleSubmit}>
+                    Crear cuenta
+                </Button>
+            </form>
+            <Typography color="gray" className="mt-4 text-center font-normal">
+                <Link to="/login" className="font-medium text-gray-900 underline">
+                    Iniciar Sesión
+                </Link>
+            </Typography>
+        </Card>
+
     )
 }

@@ -5,6 +5,8 @@ import './css/index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <main className='container mx-auto min-h-screen flex justify-center items-center'>
+      <App />
+    </main>
   </StrictMode>,
 )
