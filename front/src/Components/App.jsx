@@ -10,10 +10,10 @@ function app(){
     <Router>  
       <Routes>
         <Route path="/" element={<Login />}/>
-        <Route path="/Login.jsx" element={<Login />}/>
-        <Route path="/Register.jsx" element={<Register />}/>
-        <Route path="/adminpage.jsx" element={<Adminpage />}/>
-        <Route path="/userpage.jsx" element={<Userpage />}/>
+        <Route path="/login" element={<Login />}/>
+        <Route path="/register" element={<Register />}/>
+        <Route path="/adminpage" element={<Adminpage />}/>
+        <Route path="/userpage" element={<Userpage />}/>
         <Route path="/addrutine/:clientId" element={<AddRoutine />} />
       </Routes>
     </Router>

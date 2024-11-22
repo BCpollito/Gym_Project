@@ -1,14 +1,22 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from 'react';
 import axios from "axios";
-import './css/addroutine.css'
+import { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+
 import {
     Accordion,
-    AccordionHeader,
     AccordionBody,
-    Button
+    AccordionHeader,
+    Button,
+    Dialog,
+    DialogBody,
+    DialogFooter,
+    DialogHeader,
+    Input,
+    Textarea,
+    Typography
 } from "@material-tailwind/react";
 
+const TABLE_HEAD = ["Nombre", "Descripción", "Acciones"];
 export default function AddRoutine() {
     const { clientId } = useParams();
     const [cliente, setCliente] = useState({});
@@ -16,6 +24,16 @@ export default function AddRoutine() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenDay, setIsModalOpenDia] = useState(false);
     const [isModalOpenEjercicio, setIsModalOpenEjercicio] = useState(false);
+
+    function handleModalWeek() {
+        setIsModalOpen(e => !e)
+    }
+    function handleModalDay() {
+        setIsModalOpenDia(e => !e)
+    }
+    function handleModalEjercicio() {
+        setIsModalOpenEjercicio(e => !e)
+    }
 
     const [open, setOpen] = useState();
     const [openDia, setOpenDia] = useState();
@@ -48,31 +66,6 @@ export default function AddRoutine() {
         getSemanas();
     }, [clientId]);
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleOpenModalDia = () => {
-        setIsModalOpenDia(true);
-    };
-
-    const handleOpenModalEjercicio = () => {
-        setIsModalOpenEjercicio(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setIsModalOpenDia(false);
-        setIsModalOpenEjercicio(false);
-    };
-
-    const handleOutsideClick = (event) => {
-        if (event.target === event.currentTarget) {
-            setIsModalOpen(false);
-            setIsModalOpenDia(false);
-            setIsModalOpenEjercicio(false);
-        }
-    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -90,7 +83,6 @@ export default function AddRoutine() {
             console.error('Error al añadir semana:', error);
             alert('Hubo un error al añadir semana');
         }
-        setIsModalOpen(false);
     };
 
     const handleSubmitDia = async (event, foreinKeyWeek) => {
@@ -110,7 +102,6 @@ export default function AddRoutine() {
             console.error('Error al añadir Dia:', error);
             alert('Hubo un error al añadir Dia');
         }
-        setIsModalOpenDia(false)
     }
 
     const handleSubmitEjercicio = async (event, foreinKeyDay) => {
@@ -118,7 +109,7 @@ export default function AddRoutine() {
         const tituloEjercicio = event.target.elements.namedItem("nombreEjercicio")
         const DescripcionEjercicio = event.target.elements.namedItem("DescripcionEjercicio")
         try {
-            await axios.post('http://localhost:3000/ejercicio',{
+            await axios.post('http://localhost:3000/ejercicio', {
                 Nombre: tituloEjercicio.value,
                 Descripcion: DescripcionEjercicio.value,
                 ID_dia: foreinKeyDay
@@ -145,120 +136,171 @@ export default function AddRoutine() {
     }
 
     return (
-        <div className="contenedorRutina">
-            <h1>Asignar Rutina a Cliente {cliente.name}</h1>
-            <h2>Peso: {cliente.weight}</h2>
-            <h2>Altura: {cliente.height}</h2>
-            <h2>Edad: {cliente.age}</h2>
-            <h2>Género: {cliente.sex}</h2>
+        <>
+            <div className="flex flex-col gap-8 min-h-screen relative">
+                <div>
+                    <Typography variant="h2" className="text-center">
+                        Asignar Rutina a Cliente
+                    </Typography>
+                    <div className="flex flex-col gap-2">
+                        <Typography variant="p" className="font-bold text-2xl">{cliente.name}</Typography>
+                        <p><strong>Peso:</strong> {cliente.weight}</p>
+                        <p><strong>Altura:</strong> {cliente.height}</p>
+                        <p><strong>Edad:</strong> {cliente.age}</p>
+                        <p><strong>Género:</strong> {cliente.sex}</p>
+                    </div>
+                </div>
 
-            <button className="añadirnuevasemana" onClick={handleOpenModal}>Añadir nueva semana</button>
+                {semanas.map((semana) => (
+                    <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
+                        <AccordionHeader className="uppercase "
+                            onClick={() => handleOpen(semana.ID_semana)}>
+                            {semana.Nombre}
+                        </AccordionHeader>
+
+                        <AccordionBody>
+                            <div className="w-full flex justify-end">
+                                <Button onClick={handleModalDay}
+                                    className="whitespace-nowrap p-2">agregar dia</Button>
+                            </div>
+                            {semana.Dia.map((dia) => (
+                                <Accordion key={dia.ID_dia} open={openDia === dia.ID_dia}>
+                                    <AccordionHeader onClick={() => handleOpenDia(dia.ID_dia)}>{dia.Dia}</AccordionHeader>
+                                    <AccordionBody>
+                                        <table className="w-full text-left table-auto min-w-max">
+                                            <thead>
+                                                <tr className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                    {
+                                                        TABLE_HEAD.map((head) => (
+                                                            <th key={head} className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">{head}</p>
+                                                            </th>
+                                                        )
+                                                        )
+                                                    }
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {dia.Ejercicios.map((ejercicio) => (
+                                                    <tr key={ejercicio.ID_ejercicio}>
+                                                        <td className="p-4 border-b border-blue-gray-50">{ejercicio.Nombre}</td>
+                                                        <td className="p-4 border-b border-blue-gray-50">{ejercicio.Descripcion}</td>
+                                                        <td className="p-4 border-b border-blue-gray-50">
+                                                            <Button className="bg-red-300" onClick={() => HandleDelete(ejercicio.ID_ejercicio)}>Eliminar</Button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+
+                                        </table>
+                                        <div className="flex justify-center w-full mt-2">
+                                            <Button onClick={handleModalEjercicio}>Añadir Ejercicio</Button>
+                                        </div>
+                                    </AccordionBody>
+                                </Accordion>
+                            ))}
+                        </AccordionBody>
+                    </Accordion>
+                ))}
+
+                <Button onClick={handleModalWeek} className="!fixed bottom-4 left-1/2 transform -translate-x-1/2">Añadir nueva semana</Button>
+            </div>
+
 
             {/*Modal añadir semana*/}
-            {isModalOpen && (
-                <div className="modal" onClick={handleOutsideClick}>
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Introduce el nombre de la nueva semana</h2>
-                        <form onSubmit={handleSubmit}>
-                            <input
-                                type="text"
-                                placeholder="Nombre de la semana"
-                                name="weekName"
-                                required
-                            />
-                            <button type="submit">Guardar</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <Dialog open={isModalOpen} handler={handleModalWeek}>
+                <DialogHeader>Introduce el nombre de la nueva semana</DialogHeader>
+                <DialogBody>
+                    <form id="weekForm" onSubmit={handleSubmit}>
+                        <Input
+                            type="text"
+                            label="Nombre de la semana"
+                            name="weekName"
+                            required
+                        />
+
+                    </form>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        onClick={handleModalWeek}
+                        className="mr-1"
+                    >
+                        <span>Cancelar</span>
+                    </Button>
+                    <Button type="submit" form="weekForm">Guardar</Button>
+                </DialogFooter>
+            </Dialog>
+
 
             {/*Modal añadir dia*/}
-            {isModalOpenDay && (
-                <div className="modal" onClick={handleOutsideClick}>
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Introduce el nombre del Dia</h2>
-                        <form onSubmit={(event) => handleSubmitDia(event, open)}>
-                            <input
-                                type="text"
-                                placeholder="Nombre del Dia"
-                                name="DayName"
-                                required
-                            />
-                            <button type="submit">Guardar</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <Dialog open={isModalOpenDay} handler={handleModalDay}>
+                <DialogHeader>Introduce el nombre del Dia</DialogHeader>
+                <DialogBody>
+                    <form id="dayForm" onSubmit={handleSubmitDia}>
+                        <Input
+                            type="text"
+                            label="Nombre del Dia"
+                            name="DayName"
+                            required
+                        />
+
+                    </form>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        onClick={handleModalDay}
+                        className="mr-1"
+                    >
+                        <span>Cancelar</span>
+                    </Button>
+                    <Button form="dayForm" type="submit">Guardar</Button>
+                </DialogFooter>
+            </Dialog>
+
 
             {/*Modal añadir ejercicio*/}
-            {isModalOpenEjercicio && (
-                <div className="modal" onClick={handleOutsideClick}>
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Introduce Informacion del Ejercicio</h2>
-                        <form onSubmit={(event) => handleSubmitEjercicio(event, openDia)}>
-                            <input
-                                type="text"
-                                placeholder="Nombre del Ejercicio"
-                                name="nombreEjercicio"
-                                required
-                            />
-                            <textarea
-                            className="block w-full"
-                            placeholder="DESCRIPCION"
+            <Dialog open={isModalOpenEjercicio} handler={handleModalEjercicio}>
+                <DialogHeader>Introduce el nombre del Dia</DialogHeader>
+                <DialogBody>
+                    <form id="ejercicioForm" className="flex flex-col gap-2" onSubmit={(event) => handleSubmitEjercicio(event, openDia)}>
+                        <Input
+                            type="text"
+                            label="Nombre del Dia"
+                            name="DayName"
+                            required
+                        />
+                        <Input
+                            type="text"
+                            label="Nombre del Ejercicio"
+                            name="nombreEjercicio"
+                            required
+                        />
+                        <Textarea
+                            label="DESCRIPCION"
                             name="DescripcionEjercicio"
-                            required 
-                            />
-                            <button type="submit">Guardar</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+                            required
+                        />
 
-            <h1 className="">SEMANAS</h1>
-            {semanas.map((semana) => (
-                <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
-                    <AccordionHeader className="text-white uppercase "
-                        onClick={() => handleOpen(semana.ID_semana)}>
-                        {semana.Nombre}
-                    </AccordionHeader>
-
-                    <AccordionBody>
-                        <div className="w-full flex justify-end"> <Button onClick={handleOpenModalDia}
-                            className="whitespace-nowrap">agregar dia</Button></div>
-                        {semana.Dia.map((dia) => (
-                            <Accordion key={dia.ID_dia} open={openDia === dia.ID_dia}>
-                                <AccordionHeader onClick={() => handleOpenDia(dia.ID_dia)}>{dia.Dia}</AccordionHeader>
-                                <AccordionBody>
-                                    <table>
-                                        <thead>
-                                            <th>Nombre</th>
-                                            <th>Descipción</th>
-                                            <th>Acciones</th>
-                                        </thead>
-                                        {dia.Ejercicios.map((ejercicio) => (
-                                            <tr key={ejercicio.ID_ejercicio}>
-                                                <td>{ejercicio.Nombre}</td>
-                                                <td>{ejercicio.Descripcion}</td>
-                                                <td><Button onClick={() => HandleDelete(ejercicio.ID_ejercicio)}>Eliminar</Button></td>
-                                            </tr>
-
-                                        ))}
-                                        <tfoot>
-                                            <tr><td className="bg-black" colSpan={4}>
-                                                <Button onClick={handleOpenModalEjercicio}>Añadir Ejercicio</Button></td></tr>
-                                        </tfoot>
-                                    </table>
-                                </AccordionBody>
-                            </Accordion>
-                        ))}
-                    </AccordionBody>
-                </Accordion>
-            ))}
-
-
-        </div>
+                    </form>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        onClick={handleModalEjercicio}
+                        className="mr-1"
+                    >
+                        <span>Cancelar</span>
+                    </Button>
+                    <Button type="submit" form="ejercicioForm">Guardar</Button>
+                </DialogFooter>
+            </Dialog>
+        </>
     );
 }
