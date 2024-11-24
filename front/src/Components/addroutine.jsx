@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
+import { Trash2 } from 'lucide-react';
 
 import {
     Accordion,
@@ -11,6 +12,7 @@ import {
     DialogBody,
     DialogFooter,
     DialogHeader,
+    IconButton,
     Input,
     Textarea,
     Typography
@@ -132,6 +134,17 @@ export default function AddRoutine() {
         }
     }
 
+    const HandleDeleteDia = async (key) => {
+        try{
+            await axios.delete(`http://localhost:3000/dia/${key}`)
+            alert('Dia eliminado');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al eliminar dia:', error);
+            alert('Hubo un error al eliminar dia');
+        }
+    }
+
     return (
         <>
             <div className="flex flex-col gap-8 min-h-screen relative">
@@ -161,7 +174,15 @@ export default function AddRoutine() {
                             </div>
                             {semana.Dia.map((dia) => (
                                 <Accordion key={dia.ID_dia} open={openDia === dia.ID_dia}>
-                                    <AccordionHeader onClick={() => handleOpenDia(dia.ID_dia)}>{dia.Dia}</AccordionHeader>
+                                    <AccordionHeader className="flex justify-start whitespace-nowrap group" onClick={() => handleOpenDia(dia.ID_dia)}>
+                                        {dia.Dia}
+                                        <div className="w-full text-right group-hover:block hidden">
+                                        <IconButton color="red" variant="text" onClick={() => HandleDeleteDia(dia.ID_dia)}>
+                                        <Trash2 />
+                                        </IconButton>
+                                        </div>
+                                        
+                                        </AccordionHeader>
                                     <AccordionBody>
                                         <table className="w-full text-left table-auto min-w-max">
                                             <thead>

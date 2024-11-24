@@ -39,23 +39,23 @@ const registro = sequelize.define('registro', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    name:{
+    name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    weight:{
+    weight: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    height:{
+    height: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    age:{
+    age: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    sex:{
+    sex: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -141,13 +141,13 @@ const Ejercicio = sequelize.define('Ejercicio', {
 });
 
 //relaciones entre las tablas
-registro.hasMany(Semana, { foreignKey: 'ClienteID', onDelete: 'CASCADE'})
+registro.hasMany(Semana, { foreignKey: 'ClienteID', onDelete: 'CASCADE' })
 
 Semana.hasMany(Dia, { foreignKey: 'ID_semana', onDelete: 'CASCADE' });
-Semana.belongsTo(registro, {foreignKey: 'ClienteID'});
+Semana.belongsTo(registro, { foreignKey: 'ClienteID' });
 
 Dia.hasMany(Ejercicio, { foreignKey: 'ID_dia', onDelete: 'CASCADE' });
-Dia.belongsTo(Semana, { foreignKey: 'ID_semana'})
+Dia.belongsTo(Semana, { foreignKey: 'ID_semana' })
 
 
 // Crear una nueva semana
@@ -156,7 +156,7 @@ app.post('/semana', async (req, res) => {
         const { Nombre, ClienteID } = req.body;
 
         const nuevaSemana = await Semana.create({ Nombre, ClienteID });
-        res.status(201).json(nuevaSemana);   
+        res.status(201).json(nuevaSemana);
 
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la semana' });
@@ -259,12 +259,35 @@ app.put('/dia/:id', async (req, res) => {
 
 // Eliminar un día
 app.delete('/dia/:id', async (req, res) => {
-    try {
+    /* try {
         const { id } = req.params;
         await Dia.destroy({ where: { ID_dia: id } });
         res.json({ message: 'Día eliminado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el día' });
+    } */
+
+    const transaction = await sequelize.transaction();
+    try {
+        // Eliminar ejercicios asociados al día
+        await Ejercicio.destroy({
+            where: { ID_dia },
+            transaction
+        });
+
+        // Eliminar el día
+        await Dia.destroy({
+            where: { ID_dia },
+            transaction
+        });
+
+        // Confirmar la transacción
+        await transaction.commit();
+        console.log('Día y ejercicios asociados eliminados exitosamente.');
+    } catch (error) {
+        // Revertir la transacción en caso de error
+        await transaction.rollback();
+        console.error('Error al eliminar el día y sus ejercicios:', error);
     }
 });
 
@@ -367,22 +390,22 @@ app.post('/registros', async (req, res) => {
         const { usuario, password, name, weight, height, age, sex } = req.body;
 
         if (!usuario.trim() || !password.trim() || !name.trim() || !weight.trim() || !height.trim() || !age.trim() || !sex.trim()) {
-            return res.json({success: true});
-        }else{
+            return res.json({ success: true });
+        } else {
             // Hash de la contraseña
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Crear un nuevo registro en la base de datos con el hash de la contraseña
-        const nuevoRegistro = await registro.create({
-            usuario,
-            password: hashedPassword,
-            name,
-            weight,
-            height,
-            age,
-            sex
-        });
-        res.status(201).json(nuevoRegistro);
+            // Crear un nuevo registro en la base de datos con el hash de la contraseña
+            const nuevoRegistro = await registro.create({
+                usuario,
+                password: hashedPassword,
+                name,
+                weight,
+                height,
+                age,
+                sex
+            });
+            res.status(201).json(nuevoRegistro);
         }
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -429,10 +452,10 @@ app.post('/login', async (req, res) => {
 
         const match = await bcrypt.compare(password, usuarioEncontrado.password);
         if (!match) return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
-        
+
         const role = usuarioEncontrado.isAdmin ? 'admin' : 'user';
         return res.json({ success: true, message: 'Inicio de sesión exitoso', role });
-        
+
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
