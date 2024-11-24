@@ -31,7 +31,7 @@ export default function Register() {
                 alert('Los campos no pueden estar vacios');
             } else {
                 alert(`Registrado exitosamente Usuario ${name}`);
-                navigate('../Login.jsx');
+                navigate('../login');
             }
         } catch (error) {
             console.error('Error al registrarse', error);

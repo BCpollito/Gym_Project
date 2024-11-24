@@ -19,9 +19,9 @@ export default function Login() {
             const response = await axios.post('http://localhost:3000/login', { usuario, password });
             if (response.data.success) {
                 if (response.data.role === 'admin') {
-                    navigate('../adminpage.jsx'); // Redirige a la página de administrador
+                    navigate('/adminpage'); // Redirige a la página de administrador
                 } else {
-                    navigate('../userpage.jsx'); // Redirige a la página de usuario
+                    navigate('/userpage'); // Redirige a la página de usuario
                 }
             } else {
                 alert('Usuario o contraseña incorrectos');

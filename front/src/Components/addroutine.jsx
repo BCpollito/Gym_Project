@@ -58,7 +58,6 @@ export default function AddRoutine() {
             try {
                 const response = await axios.get(`http://localhost:3000/clientes/${clientId}/semanas`);
                 setSemanas(response.data);
-                console.log(response.data)
             } catch (error) {
                 console.error('Error al obtener las semanas:', error);
             }
@@ -88,8 +87,6 @@ export default function AddRoutine() {
     const handleSubmitDia = async (event, foreinKeyWeek) => {
         event.preventDefault();
         const input = event.target.elements.namedItem("DayName")
-        console.log("input: ", input.value)
-        console.log("foreinKeyWeek: ", foreinKeyWeek)
         try {
             await axios.post('http://localhost:3000/dia', {
                 name: input.value,
@@ -143,17 +140,16 @@ export default function AddRoutine() {
                         Asignar Rutina a Cliente
                     </Typography>
                     <div className="flex flex-col gap-2">
-                        <Typography variant="p" className="font-bold text-2xl">{cliente.name}</Typography>
+                        <Typography variant="paragraph" className="font-bold text-2xl">{cliente.name}</Typography>
                         <p><strong>Peso:</strong> {cliente.weight}</p>
                         <p><strong>Altura:</strong> {cliente.height}</p>
                         <p><strong>Edad:</strong> {cliente.age}</p>
                         <p><strong>Género:</strong> {cliente.sex}</p>
                     </div>
                 </div>
-
                 {semanas.map((semana) => (
                     <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
-                        <AccordionHeader className="uppercase "
+                        <AccordionHeader className="uppercase"
                             onClick={() => handleOpen(semana.ID_semana)}>
                             {semana.Nombre}
                         </AccordionHeader>
@@ -240,14 +236,13 @@ export default function AddRoutine() {
             <Dialog open={isModalOpenDay} handler={handleModalDay}>
                 <DialogHeader>Introduce el nombre del Dia</DialogHeader>
                 <DialogBody>
-                    <form id="dayForm" onSubmit={handleSubmitDia}>
+                    <form id="dayForm" onSubmit={(event) => handleSubmitDia(event, open)}>
                         <Input
                             type="text"
                             label="Nombre del Dia"
                             name="DayName"
                             required
                         />
-
                     </form>
                 </DialogBody>
                 <DialogFooter>
@@ -269,12 +264,6 @@ export default function AddRoutine() {
                 <DialogHeader>Introduce el nombre del Dia</DialogHeader>
                 <DialogBody>
                     <form id="ejercicioForm" className="flex flex-col gap-2" onSubmit={(event) => handleSubmitEjercicio(event, openDia)}>
-                        <Input
-                            type="text"
-                            label="Nombre del Dia"
-                            name="DayName"
-                            required
-                        />
                         <Input
                             type="text"
                             label="Nombre del Ejercicio"
