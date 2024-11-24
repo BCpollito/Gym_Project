@@ -221,6 +221,7 @@ app.delete('/semana/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar la semana' });
     }
+
 });
 
 // Crear un nuevo día
@@ -259,35 +260,12 @@ app.put('/dia/:id', async (req, res) => {
 
 // Eliminar un día
 app.delete('/dia/:id', async (req, res) => {
-    /* try {
+    try {
         const { id } = req.params;
         await Dia.destroy({ where: { ID_dia: id } });
         res.json({ message: 'Día eliminado' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el día' });
-    } */
-
-    const transaction = await sequelize.transaction();
-    try {
-        // Eliminar ejercicios asociados al día
-        await Ejercicio.destroy({
-            where: { ID_dia },
-            transaction
-        });
-
-        // Eliminar el día
-        await Dia.destroy({
-            where: { ID_dia },
-            transaction
-        });
-
-        // Confirmar la transacción
-        await transaction.commit();
-        console.log('Día y ejercicios asociados eliminados exitosamente.');
-    } catch (error) {
-        // Revertir la transacción en caso de error
-        await transaction.rollback();
-        console.error('Error al eliminar el día y sus ejercicios:', error);
     }
 });
 

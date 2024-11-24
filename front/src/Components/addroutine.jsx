@@ -135,13 +135,24 @@ export default function AddRoutine() {
     }
 
     const HandleDeleteDia = async (key) => {
-        try{
+        try {
             await axios.delete(`http://localhost:3000/dia/${key}`)
             alert('Dia eliminado');
             window.location.reload();
         } catch (error) {
             console.error('Error al eliminar dia:', error);
             alert('Hubo un error al eliminar dia');
+        }
+    }
+
+    const HandleDeleteSemana = async (key) => {
+        try {
+            await axios.delete(`http://localhost:3000/semana/${key}`)
+            alert('Semana eliminada');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al eliminar semana:', error);
+            alert('Hubo un error al eliminar semana');
         }
     }
 
@@ -162,9 +173,14 @@ export default function AddRoutine() {
                 </div>
                 {semanas.map((semana) => (
                     <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
-                        <AccordionHeader className="uppercase"
+                        <AccordionHeader className="uppercase flex justify-start whitespace-nowrap group"
                             onClick={() => handleOpen(semana.ID_semana)}>
                             {semana.Nombre}
+                            <div className="w-full text-right group-hover:block hidden">
+                                <IconButton color="red" variant="text" onClick={() => HandleDeleteSemana(semana.ID_semana)}>
+                                    <Trash2 />
+                                </IconButton>
+                            </div>
                         </AccordionHeader>
 
                         <AccordionBody>
@@ -177,12 +193,12 @@ export default function AddRoutine() {
                                     <AccordionHeader className="flex justify-start whitespace-nowrap group" onClick={() => handleOpenDia(dia.ID_dia)}>
                                         {dia.Dia}
                                         <div className="w-full text-right group-hover:block hidden">
-                                        <IconButton color="red" variant="text" onClick={() => HandleDeleteDia(dia.ID_dia)}>
-                                        <Trash2 />
-                                        </IconButton>
+                                            <IconButton color="red" variant="text" onClick={() => HandleDeleteDia(dia.ID_dia)}>
+                                                <Trash2 />
+                                            </IconButton>
                                         </div>
-                                        
-                                        </AccordionHeader>
+
+                                    </AccordionHeader>
                                     <AccordionBody>
                                         <table className="w-full text-left table-auto min-w-max">
                                             <thead>
