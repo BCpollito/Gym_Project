@@ -1,7 +1,8 @@
-import { Card } from "@material-tailwind/react";
+import { Card, IconButton } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Pencil, Trash2 } from 'lucide-react';
 
 const TABLE_HEAD = ["Cliente", "Peso", "Estatura", "Edad", "Sexo", "Asignar Rutina"];
 
@@ -23,6 +24,17 @@ export default function AdminPage() {
         getClients();
     }, []);
 
+    const HandleDeleteRegistro = async (key) => {
+        try {
+            alert('registro eliminado');
+            window.location.reload();
+            await axios.delete(`http://localhost:3000/registros/${key}`)            
+        } catch (error) {
+            console.error('Error al eliminar registro:', error);
+            alert('Hubo un error al eliminar registro');
+        }
+    }
+
     return (
         <Card className="h-full w-full overflow-y-auto">
             <table className="w-full min-w-max table-auto text-left">
@@ -36,7 +48,8 @@ export default function AdminPage() {
                 </thead>
                 <tbody>
                     {clientes.map((element, idx) => {
-                        const isLast = idx === clientes.length - 1;
+                        if (!element.isAdmin) {
+                            const isLast = idx === clientes.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                         return (
                             <tr key={element.id}>
@@ -46,13 +59,23 @@ export default function AdminPage() {
                                 <td className={classes} >{element.age}</td>
                                 <td className={classes} >{element.sex}</td>
                                 <td className={classes} >
-                                    <div>
-                                        <Link to={`/addrutine/${element.id}`} className="pointer">Editar</Link>
-                                        <Link to={`#`} className="pointer">Eliminar</Link>
+                                    <div className="flex gap-2">
+                                        <IconButton size="md" variant="filled" color="green">
+                                        <Link to={`/addrutine/${element.id}`} className="pointer">
+                                        <Pencil />
+                                        </Link>
+                                        </IconButton>
+                                        
+                                        <IconButton size="md" color="red" onClick={() => HandleDeleteRegistro(element.id)}>
+                                        <Trash2 />
+                                        </IconButton>
+                                        
                                     </div>
                                 </td>
                             </tr>
                         )
+                        }
+                        
                     }
                     )}
                 </tbody>

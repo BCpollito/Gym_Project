@@ -392,16 +392,29 @@ app.post('/registros', async (req, res) => {
 
 //Ruta para eliminar un registro
 app.delete('/registros/:id', async (req, res) => {
+    const transaction = await sequelize.transaction();
+
     try {
-        const eliminarRegistro = await registro.findByPk(req.params.id);
-        if (eliminarRegistro) {
-            await eliminarRegistro.destroy();
-            res.status(204).send();
-        } else {
-            res.status(400).json({ error: 'Producto no encontrado' });
-        }
-    } catch (err) {
-        res.status(400).json({ error: err.message })
+        const { id } = req.params;
+        // Eliminar semanas asociadas al cliente
+        await Semana.destroy({
+            where: { ClienteID: id },
+            transaction
+        });
+
+        // Eliminar el cliente
+        await registro.destroy({
+            where: { id: id },
+            transaction
+        });
+
+        // Confirmar la transacción
+        await transaction.commit();
+        console.log('Cliente y semanas asociadas eliminados exitosamente.');
+    } catch (error) {
+        // Revertir la transacción en caso de error
+        await transaction.rollback();
+        console.error('Error al eliminar cliente y semanas:', error);
     }
 })
 
