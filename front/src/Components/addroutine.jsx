@@ -15,7 +15,7 @@ import {
     IconButton,
     Input,
     Textarea,
-    Typography
+    Typography,
 } from "@material-tailwind/react";
 
 const TABLE_HEAD = ["Nombre", "Descripción", "Acciones"];
@@ -26,7 +26,8 @@ export default function AddRoutine() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenDay, setIsModalOpenDia] = useState(false);
     const [isModalOpenEjercicio, setIsModalOpenEjercicio] = useState(false);
-
+    const [isModalOpenDescripcion, setisModalOpenDescripcion] = useState(false);
+    const [description, setdescripcion] = useState("");
     function handleModalWeek() {
         setIsModalOpen(e => !e)
     }
@@ -35,6 +36,10 @@ export default function AddRoutine() {
     }
     function handleModalEjercicio() {
         setIsModalOpenEjercicio(e => !e)
+    }
+    function HandleViewDescription(descripcion) {
+        setisModalOpenDescripcion(e => !e)
+        setdescripcion(descripcion);
     }
 
     const [open, setOpen] = useState();
@@ -200,6 +205,7 @@ export default function AddRoutine() {
 
                                     </AccordionHeader>
                                     <AccordionBody>
+
                                         <table className="w-full text-left table-auto min-w-max">
                                             <thead>
                                                 <tr className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
@@ -211,15 +217,17 @@ export default function AddRoutine() {
                                                         )
                                                         )
                                                     }
-
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {dia.Ejercicios.map((ejercicio) => (
                                                     <tr key={ejercicio.ID_ejercicio}>
                                                         <td className="p-4 border-b border-blue-gray-50">{ejercicio.Nombre}</td>
-                                                        <td className="p-4 border-b border-blue-gray-50">{ejercicio.Descripcion}</td>
-                                                        <td className="p-4 border-b border-blue-gray-50">
+                                                        <td onClick={() => HandleViewDescription(ejercicio.Descripcion)}
+                                                            className="p-4 border-b border-blue-gray-50 whitespace-nowrap overflow-hidden max-w-48 text-ellipsis hover:font-bold hover:text-blue-800">
+                                                            {ejercicio.Descripcion}
+                                                        </td>
+                                                        <td className="p-4 border-b border-blue-gray-50 ">
                                                             <Button className="bg-red-300" onClick={() => HandleDelete(ejercicio.ID_ejercicio)}>Eliminar</Button>
                                                         </td>
                                                     </tr>
@@ -326,6 +334,24 @@ export default function AddRoutine() {
                     </Button>
                     <Button type="submit" form="ejercicioForm">Guardar</Button>
                 </DialogFooter>
+            </Dialog>
+
+            {/*Modal mostrar descripcion*/}
+            <Dialog open={isModalOpenDescripcion} handler={HandleViewDescription}>
+                <DialogHeader>DESCRIPCION</DialogHeader>
+                <DialogBody>
+                    <Typography className="whitespace-normal break-words" variant="lead">{description}</Typography>
+                    <DialogFooter>
+                        <Button
+                            variant="text"
+                            color="red"
+                            onClick={HandleViewDescription}
+                            className="mr-1"
+                        >
+                            <span>Cancelar</span>
+                        </Button>
+                    </DialogFooter>
+                </DialogBody>
             </Dialog>
         </>
     );
