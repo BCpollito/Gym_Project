@@ -436,7 +436,7 @@ app.post('/login', async (req, res) => {
         if (!match) return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
 
         const role = usuarioEncontrado.isAdmin ? 'admin' : 'user';
-        return res.json({ success: true, message: 'Inicio de sesión exitoso', role });
+        return res.json({ success: true, message: 'Inicio de sesión exitoso', role, data: usuarioEncontrado});
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
