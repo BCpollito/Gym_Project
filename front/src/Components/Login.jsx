@@ -21,7 +21,8 @@ export default function Login() {
                 if (response.data.role === 'admin') {
                     navigate('/adminpage'); // Redirige a la página de administrador
                 } else {
-                    navigate('/userpage'); // Redirige a la página de usuario
+                    console.log(response.data.data.id)
+                    navigate(`/userpage/${response.data.data.id}`); // Redirige a la página de usuario
                 }
             } else {
                 alert('Usuario o contraseña incorrectos');
