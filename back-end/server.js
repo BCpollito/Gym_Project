@@ -14,26 +14,22 @@ app.use(cors({
 
 let sequelize;
 
-try {
-    sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL);
-} catch (error) {
-    console.error('No se pudo conectar a la base de datos pública:', error.message);
 
-    try {
-        sequelize = new Sequelize(
-            process.env.DB_NAME,
-            process.env.DB_USER,
-            process.env.DB_PASSWORD,
-            {
-                host: process.env.DB_HOST,
-                dialect: process.env.DB_DIALECT,
-                port: process.env.DB_PORT
-            }
-        );
-    } catch (error) {
-        console.error('No se pudo conectar a la base de datos local:', localError.message);
-        throw new Error('No se pudo conectar a ninguna base de datos');
-    }
+try {
+    sequelize = new Sequelize(
+        process.env.DB_NAME,
+        process.env.DB_USER,
+        process.env.DB_PASSWORD,
+        {
+            host: process.env.DB_HOST,
+            dialect: process.env.DB_DIALECT,
+            port: process.env.DB_PORT
+        }
+    );
+} catch (error) {
+    console.error('No se pudo conectar a la base de datos local:', error.message);
+    sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL);
+
 }
 
 /* const sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL); */
