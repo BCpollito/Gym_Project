@@ -2,6 +2,11 @@ import {
   Accordion,
   AccordionBody,
   AccordionHeader,
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
@@ -13,6 +18,8 @@ export default function Userpage() {
   const { usuarioid } = useParams();
   const [cliente, setCliente] = useState({});
   const [semanas, setSemanas] = useState([]);
+  const [isModalOpenDescripcion, setisModalOpenDescripcion] = useState(false);
+  const [description, setdescripcion] = useState("");
 
   useEffect(() => {
     async function getClient() {
@@ -46,6 +53,12 @@ export default function Userpage() {
   if (!usuarioid) {
     return <div>No se encontró ningún cliente</div>;
   }
+
+  function HandleViewDescription(descripcion) {
+    setisModalOpenDescripcion((e) => !e);
+    setdescripcion(descripcion);
+  }
+
   return (
     <div className="flex flex-col gap-8 min-h-screen relative">
       <div>
@@ -90,7 +103,12 @@ export default function Userpage() {
                           <td className="p-4 border-b border-blue-gray-50">
                             {ejercicio.Nombre}
                           </td>
-                          <td className="p-4 border-b border-blue-gray-50">
+                          <td
+                            onClick={() =>
+                              HandleViewDescription(ejercicio.Descripcion)
+                            }
+                            className="p-4 border-b border-blue-gray-50 whitespace-nowrap overflow-hidden max-w-48 text-ellipsis hover:font-bold hover:text-blue-800"
+                          >
                             {ejercicio.Descripcion}
                           </td>
                         </tr>
@@ -103,6 +121,26 @@ export default function Userpage() {
           </AccordionBody>
         </Accordion>
       ))}
+
+      {/*Modal mostrar descripcion*/}
+      <Dialog open={isModalOpenDescripcion} handler={HandleViewDescription}>
+        <DialogHeader>DESCRIPCION</DialogHeader>
+        <DialogBody>
+          <Typography className="whitespace-normal break-words" variant="lead">
+            {description}
+          </Typography>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={HandleViewDescription}
+              className="mr-1"
+            >
+              <span>Cancelar</span>
+            </Button>
+          </DialogFooter>
+        </DialogBody>
+      </Dialog>
     </div>
   );
 }
