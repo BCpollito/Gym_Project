@@ -18,7 +18,7 @@ export default function Register() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/registros', {
+            const response = await axios.post('/registros', {
                 usuario: user,
                 password: password,
                 name: name,

@@ -51,7 +51,7 @@ export default function AddRoutine() {
     useEffect(() => {
         async function getClient() {
             try {
-                const response = await axios.get(`http://localhost:3000/registros/${clientId}`);
+                const response = await axios.get(`/registros/${clientId}`);
                 setCliente(response.data);
             } catch (error) {
                 console.error('Error al obtener los datos del cliente:', error);
@@ -63,7 +63,7 @@ export default function AddRoutine() {
     useEffect(() => {
         async function getSemanas() {
             try {
-                const response = await axios.get(`http://localhost:3000/clientes/${clientId}/semanas`);
+                const response = await axios.get(`/clientes/${clientId}/semanas`);
                 setSemanas(response.data);
             } catch (error) {
                 console.error('Error al obtener las semanas:', error);
@@ -78,7 +78,7 @@ export default function AddRoutine() {
         const input = event.target.elements.namedItem("weekName")
 
         try {
-            await axios.post('http://localhost:3000/semana', {
+            await axios.post('/semana', {
                 Nombre: input.value,
                 ClienteID: clientId
             });
@@ -95,7 +95,7 @@ export default function AddRoutine() {
         event.preventDefault();
         const input = event.target.elements.namedItem("DayName")
         try {
-            await axios.post('http://localhost:3000/dia', {
+            await axios.post('/dia', {
                 name: input.value,
                 ID_semana: foreinKeyWeek
             })
@@ -113,7 +113,7 @@ export default function AddRoutine() {
         const tituloEjercicio = event.target.elements.namedItem("nombreEjercicio")
         const DescripcionEjercicio = event.target.elements.namedItem("DescripcionEjercicio")
         try {
-            await axios.post('http://localhost:3000/ejercicio', {
+            await axios.post('/ejercicio', {
                 Nombre: tituloEjercicio.value,
                 Descripcion: DescripcionEjercicio.value,
                 ID_dia: foreinKeyDay
@@ -130,7 +130,7 @@ export default function AddRoutine() {
 
     const HandleDelete = async (key) => {
         try {
-            await axios.delete(`http://localhost:3000/ejercicio/${key}`)
+            await axios.delete(`/ejercicio/${key}`)
             alert('ejercicio eliminado');
             window.location.reload();
         } catch (error) {
@@ -141,7 +141,7 @@ export default function AddRoutine() {
 
     const HandleDeleteDia = async (key) => {
         try {
-            await axios.delete(`http://localhost:3000/dia/${key}`)
+            await axios.delete(`/dia/${key}`)
             alert('Dia eliminado');
             window.location.reload();
         } catch (error) {
@@ -152,7 +152,7 @@ export default function AddRoutine() {
 
     const HandleDeleteSemana = async (key) => {
         try {
-            await axios.delete(`http://localhost:3000/semana/${key}`)
+            await axios.delete(`/semana/${key}`)
             alert('Semana eliminada');
             window.location.reload();
         } catch (error) {

@@ -4,6 +4,7 @@ import Register from './Register';
 import Adminpage from './adminpage';
 import Userpage from './userpage';
 import AddRoutine from './addroutine';
+import './axios.config'
 
 function app(){
   return(

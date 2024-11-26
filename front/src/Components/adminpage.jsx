@@ -13,7 +13,7 @@ export default function AdminPage() {
         async function getClients() {
             try {
                 // Realiza la solicitud a la API
-                const response = await axios.get("http://localhost:3000/registros");
+                const response = await axios.get("/registros");
                 const clientsData = response.data; // Aquí asigno directamente la respuesta
                 setClientes(clientsData); // Almacena los clientes en el estado
             } catch (error) {
@@ -28,7 +28,7 @@ export default function AdminPage() {
         try {
             alert('registro eliminado');
             window.location.reload();
-            await axios.delete(`http://localhost:3000/registros/${key}`)            
+            await axios.delete(`/registros/${key}`)            
         } catch (error) {
             console.error('Error al eliminar registro:', error);
             alert('Hubo un error al eliminar registro');
