@@ -14,7 +14,7 @@ app.use(
   })
 );
 
-let sequelize
+let sequelize;
 /* const sequelize = new Sequelize(
         process.env.DB_NAME,
         process.env.DB_USER,
@@ -25,20 +25,20 @@ let sequelize
             port: process.env.DB_PORT
         }
     ); */
-    try {
-      const sequelize = new Sequelize(
-        process.env.DB_NAME,
-        process.env.DB_USER,
-        process.env.DB_PASSWORD,
-        {
-            host: process.env.DB_HOST,
-            dialect: process.env.DB_DIALECT,
-            port: process.env.DB_PORT
-        }
-    );
-    } catch (error) {
-      sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL);
+try {
+  sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+      host: process.env.DB_HOST,
+      dialect: process.env.DB_DIALECT,
+      port: process.env.DB_PORT,
     }
+  );
+} catch (error) {
+  sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL);
+}
 
 //modelo de la tabla registro de cliente
 const registro = sequelize.define(
