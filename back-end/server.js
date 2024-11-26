@@ -351,7 +351,7 @@ app.get('/registros/:id', async (req, res) => {
 
 // Ruta para crear un nuevo registro
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 app.post('/registros', async (req, res) => {
