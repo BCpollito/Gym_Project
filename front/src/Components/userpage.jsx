@@ -4,7 +4,6 @@ import {
   AccordionHeader,
   Typography,
 } from "@material-tailwind/react";
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -12,10 +11,9 @@ import { useParams } from "react-router-dom";
 const TABLE_HEAD = ["Nombre", "Descripción"];
 export default function Userpage() {
   const { usuarioid } = useParams();
-
   const [cliente, setCliente] = useState({});
   const [semanas, setSemanas] = useState([]);
-  console.log(semanas)
+
   useEffect(() => {
     async function getClient() {
       try {
@@ -40,6 +38,10 @@ export default function Userpage() {
     getSemanas();
   }, [usuarioid]);
 
+  const [open, setOpen] = useState();
+  const [openDia, setOpenDia] = useState();
+  const handleOpen = (value) => setOpen(open === value ? 0 : value);
+  const handleOpenDia = (value) => setOpenDia(openDia === value ? 0 : value);
 
   if (!usuarioid) {
     return <div>No se encontró ningún cliente</div>;
@@ -54,13 +56,18 @@ export default function Userpage() {
 
       {semanas.map((semana) => (
         <Accordion key={semana.ID_semana} open={open === semana.ID_semana}>
-          <AccordionHeader className="uppercase ">
+          <AccordionHeader
+            className="uppercase "
+            onClick={() => handleOpen(semana.ID_semana)}
+          >
             {semana.Nombre}
           </AccordionHeader>
           <AccordionBody>
             {semana.Dia.map((dia) => (
-              <Accordion key={dia.ID_dia}>
-                <AccordionHeader>{dia.Dia}</AccordionHeader>
+              <Accordion key={dia.ID_dia} open={openDia === dia.ID_dia}>
+                <AccordionHeader onClick={() => handleOpenDia(dia.ID_dia)}>
+                  {dia.Dia}
+                </AccordionHeader>
                 <AccordionBody>
                   <table className="w-full text-left table-auto min-w-max">
                     <thead>
