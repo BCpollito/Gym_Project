@@ -1,5 +1,5 @@
 const sequelize = require("../config/database");
-const Registro = require("./registro");
+const Registro = require("./Registro");
 const Semana = require("./Semana");
 const Dia = require("./Dia");
 const Ejercicio = require("./Ejercicio");
