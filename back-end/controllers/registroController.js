@@ -1,6 +1,6 @@
 const Registro = require("../models/Registro");
 const Semana = require("../models/Semana");
-const bcrypt = require("bcryptjs|");
+const bcrypt = require("bcryptjs");
 const sequelize = require("../config/database");
 
 exports.getAllRegistros = async (req, res) => {
