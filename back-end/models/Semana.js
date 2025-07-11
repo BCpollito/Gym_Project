@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Registro = require("./Registro");
 
 const Semana = sequelize.define(
   "Semana",
@@ -17,7 +18,7 @@ const Semana = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: registro,
+        model: Registro,
         key: "id",
       },
     },
