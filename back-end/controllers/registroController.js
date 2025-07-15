@@ -32,7 +32,7 @@ exports.createRegistro = async (req, res) => {
       !age.trim() ||
       !sex.trim()
     ) {
-      return res.json({ success: true });
+      return res.json({ success: false, message: "Todos los campos son obligatorios" });
     } else {
       // Hash de la contraseña
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,7 +48,7 @@ exports.createRegistro = async (req, res) => {
         sex,
       });
       res.status(201).json(nuevoRegistro);
-    }
+      }
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

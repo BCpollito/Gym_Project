@@ -38,25 +38,15 @@ export default function Register() {
         sex,
       });
 
-      if (!user.trim() ||
-      !password.trim() ||
-      !name.trim() ||
-      !weight.trim() ||
-      !height.trim() ||
-      !age.trim() ||
-      !sex.trim()) {
-        return alert("Todos los campos son obligatorios");
-      }
-
-      if (response.data.success) {
-        alert(`Registrado exitosamente Usuario ${name}`);
+      if (!response.data.success) {
+        alert(`Registrado exitosamente, usuario: ${name}`);
         navigate("../login");
       } else {
-        alert("Los campos no pueden estar vacíos");
+        alert(`${response.data.message}`);
       }
     } catch (error) {
-      console.error("Error al registrarse", error);
       alert("Hubo un error al intentar registrarse");
+      console.error(error);
     }
   };
 
