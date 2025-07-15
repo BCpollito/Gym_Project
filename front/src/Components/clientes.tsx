@@ -9,29 +9,33 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
+  Input
 } from "@material-tailwind/react";
 import { Cliente } from "../types/Cliente";
-import { EllipsisVertical, BookText } from "lucide-react";
+import { EllipsisVertical, BookText, UserSearch } from "lucide-react";
 import { InformacionClienteModal } from "./informacionClienteModal";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
   const [mostrarInformacion, setMostrarInformacion] = useState(false);
   const [id, setid] = useState<number>(0);
 
-  useEffect(() => {
-    async function getClients() {
+  const getClients = async () => {
       try {
         // Realiza la solicitud a la API
         const response = await axios.get<Cliente[]>("/registros");
         const clientsData = response.data; // Aquí asigno directamente la respuesta
         setClientes(clientsData); // Almacena los clientes en el estado
+        setFilteredClientes(clientsData);
         console.log(clientsData);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
       }
     }
 
+  useEffect(() => {
     getClients();
   }, []);
 
@@ -44,13 +48,26 @@ export default function Clientes() {
     setMostrarInformacion(false);
   };
 
+useEffect(() => {
+  const palabra = searchTerm.toLowerCase();
+  const result = clientes.filter(cliente =>
+    cliente.name.toLowerCase().includes(palabra)
+  );
+  setFilteredClientes(result);
+}, [searchTerm, clientes]); // también depende de clientes en caso de recarga
+
   return (
     <>
       <div className="w-full max-w-md mx-auto mt-8 h-full">
         <h1 className="text-2xl font-bold text-center mt-8">Clientes</h1>
+        <div className="px-4">
+          <Input onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre"/>
+        </div>
+
         {/* @ts-expect-error */}
         <List>
-          {clientes.map((cliente) => {
+          {filteredClientes.map((cliente) => {
             if (!cliente.isAdmin) {
               return (
                 <ListItem
