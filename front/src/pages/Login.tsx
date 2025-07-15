@@ -26,7 +26,7 @@ export default function Login() {
 
             if (response.data.success) {
                 if (response.data.role === 'admin') {
-                    navigate('/adminpage');
+                    navigate('/clientes');
                 } else {
                     navigate(`/userpage/${response.data.data.id}`);
                 }
