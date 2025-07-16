@@ -13,7 +13,7 @@ interface Exercise {
   keywords: string[];
 }
 
-export default function LibreriaWorkout() {
+export default function LibreriaExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
 

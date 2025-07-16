@@ -5,7 +5,7 @@ import AdminLayout from './layouts/AdminLayout';
 import LibraryLayout from "./layouts/LibraryLayout";
 import './services/axios.config';
 import Clientes from "./Components/clientes";
-import LibreriaWorkout from "./Components/libreriaWorkout";
+import LibreriaExercises from "./Components/libreriaExercises";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="clientes" element={<Clientes />} />    
           <Route path="/admin/libreria" element={<LibraryLayout />}>
-            <Route path="workout" element={<LibreriaWorkout />} />
+            <Route path="exercises" element={<LibreriaExercises />} />
           </Route>
         </Route>
 
