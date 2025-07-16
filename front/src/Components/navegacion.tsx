@@ -7,11 +7,11 @@ export default function Navegacion() {
   const navigate = useNavigate();
 
   const handleClickClientes = () => {
-    navigate('/clientes'); // Redirige a la página de clientes
+    navigate('/admin/clientes'); // Redirige a la página de clientes
   };
 
   const handleClickLibreria = () => {
-    navigate('/libreria'); // Redirige a la página de librería
+    navigate('/admin/libreria'); // Redirige a la página de librería
   };
 
   return (
