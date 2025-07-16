@@ -18,7 +18,7 @@ export default function LibraryNavigation() {
   const navigate = useNavigate();
 
   const handleLinkWorkout = () => {
-    navigate("/admin/libreria/workout");
+    navigate("/admin/libreria/exercises");
     setOpen(false);
   };
 
