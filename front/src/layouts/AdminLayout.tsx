@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Navegacion from "../Components/navegacion";
+import Navegacion from "../Components/mainNavegacion";
 
 export default function AdminLayout() {
   return (
