@@ -9,14 +9,9 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Cliente } from "../types/Cliente";
+import { PropsModal } from "../types/propsModal";
 
-interface InformacionClienteModalProps {
-  open: boolean;
-  onClose: () => void;
-  id: number;
-}
-
-export function InformacionClienteModal({ open, onClose, id }: InformacionClienteModalProps) {
+export function InformacionClienteModal({ open, onClose, id }: PropsModal) {
 
   const[cliente, setCliente] = useState<Cliente | null>(null);
 
