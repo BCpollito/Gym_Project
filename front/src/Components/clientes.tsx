@@ -26,7 +26,7 @@ export default function Clientes() {
       try {
         // Realiza la solicitud a la API
         const response = await axios.get<Cliente[]>("/registros");
-        const clientsData = response.data; // Aquí asigno directamente la respuesta
+        const clientsData = response.data.sort((a, b) => b.id - a.id); // Aquí asigno directamente la respuesta
         setClientes(clientsData); // Almacena los clientes en el estado
         setFilteredClientes(clientsData);
         console.log(clientsData);
