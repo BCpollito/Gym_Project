@@ -29,7 +29,6 @@ export default function Navegacion() {
           onClick={handleClickClientes}
           variant={clickClients ? 'filled' : 'text'}
           size='sm'
-          color={clickClients ? 'blue' : 'gray'}
           className="flex flex-col items-center p-1 min-w-0"
         >
           <Users size={16} />
@@ -40,7 +39,6 @@ export default function Navegacion() {
           onClick={handleClickLibreria}
           variant={clickLibrary ? 'filled' : 'text'}
           size='sm'
-          color={clickLibrary ? 'blue' : 'black'}
           className="flex flex-col items-center p-1 min-w-0"
         >
           <BookOpenText size={16} />
