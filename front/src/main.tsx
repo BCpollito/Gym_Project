@@ -5,7 +5,7 @@ import './css/index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <main className='container mx-auto min-h-screen flex justify-center items-center'>
+    <main className='bg-gray-50 container mx-auto min-h-screen flex justify-center items-center'>
       <App />
     </main>
   </StrictMode>
