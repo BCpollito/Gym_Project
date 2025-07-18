@@ -1,35 +1,46 @@
-import { IconButton } from "@material-tailwind/react";
+import {
+  IconButton,
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+  Input,
+} from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Plus } from "lucide-react";
 import AddexerciseModal from "./addExerciseModal";
-
-interface Exercise {
-  exerciseId: string;
-  name: string;
-  imageUrl: string;
-  bodyParts: string[];
-  equipments: string[];
-  exerciseType: string;
-  targetMuscles: string[];
-  secondaryMuscles: string[];
-  keywords: string[];
-}
+import { Exercise } from "../types/Exercises";
 
 export default function LibreriaExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredExercise, setFilteredExercise] = useState<Exercise[]>([]);
+
   useEffect(() => {
-    axios
-      .get("https://v2.exercisedb.dev/api/v1/exercises")
-      .then((res) => {
-        setExercises(Array.isArray(res.data.data) ? res.data.data : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    if (!open) {
+      axios
+        .get("/ejercicio")
+        .then((res) => {
+          const data = res.data;
+          if (
+            Array.isArray(data) &&
+            data.every((e) => "ID_ejercicio" in e && "Nombre" in e)
+          ) {
+            const exercisesData = data as Exercise[];
+            setExercises(
+              exercisesData.sort((a, b) => b.ID_ejercicio - a.ID_ejercicio)
+            );
+          }
+
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [open]);
 
   const handleClickCreate = () => {
     setOpen(true);
@@ -39,24 +50,55 @@ export default function LibreriaExercises() {
     setOpen(false);
   };
 
+  useEffect(() => {
+  const palabra = searchTerm.toLowerCase();
+  const result = exercises.filter(exercise =>
+    exercise.Nombre.toLowerCase().includes(palabra)
+  );
+  setFilteredExercise(result);
+}, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+
   return (
     <>
       <div>
-        <h1>Página de Librería Ejercicios</h1>
-        {loading ? (
-          <p>Cargando ejercicios...</p>
-        ) : (
-          <ul>
-            {exercises.slice(0, 10).map((exercise) => (
-              <li key={exercise.exerciseId}>
-                <strong>{exercise.name}</strong> -{" "}
-                {exercise.bodyParts.join(", ")}
-                <br />
-                <img src={exercise.imageUrl} alt={exercise.name} width={100} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <Input
+          variant="static"
+          placeholder="Buscar por Nombre"
+          containerProps={{ className: "mt-9" }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+        />
+        <div className="max-h-[75vh]">
+          {loading ? (
+            <p>Cargando ejercicios...</p>
+          ) : (
+            <div className="flex flex-col items-center h-full gap-10 mt-4 p-4 overflow-y-auto max-h-[75vh]">
+              {filteredExercise.map((exercise) => (
+                <Card
+                  key={exercise.ID_ejercicio}
+                  className="w-full max-w-xs shadow-md"
+                >
+                  <CardHeader className="relative h-48 overflow-hidden">
+                    <img
+                      src={exercise.Link}
+                      alt={exercise.Nombre}
+                      className="w-full h-full object-contain"
+                    />
+                  </CardHeader>
+                  <CardBody>
+                    <Typography
+                      variant="h5"
+                      color="blue-gray"
+                      className="mb-2 font-semibold"
+                    >
+                      {exercise.Nombre}
+                    </Typography>
+                    <Typography>{exercise.Descripcion}</Typography>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="fixed bottom-[75px] right-4">
@@ -64,6 +106,7 @@ export default function LibreriaExercises() {
           onClick={handleClickCreate}
           color="amber"
           className="rounded-full"
+          aria-label="Agregar nuevo ejercicio"
         >
           <Plus />
         </IconButton>
