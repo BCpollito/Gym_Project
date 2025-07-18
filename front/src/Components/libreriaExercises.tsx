@@ -51,12 +51,12 @@ export default function LibreriaExercises() {
   };
 
   useEffect(() => {
-  const palabra = searchTerm.toLowerCase();
-  const result = exercises.filter(exercise =>
-    exercise.Nombre.toLowerCase().includes(palabra)
-  );
-  setFilteredExercise(result);
-}, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+    const palabra = searchTerm.toLowerCase();
+    const result = exercises.filter((exercise) =>
+      exercise.Nombre.toLowerCase().includes(palabra)
+    );
+    setFilteredExercise(result);
+  }, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
 
   return (
     <>
@@ -65,7 +65,9 @@ export default function LibreriaExercises() {
           variant="static"
           placeholder="Buscar por Nombre"
           containerProps={{ className: "mt-9" }}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSearchTerm(e.target.value)
+          }
         />
         <div className="max-h-[75vh]">
           {loading ? (
@@ -78,11 +80,19 @@ export default function LibreriaExercises() {
                   className="w-full max-w-xs shadow-md"
                 >
                   <CardHeader className="relative h-48 overflow-hidden">
-                    <img
-                      src={exercise.Link}
-                      alt={exercise.Nombre}
-                      className="w-full h-full object-contain"
-                    />
+                    {exercise.Link.includes("youtube.com/embed") ? (
+                      <iframe 
+                        className="max-w-sm aspect-video "
+                        src={exercise.Link}
+                        title="YouTube video"
+                      />
+                    ) : (
+                      <img
+                        src={exercise.Link}
+                        alt={exercise.Nombre}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
                   </CardHeader>
                   <CardBody>
                     <Typography
