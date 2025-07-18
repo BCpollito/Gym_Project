@@ -62,7 +62,7 @@ useEffect(() => {
         <h1 className="text-2xl font-bold text-center mt-8">Clientes</h1>
         <div className="px-4">
           <Input onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-          icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre"/>
+          icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre" className="bg-white"/>
         </div>
 
         {/* @ts-expect-error */}
@@ -73,7 +73,7 @@ useEffect(() => {
                 <ListItem
                   key={cliente.id}
                   className="flex items-center justify-between gap-4 border 
-              border-gray-200 rounded-lg px-3 py-2 hover:bg-gray-100 transition-all duration-200"
+              border-black rounded-lg px-3 py-2 bg-white hover:bg-gray-100 transition-all duration-200"
                 >
                   <span className="sm:text-base text-gray-800 font-medium">
                     {cliente.name}
