@@ -3,23 +3,27 @@ const Ejercicio = require("../models/Ejercicio");
 // Crear un nuevo ejercicio
 exports.createEjercicio = async (req, res) => {
   try {
-    const { Nombre, Descripcion, ID_dia } = req.body;
-    const nuevoEjercicio = await Ejercicio.create({
+    const { Nombre, Descripcion, Link } = req.body;
+
+    if (!Nombre.trim() || !Link.trim()) {
+      return res.json({success: false, message: "Nombre y Link son requeridos" });
+    }else{
+       const nuevoEjercicio = await Ejercicio.create({
       Nombre,
       Descripcion,
-      ID_dia,
+      Link,
     });
-    res.status(201).json(nuevoEjercicio);
+    return res.status(201).json({ nuevoEjercicio: nuevoEjercicio, message: "Ejercicio creado exitosamente" , success: true });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Error al crear el ejercicio" });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-// Obtener todos los ejercicios de un día
-exports.getEjerciciosByDia = async (req, res) => {
+// Obtener todos los ejercicios
+exports.getEjercicios = async (req, res) => {
   try {
-    const { id_dia } = req.params;
-    const ejercicios = await Ejercicio.findAll({ where: { ID_dia: id_dia } });
+    const ejercicios = await Ejercicio.findAll();
     res.json(ejercicios);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener los ejercicios" });
@@ -30,9 +34,9 @@ exports.getEjerciciosByDia = async (req, res) => {
 exports.updateEjercicio = async (req, res) => {
   try {
     const { id } = req.params;
-    const { Nombre, Descripcion } = req.body;
+    const { Nombre, Descripcion, Link } = req.body;
     await Ejercicio.update(
-      { Nombre, Descripcion },
+      { Nombre, Descripcion, Link },
       { where: { ID_ejercicio: id } }
     );
     res.json({ message: "Ejercicio actualizado" });

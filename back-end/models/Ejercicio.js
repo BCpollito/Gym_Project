@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const Dia = require("./Dia");
 
 const Ejercicio = sequelize.define(
   "Ejercicio",
@@ -18,13 +17,9 @@ const Ejercicio = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    ID_dia: {
-      type: DataTypes.INTEGER,
+    Link: {
+      type: DataTypes.STRING,
       allowNull: false,
-      references: {
-        model: Dia,
-        key: "ID_dia",
-      },
     },
   },
   {
