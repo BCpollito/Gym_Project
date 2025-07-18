@@ -20,7 +20,7 @@ export default function LibraryActivity(){
       };
 
     return (
-        <div className="fixed top-[70px] left-0 w-full px-4">
+        <div className="fixed top-11 left-0 w-full px-4 z-40">
         <div className="mx-auto bg-white shadow rounded-2xl h-8 w-full max-w-xs flex items-center justify-around">
           <div onClick={handleClickExercise}>
             <Chip

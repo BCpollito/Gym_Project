@@ -26,19 +26,20 @@ export default function LibraryNavigation() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full px-4 pt-2 bg-white shadow z-50">
+      <div className="fixed top-0 left-0 w-full px-4 py-0 bg-white shadow z-50">
         <div className="flex items-center justify-between w-full">
           <h1 className="text-lg font-semibold text-gray-800">Librería</h1>
           <IconButton
+            ripple={false}
             onClick={toggleOpen}
-            className="mb-2"
+            className="hover:bg-transparent"
             variant="text"
-            size="lg"
+            size="md"
           >
             {open ? (
-              <X className="h-6 w-6" />
+              <X className="h-8 w-8" />
             ) : (
-              <ListIcon className="h-6 w-6" />
+              <ListIcon className="h-8 w-8" />
             )}
           </IconButton>
         </div>
