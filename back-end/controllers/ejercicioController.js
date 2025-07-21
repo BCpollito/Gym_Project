@@ -3,7 +3,7 @@ const Ejercicio = require("../models/Ejercicio");
 // Crear un nuevo ejercicio
 exports.createEjercicio = async (req, res) => {
   try {
-    const { Nombre, Descripcion, Link } = req.body;
+    const { Nombre, Descripcion, Link, Tag } = req.body;
 
     if (!Nombre.trim() || !Link.trim()) {
       return res.json({success: false, message: "Nombre y Link son requeridos" });
@@ -12,6 +12,7 @@ exports.createEjercicio = async (req, res) => {
       Nombre,
       Descripcion,
       Link,
+      Tag,
     });
     return res.status(201).json({ nuevoEjercicio: nuevoEjercicio, message: "Ejercicio creado exitosamente" , success: true });
     }
@@ -36,7 +37,7 @@ exports.updateEjercicio = async (req, res) => {
     const { id } = req.params;
     const { Nombre, Descripcion, Link } = req.body;
     await Ejercicio.update(
-      { Nombre, Descripcion, Link },
+      { Nombre, Descripcion, Link, Tag},
       { where: { ID_ejercicio: id } }
     );
     res.json({ message: "Ejercicio actualizado" });

@@ -21,6 +21,10 @@ const Ejercicio = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    Tag: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
   },
   {
     tableName: "Ejercicios",
