@@ -1,6 +1,8 @@
 import {
   Input,
   Button,
+  IconButton,
+  Chip,
   Dialog,
   Textarea,
   Typography,
@@ -8,6 +10,7 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
+import { Plus, X } from "lucide-react";
 import { PropsModal } from "../types/propsModal";
 import convertirLink from "../services/ConvertLink";
 import React, { useState, useEffect } from "react";
@@ -16,24 +19,26 @@ import { Exercise } from "../types/Exercises";
 
 export default function AddexerciseModal({ open, onClose }: PropsModal) {
   const [link, setlink] = useState<string | null>(null);
+  const [etiqueta, setEtiqueta] = useState<string>("");
   const [convertedLink, setConvertedLink] = useState<string | null>(null);
   const [ejercicio, setEjercicio] = useState<Exercise>({
     ID_ejercicio: 0,
     Nombre: "",
     Descripcion: "",
     Link: "",
+    Tag: [],
   });
 
   useEffect(() => {
     if (link) {
       const result = convertirLink(link);
       setConvertedLink(result);
-      if(result !== null){
+      if (result !== null) {
         setEjercicio({
           ...ejercicio,
           Link: result,
         });
-      }else{
+      } else {
         setEjercicio({
           ...ejercicio,
           Link: "",
@@ -47,6 +52,11 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
   useEffect(() => {
     if (!open) {
       setlink(null);
+      setEtiqueta("");
+      setEjercicio({
+        ...ejercicio,
+        Tag: [],
+      });
     }
   }, [open]);
 
@@ -55,27 +65,47 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
       const response = await axios.post<{
         success: boolean;
         message?: string;
-      }>('/ejercicio', {
+      }>("/ejercicio", {
         Nombre: ejercicio.Nombre,
-      Descripcion: ejercicio.Descripcion,
-      Link: ejercicio.Link,
+        Descripcion: ejercicio.Descripcion,
+        Link: ejercicio.Link,
+        Tag: ejercicio.Tag.join(","),
       });
 
-      if(response.data.success) {
+      if (response.data.success) {
         setEjercicio({
           ...ejercicio,
           Nombre: "",
           Descripcion: "",
           Link: "",
+          Tag: [],
         });
         onClose();
       }
 
-      alert(`${response.data.message}`)      
-
+      alert(`${response.data.message}`);
     } catch (error) {
       console.error("Error al crear el ejercicio:", error);
-    }    
+    }
+  };
+
+  const handleAddTag = () => {
+    if (etiqueta !== null && etiqueta.trim()) {
+      setEjercicio((prev) => ({
+        ...prev,
+        Tag: [...prev.Tag, etiqueta],
+      }));
+    }
+
+    setEtiqueta("");
+  };
+
+  const handleDeletTag = (event: React.MouseEvent) => {
+    const index = Number(event.currentTarget.id);
+    setEjercicio((prev) => ({
+      ...prev,
+      Tag: prev.Tag.filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -84,7 +114,7 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
         size="sm"
         open={open}
         handler={onClose}
-        className="p-4 max-h-[80vh]"
+        className="p-4 max-h-[85vh]"
       >
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
@@ -128,7 +158,7 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
             >
               Link (imagen o video)
             </Typography>
-            <Input              
+            <Input
               color="gray"
               size="lg"
               placeholder="https://www.youtube.com/watch?v=example"
@@ -145,6 +175,59 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
               }
             />
           </div>
+          <div>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="mb-2 text-left font-medium"
+            >
+              Etiqueta
+            </Typography>
+            <div className="relative flex w-full max-w-[24rem]">
+              <Input
+                placeholder="ej. pecho, hipertrofia..."
+                color="gray"
+                value={etiqueta}
+                className="pr-20 placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setEtiqueta(e.target.value)
+                }
+              />
+              <IconButton
+                size="sm"
+                color={etiqueta ? "amber" : "gray"}
+                disabled={!etiqueta}
+                className="!absolute right-1 top-1 rounded"
+                onClick={handleAddTag}
+              >
+                <Plus />
+              </IconButton>
+            </div>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {ejercicio.Tag.map((tag, index) => (
+              <Chip
+              key={index}
+                size="sm"
+                value={tag}
+                icon={
+                  <IconButton
+                    id={String(index)}
+                    onClick={handleDeletTag}
+                    color="white"
+                    variant="text"
+                    className="mb-[2px] w-3 h-3"
+                  >
+                    <X size={15} strokeWidth="3px" />
+                  </IconButton>
+                }
+              />
+            ))}
+          </div>
+
           <div>
             <Typography
               variant="small"
