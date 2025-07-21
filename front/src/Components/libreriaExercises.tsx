@@ -5,6 +5,7 @@ import {
   CardBody,
   Typography,
   Input,
+  Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -81,8 +82,8 @@ export default function LibreriaExercises() {
                 >
                   <CardHeader className="relative h-48 overflow-hidden">
                     {exercise.Link.includes("youtube.com/embed") ? (
-                      <iframe 
-                        className="max-w-sm aspect-video "
+                      <iframe
+                        className="max-w-sm aspect-video mt-4"
                         src={exercise.Link}
                         title="YouTube video"
                       />
@@ -90,7 +91,7 @@ export default function LibreriaExercises() {
                       <img
                         src={exercise.Link}
                         alt={exercise.Nombre}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover"
                       />
                     )}
                   </CardHeader>
@@ -102,7 +103,11 @@ export default function LibreriaExercises() {
                     >
                       {exercise.Nombre}
                     </Typography>
-                    <Typography>{exercise.Descripcion}</Typography>
+                    <div className="flex gap-2 flex-wrap">
+                      {exercise.Tag.split(",").map((tag, index) => (
+                        <Chip key={index} size="sm" value={tag.trim()} />
+                      ))}
+                    </div>
                   </CardBody>
                 </Card>
               ))}
