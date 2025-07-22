@@ -17,7 +17,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Exercise } from "../types/Exercises";
 
-export default function AddexerciseModal({ open, onClose }: PropsModal) {
+export default function AddexerciseModal({
+  open,
+  onClose,
+  modo,
+  ejercicioExistente,
+}: PropsModal) {
   const [link, setlink] = useState<string | null>(null);
   const [etiqueta, setEtiqueta] = useState<string>("");
   const [convertedLink, setConvertedLink] = useState<string | null>(null);
@@ -50,15 +55,29 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
   }, [link]);
 
   useEffect(() => {
-    if (!open) {
-      setlink(null);
+    if (open) {
+      if (modo === "Ver" && ejercicioExistente) {
+        setEjercicio({
+          ...ejercicio,
+          ID_ejercicio: ejercicioExistente.ID_ejercicio,
+          Nombre: ejercicioExistente.Nombre,
+          Descripcion: ejercicioExistente.Descripcion,
+          Tag: ejercicioExistente.Tag.split(","),
+        });
+        setConvertedLink(ejercicioExistente.Link);
+      } else {
+        setEjercicio({
+          ID_ejercicio: 0,
+          Nombre: "",
+          Descripcion: "",
+          Link: "",
+          Tag: [],
+        });
+        setlink(null);
+      }
       setEtiqueta("");
-      setEjercicio({
-        ...ejercicio,
-        Tag: [],
-      });
     }
-  }, [open]);
+  }, [open, modo, ejercicioExistente]);
 
   const handleCreate = async () => {
     try {
@@ -118,23 +137,26 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
       >
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Añadir Ejercicio
+            {modo === "Ver" ? "Ver Ejercicio" : "Añadir Ejercicio"}
           </Typography>
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6 overflow-y-auto max-h-[60vh]">
           <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Nombre
-            </Typography>
+            {modo === "crear" && (
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Nombre
+              </Typography>
+            )}
             <Input
               color="gray"
               size="lg"
               placeholder="ej. Pull over"
-              name="name"
+              value={ejercicio.Nombre}
+              disabled={modo === "crear" ? false : true}
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
                 className: "!min-w-full",
@@ -150,70 +172,74 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
               }
             />
           </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Link (imagen o video)
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="https://www.youtube.com/watch?v=example"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setlink(e.target.value)
-              }
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Etiqueta
-            </Typography>
-            <div className="relative flex w-full max-w-[24rem]">
+          {modo === "crear" && (
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Link (imagen o video)
+              </Typography>
               <Input
-                placeholder="ej. pecho, hipertrofia..."
                 color="gray"
-                value={etiqueta}
-                className="pr-20 placeholder:opacity-100 focus:!border-t-gray-900"
+                size="lg"
+                placeholder="https://www.youtube.com/watch?v=example"
+                name="name"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
                 containerProps={{
                   className: "!min-w-full",
                 }}
+                labelProps={{
+                  className: "hidden",
+                }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setEtiqueta(e.target.value)
+                  setlink(e.target.value)
                 }
               />
-              <IconButton
-                size="sm"
-                color={etiqueta ? "amber" : "gray"}
-                disabled={!etiqueta}
-                className="!absolute right-1 top-1 rounded"
-                onClick={handleAddTag}
-              >
-                <Plus />
-              </IconButton>
             </div>
-          </div>
+          )}
+          {modo === "crear" && (
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Etiqueta
+              </Typography>
+              <div className="relative flex w-full max-w-[24rem]">
+                <Input
+                  placeholder="ej. pecho, hipertrofia..."
+                  color="gray"
+                  value={etiqueta}
+                  className="pr-20 placeholder:opacity-100 focus:!border-t-gray-900"
+                  containerProps={{
+                    className: "!min-w-full",
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setEtiqueta(e.target.value)
+                  }
+                />
+                <IconButton
+                  size="sm"
+                  color={etiqueta ? "amber" : "gray"}
+                  disabled={!etiqueta}
+                  className="!absolute right-1 top-1 rounded"
+                  onClick={handleAddTag}
+                >
+                  <Plus />
+                </IconButton>
+              </div>
+            </div>
+          )}
           <div className="flex gap-2 flex-wrap">
             {ejercicio.Tag.map((tag, index) => (
               <Chip
-              key={index}
+                key={index}
                 size="sm"
                 value={tag}
-                icon={
+                icon={modo === "crear" &&
                   <IconButton
                     id={String(index)}
                     onClick={handleDeletTag}
@@ -227,7 +253,6 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
               />
             ))}
           </div>
-
           <div>
             <Typography
               variant="small"
@@ -239,6 +264,8 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
             <Textarea
               rows={7}
               placeholder="ej. Ejercicio para espalda enfocado en dorsales..."
+              value={ejercicio.Descripcion}
+              disabled={modo === "Ver" ? true : false}
               className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-600 ring-4 ring-transparent focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
               labelProps={{
                 className: "hidden",
@@ -278,11 +305,13 @@ export default function AddexerciseModal({ open, onClose }: PropsModal) {
             className="hover:bg-red-700 hover:text-white"
             onClick={onClose}
           >
-            Cancelar
+            {modo === "crear" ? "Cancelar" : "Salir"}
           </Button>
-          <Button onClick={handleCreate} className="ml-auto">
-            Crear
-          </Button>
+          {modo === "crear" && (
+            <Button onClick={handleCreate} className="ml-auto">
+              Crear
+            </Button>
+          )}
         </DialogFooter>
       </Dialog>
     </>
