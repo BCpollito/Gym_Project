@@ -53,11 +53,20 @@ export default function LibreriaExercises() {
 
   useEffect(() => {
     const palabra = searchTerm.toLowerCase();
-    const result = exercises.filter((exercise) =>
-      exercise.Nombre.toLowerCase().includes(palabra)
-    );
+    const result = exercises.filter((exercise) => {
+      const nombre = exercise.Nombre?.toLowerCase() || "";
+      const tags =
+        exercise.Tag?.toLowerCase()
+          .split(",")
+          .map((tag) => tag.trim()) || [];
+
+      return (
+        nombre.includes(palabra) || tags.some((tag) => tag.includes(palabra))
+      );
+    });
     setFilteredExercise(result);
-  }, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+  }, [searchTerm, exercises]);
+  // también depende de ejercicios en caso de recarga
 
   return (
     <>
