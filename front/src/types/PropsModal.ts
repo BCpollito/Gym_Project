@@ -1,5 +1,8 @@
+import { Exercise } from "./Exercises";
+
 export interface PropsModal {
   open: boolean;
   onClose: () => void;
-  id?: number;
+  modo?: "crear" | "Ver";
+  ejercicioExistente?: Exercise | null;
 }
