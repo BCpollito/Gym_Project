@@ -87,12 +87,12 @@ export default function LibreriaExercises() {
               {filteredExercise.map((exercise) => (
                 <Card
                   key={exercise.ID_ejercicio}
-                  className="w-full max-w-xs shadow-md"
+                  className="w-full min-w-80 max-w-xs shadow-md"
                 >
-                  <CardHeader className="relative h-48 overflow-hidden">
+                  <CardHeader className="relative h-[163px] overflow-hidden">
                     {exercise.Link.includes("youtube.com/embed") ? (
                       <iframe
-                        className="max-w-sm aspect-video mt-4"
+                        className="max-w-sm aspect-video"
                         src={exercise.Link}
                         title="YouTube video"
                       />
@@ -100,7 +100,7 @@ export default function LibreriaExercises() {
                       <img
                         src={exercise.Link}
                         alt={exercise.Nombre}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     )}
                   </CardHeader>
