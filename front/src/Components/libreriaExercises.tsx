@@ -13,10 +13,14 @@ import { Plus } from "lucide-react";
 import AddexerciseModal from "./addExerciseModal";
 import { Exercise } from "../types/Exercises";
 
+type Modo = "crear" | "Ver";
+
 export default function LibreriaExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [modo, setModo] = useState<Modo>("crear");
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredExercise, setFilteredExercise] = useState<Exercise[]>([]);
@@ -45,6 +49,7 @@ export default function LibreriaExercises() {
 
   const handleClickCreate = () => {
     setOpen(true);
+    setModo("crear");
   };
 
   const handleClose = () => {
@@ -65,8 +70,13 @@ export default function LibreriaExercises() {
       );
     });
     setFilteredExercise(result);
-  }, [searchTerm, exercises]);
-  // también depende de ejercicios en caso de recarga
+  }, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+  
+  const handleViewExercise = (exercise: Exercise) => {
+    setOpen(true);
+    setModo("Ver");
+    setSelectedExercise(exercise);
+  }
 
   return (
     <>
@@ -83,13 +93,18 @@ export default function LibreriaExercises() {
           {loading ? (
             <p>Cargando ejercicios...</p>
           ) : (
-            <div className="flex flex-col items-center h-full gap-10 mt-4 p-4 overflow-y-auto max-h-[75vh]">
+            <div className="flex flex-col items-center h-full gap-7 mt-4 p-4 overflow-y-auto max-h-[75vh]">
               {filteredExercise.map((exercise) => (
                 <Card
                   key={exercise.ID_ejercicio}
-                  className="w-full min-w-80 max-w-xs shadow-md"
+                  className="w-full min-w-80 max-w-xs shadow-md cursor-pointer"
+                  onClick={() => handleViewExercise(exercise)}
                 >
-                  <CardHeader className="relative h-[163px] overflow-hidden">
+                  <CardHeader
+                  floated={false}
+                  shadow={false}
+                  color="transparent"
+                  className="relative h-[180px] overflow-hidden m-0 rounded-none">
                     {exercise.Link.includes("youtube.com/embed") ? (
                       <iframe
                         className="max-w-sm aspect-video"
@@ -114,7 +129,7 @@ export default function LibreriaExercises() {
                     </Typography>
                     <div className="flex gap-2 flex-wrap">
                       {exercise.Tag.split(",").map((tag, index) => (
-                        <Chip key={index} size="sm" value={tag.trim()} />
+                        <Chip className="text-xs" key={index} size="sm" value={tag.trim()} />
                       ))}
                     </div>
                   </CardBody>
@@ -135,7 +150,7 @@ export default function LibreriaExercises() {
           <Plus />
         </IconButton>
       </div>
-      <AddexerciseModal open={open} onClose={handleClose} />
+      <AddexerciseModal open={open} onClose={handleClose} modo={modo} ejercicioExistente={selectedExercise}/>
     </>
   );
 }
