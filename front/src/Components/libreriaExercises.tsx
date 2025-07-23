@@ -54,6 +54,7 @@ export default function LibreriaExercises() {
 
   const handleClose = () => {
     setOpen(false);
+    setSelectedExercise(null);
   };
 
   useEffect(() => {
