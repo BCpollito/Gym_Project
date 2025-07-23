@@ -58,20 +58,27 @@ export default function LibreriaExercises() {
   };
 
   useEffect(() => {
-    const palabra = searchTerm.toLowerCase();
-    const result = exercises.filter((exercise) => {
-      const nombre = exercise.Nombre?.toLowerCase() || "";
-      const tags =
-        exercise.Tag?.toLowerCase()
-          .split(",")
-          .map((tag) => tag.trim()) || [];
+  const palabras = searchTerm
+    .toLowerCase()
+    .split(" ") // Divide el searchTerm en palabras usando el espacio como delimitador
+    .map((palabra) => palabra.trim()) // Elimina espacios adicionales
 
-      return (
-        nombre.includes(palabra) || tags.some((tag) => tag.includes(palabra))
-      );
-    });
-    setFilteredExercise(result);
-  }, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+  const result = exercises.filter((exercise) => {
+    const nombre = exercise.Nombre?.toLowerCase() || "";
+    const tags =
+      exercise.Tag?.toLowerCase()
+        .split(",")
+        .map((tag) => tag.trim()) || [];
+
+    // Verifica si al menos uno de los términos de búsqueda coincide con el nombre o las etiquetas
+    return (
+      palabras.some((palabra) => nombre.includes(palabra)) ||
+      palabras.some((palabra) => tags.some((tag) => tag.includes(palabra)))
+    );
+  });
+
+  setFilteredExercise(result);
+}, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
   
   const handleViewExercise = (exercise: Exercise) => {
     setOpen(true);
