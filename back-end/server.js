@@ -5,12 +5,12 @@ require("dotenv").config();
 
 const app = express();
 
+require("./models");
+
 app.use(CorsConfig);
 app.use(express.json());
 
 app.use(require("./routes/registroRoutes"));
-app.use(require("./routes/semanaRoutes"));
-app.use(require("./routes/diaRoutes"));
 app.use(require("./routes/ejercicioRoutes"));
 app.use(require("./routes/loginRoutes"));
 
