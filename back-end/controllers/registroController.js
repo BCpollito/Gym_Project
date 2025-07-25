@@ -1,5 +1,4 @@
 const Registro = require("../models/Registro");
-const Semana = require("../models/Semana");
 const bcrypt = require("bcryptjs");
 const sequelize = require("../config/database");
 
@@ -56,31 +55,19 @@ exports.createRegistro = async (req, res) => {
 
 //Ruta para eliminar un registro
 exports.deleteRegistro = async (req, res) => {
-  const transaction = await sequelize.transaction();
 
   try {
-    const { id } = req.params;
-    // Eliminar semanas asociadas al cliente
-    await Semana.destroy({
-      where: { ClienteID: id },
-      transaction,
-    });
-
     // Eliminar el cliente
     await Registro.destroy({
       where: { id: id },
-      transaction,
     });
-
-    // Confirmar la transacción
-    await transaction.commit();
-    console.log("Cliente y semanas asociadas eliminados exitosamente.");
+    console.log("Cliente  eliminado exitosamente.");
 
     res.status(200).json({ message: "Registro eliminado exitosamente" });
   } catch (error) {
     // Revertir la transacción en caso de error
     await transaction.rollback();
-    console.error("Error al eliminar cliente y semanas:", error);
+    console.error("Error al eliminar cliente: ", error);
     res.status(500).json({ message: "Error al eliminar registro" });
   }
 };
