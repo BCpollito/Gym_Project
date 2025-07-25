@@ -1,23 +1,72 @@
-const sequelize = require("../config/database");
-const Registro = require("./Registro");
-const Semana = require("./Semana");
-const Dia = require("./Dia");
-const Ejercicio = require("./Ejercicio");
+const Sequelize = require('sequelize');
+const sequelize = require('../config/database');
 
-// Definir relaciones
-Registro.hasMany(Semana, { foreignKey: "ClienteID", onDelete: "CASCADE" });
-Semana.belongsTo(Registro, { foreignKey: "ClienteID" });
+// Importar modelos
+const Workouts = require('./Workouts');
+const Bloques = require('./Bloques');
+const WorkoutExercises = require('./WorkoutExercises');
+const Ejercicio = require('./Ejercicio');
+const Descansos = require('./Descansos');
+const WorkoutElementos = require('./WorkoutElementos');
 
-Semana.hasMany(Dia, { foreignKey: "ID_semana", onDelete: "CASCADE" });
-Dia.belongsTo(Semana, { foreignKey: "ID_semana" });
+// Relaciones
 
-Dia.hasMany(Ejercicio, { foreignKey: "ID_dia", onDelete: "CASCADE" });
-Ejercicio.belongsTo(Dia, { foreignKey: "ID_dia" });
+// Workout → Bloques
+Workouts.hasMany(Bloques, {
+  foreignKey: 'workoutID',
+  onDelete: 'CASCADE',
+});
+Bloques.belongsTo(Workouts, { foreignKey: 'workoutID' });
+
+// Bloques → WorkoutExercises
+Bloques.hasMany(WorkoutExercises, {
+  foreignKey: 'bloqueID',
+  onDelete: 'CASCADE',
+});
+WorkoutExercises.belongsTo(Bloques, { foreignKey: 'bloqueID' });
+
+// Ejercicio → WorkoutExercises
+Ejercicio.hasMany(WorkoutExercises, {
+  foreignKey: 'ejercicioID',
+  onDelete: 'CASCADE',
+});
+WorkoutExercises.belongsTo(Ejercicio, { foreignKey: 'ejercicioID' });
+
+// Workout → Descansos
+Workouts.hasMany(Descansos, {
+  foreignKey: 'workoutID',
+  onDelete: 'CASCADE',
+});
+Descansos.belongsTo(Workouts, { foreignKey: 'workoutID' });
+
+// Workout → WorkoutElementos
+Workouts.hasMany(WorkoutElementos, {
+  foreignKey: 'workoutID',
+  onDelete: 'CASCADE',
+});
+WorkoutElementos.belongsTo(Workouts, { foreignKey: 'workoutID' });
+
+// Bloques → WorkoutElementos
+Bloques.hasOne(WorkoutElementos, {
+  foreignKey: 'bloqueID',
+  onDelete: 'CASCADE',
+});
+WorkoutElementos.belongsTo(Bloques, { foreignKey: 'bloqueID', as: 'bloque' });
+
+// Descansos → WorkoutElementos
+Descansos.hasOne(WorkoutElementos, {
+  foreignKey: 'descansoID',
+  onDelete: 'CASCADE',
+});
+WorkoutElementos.belongsTo(Descansos, { foreignKey: 'descansoID', as: 'descanso' });
 
 module.exports = {
   sequelize,
-  Registro,
-  Semana,
-  Dia,
+  Sequelize,
+  Workouts,
+  Bloques,
+  WorkoutExercises,
   Ejercicio,
+  Descansos,
+  WorkoutElementos
 };
