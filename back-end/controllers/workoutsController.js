@@ -1,4 +1,4 @@
-const { Workouts } = require("../models");
+const { Workouts, Bloques, WorkoutExercises, Ejercicio, Descansos, WorkoutElementos } = require("../models");
 
 //crear un workout
 exports.createWorkout = async (req, res) => {
@@ -27,6 +27,51 @@ exports.getAllWorkout = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: `Error al obtener workouts: ${error}` });
     }
+};
+
+//obtener workout por id y sus relaciones(opcional)
+exports.getWorkoutById = async (req, res) => {
+  const { id } = req.params;
+  const { include } = req.query;
+
+  try {
+    const workout = await Workouts.findByPk(id, {
+      include: include === "full" ? [
+        {
+          model: Bloques,
+          include: [
+            {
+              model: WorkoutExercises,
+              include: [
+                {
+                  model: Ejercicio
+                }
+              ]
+            }
+          ]
+        },
+        {
+          model: Descansos
+        },
+        {
+          model: WorkoutElementos,
+          include: [
+            { model: Bloques, as: 'bloque' },
+            { model: Descansos, as: 'descanso' }
+          ]
+        }
+      ] : []
+    });
+
+    if (!workout) {
+      return res.status(404).json({ message: "Workout no encontrado" });
+    }
+
+    res.json(workout);
+  } catch (error) {
+    console.error("Error al obtener workout:", error);
+    res.status(500).json({ message: "Error interno del servidor", error });
+  }
 };
 
 //actualizar workout
