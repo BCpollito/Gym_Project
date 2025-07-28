@@ -4,6 +4,7 @@ const Workouts = require("../controllers/workoutsController");
 
 router.post('/workouts', Workouts.createWorkout);
 router.get('/workouts', Workouts.getAllWorkout);
+router.get('/workouts/:id', Workouts.getWorkoutById);
 router.put('/workouts/:id', Workouts.updateWorkout);
 router.delete('/workouts/:id', Workouts.deleteWorkout);
 
