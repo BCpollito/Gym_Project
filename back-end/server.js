@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(require("./routes/registroRoutes"));
 app.use(require("./routes/ejercicioRoutes"));
 app.use(require("./routes/loginRoutes"));
+app.use(require("./routes/workoutsRoutes"));
 
 // Ruta de prueba
 app.get("/", (req, res) => {
