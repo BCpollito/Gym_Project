@@ -8,6 +8,7 @@ import Clientes from "./Components/clientes";
 import LibreriaExercises from "./Components/libreriaExercises";
 import LibraryWorkout from "./Components/libraryWorkout";
 import LibraryActivityLayout from "./layouts/LibraryActivityLayout";
+import NewWorkout from "./pages/NewWorkout";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           </Route>
           </Route>
         </Route>
+        <Route path="/workout/:id" element={<NewWorkout />} />
 
       </Routes>
     </Router>
