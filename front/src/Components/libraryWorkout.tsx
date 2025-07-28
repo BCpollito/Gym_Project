@@ -1,10 +1,13 @@
 import {
   Card,
   Input,
-  CardHeader,
   Typography,
   CardBody,
+  Button,
 } from "@material-tailwind/react";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import CreateWorkoutModal from "./CreateWorkoutModal";
 
 const TABLE_HEAD = [
   {
@@ -21,6 +24,9 @@ const TABLE_HEAD = [
   },
   {
     head: "Payment Date",
+  },
+  {
+    head: "opciones prolongadas",
   },
 ];
 
@@ -156,24 +162,40 @@ const TABLE_ROWS = [
 ];
 
 export default function LibraryWorkout() {
+  const [open, setOpen] = useState(false);
+
+  const handleCreateWorkout = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <div className="max-h-[75vh]">
-      <Card className="h-full max-w-sm overflow-scroll ">
-        <CardHeader
-          floated={false}
-          shadow={false}
-          className="mb-2 rounded-none p-2"
+    <div className="max-h-[77vh]">
+      <div className="flex pb-2 gap-2 items-center pr-4 pl-4 pt-2">
+        <Button
+          onClick={handleCreateWorkout}
+          color="amber"
+          size="sm"
+          className="flex items-center justify-center gap-3 rounded-full h-8"
         >
-          <div className="w-full max-w-sm md:w-96 relative block">
-            <Input label="Search Invoice" />
-          </div>
-        </CardHeader>
-        <CardBody className="overflow-scroll max-w-sm max-h-[65vh] h-full">
-          <table className="w-full min-w-max table-auto text-left">
+          <Plus strokeWidth={3} /> Crear workout
+        </Button>
+
+        <Input label="Buscar Workout por nombre" />
+      </div>
+      <Card className="h-full w-full sm:max-w-sm overflow-scroll ">
+        <CardBody className="max-w-sm max-h-[72vh] h-full">
+          <table className="overflow-scroll table-auto max-w-sm text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map(({ head }) => (
-                  <th key={head} className="border-b border-gray-300 p-4">
+                  <th
+                    key={head}
+                    className="border-b border-gray-300 text-center"
+                  >
                     <div className="flex items-center gap-1">
                       <Typography
                         color="blue-gray"
@@ -248,6 +270,7 @@ export default function LibraryWorkout() {
           </table>
         </CardBody>
       </Card>
+      <CreateWorkoutModal open={open} onClose={handleClose} />
     </div>
   );
 }
