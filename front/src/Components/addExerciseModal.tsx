@@ -301,8 +301,7 @@ export default function AddexerciseModal({
               size="sm"
               value={tag}
               icon={
-                modo === "crear" ||
-                (modoeditar && (
+                (modo === "crear" || modoeditar) && (
                   <IconButton
                     id={String(index)}
                     onClick={handleDeletTag}
@@ -312,7 +311,7 @@ export default function AddexerciseModal({
                   >
                     <X size={15} strokeWidth="3px" />
                   </IconButton>
-                ))
+                )
               }
             />
           ))}
