@@ -18,7 +18,7 @@ const WorkoutElementos = sequelize.define("WorkoutElementos", {
     },
   },
   tipo: {
-    type: DataTypes.ENUM('bloque', 'descanso'),
+    type: DataTypes.ENUM('Bloque', 'Descanso'),
     allowNull: false,
   },
   elementoID: {
