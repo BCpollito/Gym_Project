@@ -39,7 +39,7 @@ export default function SlideUpSelectelement({
           unmount: { y: 500 },
         }}
         className="fixed bottom-0 left-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
-        style={{ height: "40%" }}
+        style={{ height: "30%" }}
       >
         <DialogHeader className="flex justify-between items-center w-full">
           <div className="w-10" />
