@@ -46,20 +46,6 @@ Workouts.hasMany(WorkoutElementos, {
 });
 WorkoutElementos.belongsTo(Workouts, { foreignKey: 'workoutID' });
 
-// Bloques → WorkoutElementos
-Bloques.hasOne(WorkoutElementos, {
-  foreignKey: 'bloqueID',
-  onDelete: 'CASCADE',
-});
-WorkoutElementos.belongsTo(Bloques, { foreignKey: 'bloqueID', as: 'bloque' });
-
-// Descansos → WorkoutElementos
-Descansos.hasOne(WorkoutElementos, {
-  foreignKey: 'descansoID',
-  onDelete: 'CASCADE',
-});
-WorkoutElementos.belongsTo(Descansos, { foreignKey: 'descansoID', as: 'descanso' });
-
 module.exports = {
   sequelize,
   Sequelize,
