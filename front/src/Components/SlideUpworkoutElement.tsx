@@ -8,6 +8,7 @@ import {
   Input,
   Textarea,
   Button,
+  Chip,
 } from "@material-tailwind/react";
 import { X, LayoutList, CirclePause } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -25,6 +26,28 @@ export default function SlideUpworkoutElement({
   const [nombre, setnombre] = useState<string>("");
   const [descripcion, setdescripcion] = useState<string>("");
   const [orden, setorden] = useState<number>(1);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const chips = [
+  { label: "0s", value: 0 },
+  { label: "10s", value: 10 },
+  { label: "15s", value: 15 },
+  { label: "20s", value: 20 },
+  { label: "25s", value: 25 },
+  { label: "30s", value: 30 },
+  { label: "35s", value: 35 },
+  { label: "40s", value: 40 },
+  { label: "45s", value: 45 },
+  { label: "50s", value: 50 },
+  { label: "55s", value: 55 },
+  { label: "60s", value: 60 },
+  { label: "90s", value: 90 },
+  { label: "2m", value: 120 },
+  { label: "3m", value: 180 },
+  { label: "4m", value: 240 },
+  { label: "5m", value: 300 },
+];
+
 
   const handleAddElement = async () => {
     if (modo === "Bloque") {
@@ -44,8 +67,8 @@ export default function SlideUpworkoutElement({
         success: boolean;
         message: string;
         newElement: WorkoutElement;
-      }>("/workoutElement", {     
-        workoutID: idworkout,   
+      }>("/workoutElement", {
+        workoutID: idworkout,
         tipo: modo,
         elementoID: response.data.newblock.id,
         orden: orden,
@@ -156,6 +179,21 @@ export default function SlideUpworkoutElement({
                 }
               />
             </div>
+          </DialogBody>
+        )}
+        {modo === "Descanso" && (
+          <DialogBody className="w-full p-5 pt-0 pb-6 flex gap-2 flex-wrap">
+            {chips.map((value, index) => (
+              <div className="rounded-full" onClick={() => setSelectedIndex(index)}>
+                <Chip
+                  key={index}
+                  size="sm"
+                  value={value.label}
+                  variant={selectedIndex === index ? "filled" : "outlined"}
+                  className="rounded-full"
+                />
+              </div>
+            ))}
           </DialogBody>
         )}
         <DialogFooter className="flex items-center justify-center">
