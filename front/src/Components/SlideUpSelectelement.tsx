@@ -17,6 +17,7 @@ export default function SlideUpSelectelement({
   open,
   onClose,
   idworkout,
+  refresh,
 }: PropsModal) {
   const [openElement, setopenElement] = useState(false);
   const [modo, setmodo] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function SlideUpSelectelement({
           mount: { y: 0 },
           unmount: { y: 500 },
         }}
-        className="fixed bottom-0 left-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
+        className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
         style={{ height: "30%" }}
       >
         <DialogHeader className="flex justify-between items-center w-full">
@@ -79,6 +80,7 @@ export default function SlideUpSelectelement({
         onClose={() => setopenElement(false)}
         idworkout={idworkout}
         modo={modo === "Bloque" ? "Bloque" : "Descanso"}
+        refresh={refresh}
       />
     </>
   );
