@@ -10,7 +10,7 @@ import { ChevronsLeft, Plus } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { WorkoutElementDetail } from "../types/WorkoutElementDetail";
+import { LayoutList, CirclePause } from "lucide-react";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
 
@@ -22,13 +22,15 @@ export default function NewWorkout() {
     null
   );
 
+  const [refreshdata, setrefreshdata] = useState(false);
+  const refresh = () => {setrefreshdata(prev => !prev)}
+
   const [open, setopen] = useState(false);
   const handleClose = () => {
     setopen(false);
   };
 
   useEffect(() => {
-    if (!open) {
       const getWorkoutElements = async () => {
         try {
           const workoutElements = await axios.get<FullWorkoutResponse>(
@@ -42,8 +44,7 @@ export default function NewWorkout() {
         }
       };
       getWorkoutElements();
-    }
-  }, [open]);
+  }, [refreshdata]);
 
   return (
     <>
@@ -74,11 +75,34 @@ export default function NewWorkout() {
 
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
-          <Accordion key={index} open={false}>
-            <AccordionHeader>
-              {elemento.tipo === "bloque"
-                ? `Bloque #${elemento.data.nombre}`
-                : `Descanso - ${elemento.data.duracionSegundos} segundos`}
+          <Accordion
+            className="bg-blue-50 mb-2 rounded-lg px-2"
+            key={index}
+            open={false}
+          >
+            <AccordionHeader className="gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 text-blue-500">
+              {elemento.tipo === "bloque" ? (
+                <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
+                  <LayoutList />
+                </div>
+              ) : (
+                <CirclePause />
+              )}
+              <div className="w-full justify-start overflow-hidden whitespace-nowrap">
+                {elemento.tipo === "bloque" ? (
+                  <Typography
+                    className="font-black"
+                    variant="paragraph"
+                  >{`${elemento.data.nombre}`}</Typography>
+                ) : (
+                  `Descanso - ${elemento.data.duracionSegundos} segundos`
+                )}
+                {elemento.tipo === "bloque" && (
+                  <Typography color="gray" className="text-xs">
+                    {elemento.data.descripcion}
+                  </Typography>
+                )}
+              </div>
             </AccordionHeader>
             <AccordionBody>
               {elemento.tipo === "bloque" ? (
@@ -114,7 +138,7 @@ export default function NewWorkout() {
           Guardar workout
         </Button>
       </div>
-      <SlideUpSelectelement open={open} onClose={handleClose} idworkout={id} />
+      <SlideUpSelectelement open={open} onClose={handleClose} idworkout={id} refresh={refresh}/>
     </>
   );
 }
