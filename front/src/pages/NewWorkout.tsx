@@ -23,7 +23,9 @@ export default function NewWorkout() {
   );
 
   const [refreshdata, setrefreshdata] = useState(false);
-  const refresh = () => {setrefreshdata(prev => !prev)}
+  const refresh = () => {
+    setrefreshdata((prev) => !prev);
+  };
 
   const [open, setopen] = useState(false);
   const handleClose = () => {
@@ -31,19 +33,19 @@ export default function NewWorkout() {
   };
 
   useEffect(() => {
-      const getWorkoutElements = async () => {
-        try {
-          const workoutElements = await axios.get<FullWorkoutResponse>(
-            `/workouts/${id}?include=full`
-          );
-          setfullworkout(workoutElements.data);
-          console.log(workoutElements.data);
-        } catch (error) {
-          console.log("No se pudieron cargar los elementos del workout");
-          console.log(error);
-        }
-      };
-      getWorkoutElements();
+    const getWorkoutElements = async () => {
+      try {
+        const workoutElements = await axios.get<FullWorkoutResponse>(
+          `/workouts/${id}?include=full`
+        );
+        setfullworkout(workoutElements.data);
+        console.log(workoutElements.data);
+      } catch (error) {
+        console.log("No se pudieron cargar los elementos del workout");
+        console.log(error);
+      }
+    };
+    getWorkoutElements();
   }, [refreshdata]);
 
   return (
@@ -76,17 +78,19 @@ export default function NewWorkout() {
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
           <Accordion
-            className="bg-blue-50 mb-2 rounded-lg px-2"
+            className={`${elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"} mb-2 rounded-lg px-2`}
             key={index}
             open={false}
           >
-            <AccordionHeader className="gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 text-blue-500">
+            <AccordionHeader className={`gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"}`}>
               {elemento.tipo === "bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
                   <LayoutList />
                 </div>
               ) : (
-                <CirclePause />
+                <div className="rounded-sm p-1 bg-green-300 bg-opacity-20">
+                  <CirclePause />
+                </div>
               )}
               <div className="w-full justify-start overflow-hidden whitespace-nowrap">
                 {elemento.tipo === "bloque" ? (
@@ -95,7 +99,10 @@ export default function NewWorkout() {
                     variant="paragraph"
                   >{`${elemento.data.nombre}`}</Typography>
                 ) : (
-                  `Descanso - ${elemento.data.duracionSegundos} segundos`
+                  <Typography
+                    className="font-black"
+                    variant="paragraph"
+                  >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
                 )}
                 {elemento.tipo === "bloque" && (
                   <Typography color="gray" className="text-xs">
@@ -138,7 +145,12 @@ export default function NewWorkout() {
           Guardar workout
         </Button>
       </div>
-      <SlideUpSelectelement open={open} onClose={handleClose} idworkout={id} refresh={refresh}/>
+      <SlideUpSelectelement
+        open={open}
+        onClose={handleClose}
+        idworkout={id}
+        refresh={refresh}
+      />
     </>
   );
 }
