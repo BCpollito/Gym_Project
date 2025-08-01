@@ -16,43 +16,54 @@ import { PropsModal } from "../types/propsModal";
 import axios from "axios";
 import { Workout } from "../types/workout";
 import { WorkoutElement } from "../types/WorkoutElement";
+import { Descanso } from "../types/Descanso";
+import { useNavigate } from "react-router-dom";
 
 export default function SlideUpworkoutElement({
   open,
   onClose,
   idworkout,
   modo,
+  refresh,
 }: PropsModal) {
   const [nombre, setnombre] = useState<string>("");
   const [descripcion, setdescripcion] = useState<string>("");
+  const [descanso, setdescanso] = useState<number>(0);
   const [orden, setorden] = useState<number>(1);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const chips = [
-  { label: "0s", value: 0 },
-  { label: "10s", value: 10 },
-  { label: "15s", value: 15 },
-  { label: "20s", value: 20 },
-  { label: "25s", value: 25 },
-  { label: "30s", value: 30 },
-  { label: "35s", value: 35 },
-  { label: "40s", value: 40 },
-  { label: "45s", value: 45 },
-  { label: "50s", value: 50 },
-  { label: "55s", value: 55 },
-  { label: "60s", value: 60 },
-  { label: "90s", value: 90 },
-  { label: "2m", value: 120 },
-  { label: "3m", value: 180 },
-  { label: "4m", value: 240 },
-  { label: "5m", value: 300 },
-];
+  const nav = useNavigate();
 
+  const chips = [
+    { label: "0s", value: 0 },
+    { label: "10s", value: 10 },
+    { label: "15s", value: 15 },
+    { label: "20s", value: 20 },
+    { label: "25s", value: 25 },
+    { label: "30s", value: 30 },
+    { label: "35s", value: 35 },
+    { label: "40s", value: 40 },
+    { label: "45s", value: 45 },
+    { label: "50s", value: 50 },
+    { label: "55s", value: 55 },
+    { label: "60s", value: 60 },
+    { label: "90s", value: 90 },
+    { label: "2m", value: 120 },
+    { label: "3m", value: 180 },
+    { label: "4m", value: 240 },
+    { label: "5m", value: 300 },
+  ];
+
+  const handleRestTime = (
+    value: { label: string; value: number },
+    index: number
+  ) => {
+    setSelectedIndex(index);
+    setdescanso(value.value);
+  };
 
   const handleAddElement = async () => {
     if (modo === "Bloque") {
-      console.log(idworkout);
-      console.log(Number(idworkout));
       const response = await axios.post<{
         success: boolean;
         message: string;
@@ -86,11 +97,48 @@ export default function SlideUpworkoutElement({
         setnombre("");
         setdescripcion("");
         onClose();
+        refresh?.();
       }
     }
 
     if (modo === "Descanso") {
       console.log("DESCANSO");
+
+      if (selectedIndex !== null) {
+        const response = await axios.post<{
+          newRest: Descanso;
+          success: boolean;
+          message: string;
+        }>("/descansos", {
+          workoutID: idworkout,
+          duracionSegundos: descanso,
+        });
+
+        const responseElement = await axios.post<{
+          success: boolean;
+          message: string;
+          newElement: WorkoutElement;
+        }>("/workoutElement", {
+          workoutID: idworkout,
+          tipo: modo,
+          elementoID: response.data.newRest.id,
+          orden: orden,
+        });
+
+        if (response.data.success) {
+          if (responseElement.data.success) {
+            const newOrden = orden + 1;
+            setorden(newOrden);
+            console.log(
+              `Se agrego un nuevo elemento tipo: ${responseElement.data.newElement.tipo} al workoutde ID: ${responseElement.data.newElement.workoutID}`
+            );
+          }
+          setdescanso(0);
+          onClose();
+          refresh?.();
+          alert(response.data.message);
+        }
+      }
     }
   };
 
@@ -103,7 +151,7 @@ export default function SlideUpworkoutElement({
           mount: { y: 0 },
           unmount: { y: 500 },
         }}
-        className="fixed bottom-0 left-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
+        className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
         style={{ maxHeight: "80vh", height: "auto" }}
       >
         <DialogHeader className="flex justify-between items-center w-full">
@@ -184,7 +232,10 @@ export default function SlideUpworkoutElement({
         {modo === "Descanso" && (
           <DialogBody className="w-full p-5 pt-0 pb-6 flex gap-2 flex-wrap">
             {chips.map((value, index) => (
-              <div className="rounded-full" onClick={() => setSelectedIndex(index)}>
+              <div
+                className="rounded-full"
+                onClick={() => handleRestTime(value, index)}
+              >
                 <Chip
                   key={index}
                   size="sm"
