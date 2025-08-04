@@ -5,6 +5,8 @@ import {
   Accordion,
   AccordionBody,
   AccordionHeader,
+  List,
+  ListItem,
 } from "@material-tailwind/react";
 import { ChevronsLeft, Plus } from "lucide-react";
 import axios from "axios";
@@ -78,11 +80,15 @@ export default function NewWorkout() {
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
           <Accordion
-            className={`${elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"} mb-2 rounded-lg px-2`}
+            className={`${elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"
+              } mb-2 rounded-lg px-2`}
             key={index}
-            open={false}
+            open={elemento.tipo === "bloque" ? true : false}
           >
-            <AccordionHeader className={`gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"}`}>
+            <AccordionHeader
+              className={`gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"
+                }`}
+            >
               {elemento.tipo === "bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
                   <LayoutList />
@@ -112,16 +118,19 @@ export default function NewWorkout() {
               </div>
             </AccordionHeader>
             <AccordionBody>
-              {elemento.tipo === "bloque" ? (
-                <ul className="list-disc pl-5">
+              {(elemento.tipo === "bloque" &&
+                elemento.data.WorkoutExercises.length > 0) ? (
+                <List>
                   {elemento.data.WorkoutExercises.map((we) => (
-                    <li key={we.id}>
+                    <ListItem key={we.id}>
                       {we.Ejercicio.Nombre} - {we.Ejercicio.Descripcion}
-                    </li>
+                    </ListItem>
                   ))}
-                </ul>
+                </List>
               ) : (
-                <p className="text-gray-600">Descanso programado</p>
+                <Typography variant="small" className="text-gray-400">
+                  nada por aqui
+                </Typography>
               )}
             </AccordionBody>
           </Accordion>
