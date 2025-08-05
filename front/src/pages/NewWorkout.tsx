@@ -7,6 +7,11 @@ import {
   AccordionHeader,
   List,
   ListItem,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Card,
 } from "@material-tailwind/react";
 import { ChevronsLeft, Plus } from "lucide-react";
 import axios from "axios";
@@ -15,6 +20,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LayoutList, CirclePause } from "lucide-react";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
+import LibreriaExercises from "../Components/libreriaExercises";
 
 export default function NewWorkout() {
   const navigate = useNavigate();
@@ -32,6 +38,11 @@ export default function NewWorkout() {
   const [open, setopen] = useState(false);
   const handleClose = () => {
     setopen(false);
+  };
+
+  const [openViewExercises, setopenViewExercises] = useState(false);
+  const handleCloseExercises = () => {
+    setopenViewExercises(false);
   };
 
   useEffect(() => {
@@ -80,14 +91,16 @@ export default function NewWorkout() {
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
           <Accordion
-            className={`${elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"
-              } mb-2 rounded-lg px-2`}
+            className={`${
+              elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"
+            } mb-2 rounded-lg px-2`}
             key={index}
             open={elemento.tipo === "bloque" ? true : false}
           >
             <AccordionHeader
-              className={`gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"
-                }`}
+              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${
+                elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"
+              }`}
             >
               {elemento.tipo === "bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
@@ -116,10 +129,25 @@ export default function NewWorkout() {
                   </Typography>
                 )}
               </div>
+              {elemento.tipo === "bloque" && (
+                <div className="absolute right-0 p-0">
+                  <Button
+                    variant="text"
+                    size="sm"
+                    className="font-thin flex flex-col items-center p-0 rounded-sm"
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                      setopenViewExercises(true)
+                    }
+                  >
+                    <Plus />
+                    ejercicio
+                  </Button>
+                </div>
+              )}
             </AccordionHeader>
             <AccordionBody>
-              {(elemento.tipo === "bloque" &&
-                elemento.data.WorkoutExercises.length > 0) ? (
+              {elemento.tipo === "bloque" &&
+              elemento.data.WorkoutExercises.length > 0 ? (
                 <List>
                   {elemento.data.WorkoutExercises.map((we) => (
                     <ListItem key={we.id}>
@@ -160,6 +188,30 @@ export default function NewWorkout() {
         idworkout={id}
         refresh={refresh}
       />
+
+      {openViewExercises && (
+        <Dialog
+          open={openViewExercises}
+          handler={handleCloseExercises}
+          size="xxl"
+          className="!max-w-none !w-screen !h-screen overflow-hidden bg-white px-2"
+        >          
+        <DialogHeader className="p-0">
+          añadir ejercicio a workout
+        </DialogHeader>
+          <LibreriaExercises classNamemodify={true}/>
+          <DialogFooter className="justify-start gap-1">
+            <IconButton
+              size="sm"
+              variant="outlined"
+              onClick={handleCloseExercises}
+            >
+              <ChevronsLeft />
+            </IconButton>
+            Regresar
+          </DialogFooter>
+        </Dialog>
+      )}
     </>
   );
 }
