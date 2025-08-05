@@ -15,7 +15,11 @@ import { Exercise } from "../types/Exercises";
 
 type Modo = "crear" | "Ver";
 
-export default function LibreriaExercises() {
+type props = {
+  classNamemodify?: boolean;
+}
+
+export default function LibreriaExercises({classNamemodify}: props) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +96,7 @@ export default function LibreriaExercises() {
         <Input
           variant="static"
           placeholder="Buscar por Nombre"
-          containerProps={{ className: "mt-9" }}
+          containerProps={{ className: `${classNamemodify === true ? "mt-0" : "mt-9"}` }}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setSearchTerm(e.target.value)
           }
