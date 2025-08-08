@@ -145,7 +145,7 @@ export default function NewWorkout() {
                 </div>
               )}
             </AccordionHeader>
-            <AccordionBody>
+            <AccordionBody className="p-0">
               {elemento.tipo === "bloque" &&
               elemento.data.WorkoutExercises.length > 0 ? (
                 <List>
@@ -155,11 +155,7 @@ export default function NewWorkout() {
                     </ListItem>
                   ))}
                 </List>
-              ) : (
-                <Typography variant="small" className="text-gray-400">
-                  nada por aqui
-                </Typography>
-              )}
+              ) : null}
             </AccordionBody>
           </Accordion>
         ))}
@@ -200,7 +196,7 @@ export default function NewWorkout() {
           añadir ejercicio a workout
         </DialogHeader>
           <LibreriaExercises classNamemodify={true}/>
-          <DialogFooter className="justify-start gap-1">
+          <DialogFooter className="justify-start text-center gap-1">
             <IconButton
               size="sm"
               variant="outlined"
