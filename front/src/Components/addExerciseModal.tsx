@@ -244,7 +244,7 @@ export default function AddexerciseModal({
             color="gray"
             size="lg"
             placeholder="https://www.youtube.com/watch?v=example"
-            value={convertedLink || ""}
+            value={convertedLink || link || ""}
             disabled={modo !== "crear" && !modoeditar}
             className="placeholder:opacity-100 focus:!border-t-gray-900"
             containerProps={{
