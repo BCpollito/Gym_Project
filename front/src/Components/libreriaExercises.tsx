@@ -17,11 +17,13 @@ type Modo = "crear" | "Ver";
 
 type props = {
   classNamemodify?: boolean;
-}
+};
 
-export default function LibreriaExercises({classNamemodify}: props) {
+export default function LibreriaExercises({ classNamemodify }: props) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [modo, setModo] = useState<Modo>("crear");
@@ -62,33 +64,33 @@ export default function LibreriaExercises({classNamemodify}: props) {
   };
 
   useEffect(() => {
-  const palabras = searchTerm
-    .toLowerCase()
-    .split(" ") // Divide el searchTerm en palabras usando el espacio como delimitador
-    .map((palabra) => palabra.trim()) // Elimina espacios adicionales
+    const palabras = searchTerm
+      .toLowerCase()
+      .split(" ") // Divide el searchTerm en palabras usando el espacio como delimitador
+      .map((palabra) => palabra.trim()); // Elimina espacios adicionales
 
-  const result = exercises.filter((exercise) => {
-    const nombre = exercise.Nombre?.toLowerCase() || "";
-    const tags =
-      exercise.Tag?.toLowerCase()
-        .split(",")
-        .map((tag) => tag.trim()) || [];
+    const result = exercises.filter((exercise) => {
+      const nombre = exercise.Nombre?.toLowerCase() || "";
+      const tags =
+        exercise.Tag?.toLowerCase()
+          .split(",")
+          .map((tag) => tag.trim()) || [];
 
-    // Verifica si al menos uno de los términos de búsqueda coincide con el nombre o las etiquetas
-    return (
-      palabras.some((palabra) => nombre.includes(palabra)) ||
-      palabras.some((palabra) => tags.some((tag) => tag.includes(palabra)))
-    );
-  });
+      // Verifica si al menos uno de los términos de búsqueda coincide con el nombre o las etiquetas
+      return (
+        palabras.some((palabra) => nombre.includes(palabra)) ||
+        palabras.some((palabra) => tags.some((tag) => tag.includes(palabra)))
+      );
+    });
 
-  setFilteredExercise(result);
-}, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
-  
+    setFilteredExercise(result);
+  }, [searchTerm, exercises]); // también depende de ejercicios en caso de recarga
+
   const handleViewExercise = (exercise: Exercise) => {
     setOpen(true);
     setModo("Ver");
     setSelectedExercise(exercise);
-  }
+  };
 
   return (
     <>
@@ -96,7 +98,9 @@ export default function LibreriaExercises({classNamemodify}: props) {
         <Input
           variant="static"
           placeholder="Buscar por Nombre"
-          containerProps={{ className: `${classNamemodify === true ? "mt-0" : "mt-9"}` }}
+          containerProps={{
+            className: `${classNamemodify === true ? "mt-0" : "mt-9"}`,
+          }}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setSearchTerm(e.target.value)
           }
@@ -105,23 +109,26 @@ export default function LibreriaExercises({classNamemodify}: props) {
           {loading ? (
             <p>Cargando ejercicios...</p>
           ) : (
-            <div className="flex flex-col items-center h-full gap-7 mt-4 p-4 overflow-y-auto max-h-[75vh]">
+            <div className="flex flex-col items-center h-full gap-5 mt-4 pb-4 px-4 overflow-y-auto max-h-[75vh]">
               {filteredExercise.map((exercise) => (
                 <Card
                   key={exercise.ID_ejercicio}
-                  className="w-full min-w-80 max-w-xs shadow-md cursor-pointer"
+                  className="w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50"
                   onClick={() => handleViewExercise(exercise)}
                 >
                   <CardHeader
-                  floated={false}
-                  shadow={false}
-                  color="transparent"
-                  className="relative h-[180px] overflow-hidden m-0 rounded-none">
+                    floated={false}
+                    shadow={false}
+                    color="transparent"
+                    className="relative h-[180px] overflow-hidden m-0 rounded-none"
+                  >
                     {exercise.Link.includes("youtube.com/embed") ? (
                       <iframe
                         className="max-w-sm aspect-video"
-                        src={exercise.Link}
+                        src={`${exercise.Link}?controls=1&modestbranding=1&rel=0&showinfo=0`}
                         title="YouTube video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
                       />
                     ) : (
                       <img
@@ -131,7 +138,7 @@ export default function LibreriaExercises({classNamemodify}: props) {
                       />
                     )}
                   </CardHeader>
-                  <CardBody>
+                  <CardBody className="py-1">
                     <Typography
                       variant="h5"
                       color="blue-gray"
@@ -141,12 +148,18 @@ export default function LibreriaExercises({classNamemodify}: props) {
                     </Typography>
                     <div className="flex gap-2 flex-wrap">
                       {exercise.Tag.split(",").map((tag, index) => (
-                        <Chip className="text-xs" key={index} size="sm" value={tag.trim()} />
+                        <Chip
+                          className="text-xs"
+                          key={index}
+                          size="sm"
+                          value={tag.trim()}
+                        />
                       ))}
                     </div>
                   </CardBody>
                 </Card>
               ))}
+              <div className="h-4"></div>
             </div>
           )}
         </div>
@@ -162,7 +175,12 @@ export default function LibreriaExercises({classNamemodify}: props) {
           <Plus />
         </IconButton>
       </div>
-      <AddexerciseModal open={open} onClose={handleClose} modo={modo} ejercicioExistente={selectedExercise}/>
+      <AddexerciseModal
+        open={open}
+        onClose={handleClose}
+        modo={modo}
+        ejercicioExistente={selectedExercise}
+      />
     </>
   );
 }
