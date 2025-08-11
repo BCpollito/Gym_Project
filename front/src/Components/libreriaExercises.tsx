@@ -12,14 +12,17 @@ import axios from "axios";
 import { Plus } from "lucide-react";
 import AddexerciseModal from "./addExerciseModal";
 import { Exercise } from "../types/Exercises";
+import SlideUpworkoutElement from "./SlideUpworkoutElement";
 
 type Modo = "crear" | "Ver";
 
 type props = {
   classNamemodify?: boolean;
+  closeSelf?: () => void;
+  exerciseID?: (id: number) => void;
 };
 
-export default function LibreriaExercises({ classNamemodify }: props) {
+export default function LibreriaExercises({ classNamemodify, closeSelf, exerciseID }: props) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
     null
@@ -92,6 +95,11 @@ export default function LibreriaExercises({ classNamemodify }: props) {
     setSelectedExercise(exercise);
   };
 
+  const handleExerciseToBlock = (id: number) => {
+    if(exerciseID !== undefined) exerciseID(id)
+    if(closeSelf !== undefined) closeSelf();
+  }
+
   return (
     <>
       <div>
@@ -114,7 +122,7 @@ export default function LibreriaExercises({ classNamemodify }: props) {
                 <Card
                   key={exercise.ID_ejercicio}
                   className="w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50"
-                  onClick={() => handleViewExercise(exercise)}
+                  onClick={classNamemodify === true ? () => handleExerciseToBlock(exercise.ID_ejercicio) : () => handleViewExercise(exercise)}
                 >
                   <CardHeader
                     floated={false}
