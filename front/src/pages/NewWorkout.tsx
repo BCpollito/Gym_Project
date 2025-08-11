@@ -92,17 +92,17 @@ export default function NewWorkout() {
         {fullworkout?.elementos.map((elemento, index) => (
           <Accordion
             className={`${
-              elemento.tipo === "bloque" ? "bg-blue-50" : "bg-green-50"
+              elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
             } mb-2 rounded-lg px-2`}
             key={index}
-            open={elemento.tipo === "bloque" ? true : false}
+            open={elemento.tipo === "Bloque" ? true : false}
           >
             <AccordionHeader
               className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${
-                elemento.tipo === "bloque" ? " text-blue-500" : "text-green-500"
+                elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
               }`}
             >
-              {elemento.tipo === "bloque" ? (
+              {elemento.tipo === "Bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
                   <LayoutList />
                 </div>
@@ -112,7 +112,7 @@ export default function NewWorkout() {
                 </div>
               )}
               <div className="w-full justify-start overflow-hidden whitespace-nowrap">
-                {elemento.tipo === "bloque" ? (
+                {elemento.tipo === "Bloque" ? (
                   <Typography
                     className="font-black"
                     variant="paragraph"
@@ -123,13 +123,13 @@ export default function NewWorkout() {
                     variant="paragraph"
                   >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
                 )}
-                {elemento.tipo === "bloque" && (
+                {elemento.tipo === "Bloque" && (
                   <Typography color="gray" className="text-xs">
                     {elemento.data.descripcion}
                   </Typography>
                 )}
               </div>
-              {elemento.tipo === "bloque" && (
+              {elemento.tipo === "Bloque" && (
                 <div className="absolute right-0 p-0">
                   <Button
                     variant="text"
@@ -146,7 +146,7 @@ export default function NewWorkout() {
               )}
             </AccordionHeader>
             <AccordionBody className="p-0">
-              {elemento.tipo === "bloque" &&
+              {elemento.tipo === "Bloque" &&
               elemento.data.WorkoutExercises.length > 0 ? (
                 <List>
                   {elemento.data.WorkoutExercises.map((we) => (

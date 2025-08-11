@@ -62,7 +62,7 @@ exports.getWorkoutById = async (req, res) => {
     const elementosDetallados = [];
 
     for (const elem of elementos) {
-      if (elem.tipo === 'bloque') {
+      if (elem.tipo === 'Bloque') {
         const bloque = await Bloques.findByPk(elem.elementoID, {
           include: [
             {
@@ -73,12 +73,12 @@ exports.getWorkoutById = async (req, res) => {
         });
 
         if (bloque) {
-          elementosDetallados.push({ tipo: 'bloque', data: bloque });
+          elementosDetallados.push({ tipo: 'Bloque', data: bloque });
         }
-      } else if (elem.tipo === 'descanso') {
+      } else if (elem.tipo === 'Descanso') {
         const descanso = await Descansos.findByPk(elem.elementoID);
         if (descanso) {
-          elementosDetallados.push({ tipo: 'descanso', data: descanso });
+          elementosDetallados.push({ tipo: 'Descanso', data: descanso });
         }
       }
     }
