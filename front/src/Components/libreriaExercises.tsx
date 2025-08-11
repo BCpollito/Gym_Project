@@ -149,7 +149,7 @@ export default function LibreriaExercises({ classNamemodify }: props) {
                     <div className="flex gap-2 flex-wrap">
                       {exercise.Tag.split(",").map((tag, index) => (
                         <Chip
-                          className="text-xs"
+                          className="text-[10px] leading-3"
                           key={index}
                           size="sm"
                           value={tag.trim()}
