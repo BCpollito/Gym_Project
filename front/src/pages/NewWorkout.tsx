@@ -41,6 +41,7 @@ export default function NewWorkout() {
   };
 
   const [openViewExercises, setopenViewExercises] = useState(false);
+  const [bloqueid, setbloqueid] = useState<number | null>(null);
   const handleCloseExercises = () => {
     setopenViewExercises(false);
   };
@@ -60,6 +61,12 @@ export default function NewWorkout() {
     };
     getWorkoutElements();
   }, [refreshdata]);
+
+  const [exerciseID, setexerciseID] = useState<number | null>(null);
+  const getexerciseid = (id: number) => {
+    setexerciseID(id);
+    console.log(id);
+  }
 
   return (
     <>
@@ -135,9 +142,10 @@ export default function NewWorkout() {
                     variant="text"
                     size="sm"
                     className="font-thin flex flex-col items-center p-0 rounded-sm"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                      setopenViewExercises(true)
-                    }
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      setopenViewExercises(true);
+                      setbloqueid(elemento.data.id);
+                    }}
                   >
                     <Plus />
                     ejercicio
@@ -191,11 +199,11 @@ export default function NewWorkout() {
           handler={handleCloseExercises}
           size="xxl"
           className="!max-w-none !w-screen !h-screen overflow-hidden bg-white px-2"
-        >          
-        <DialogHeader className="p-0">
-          añadir ejercicio a workout
-        </DialogHeader>
-          <LibreriaExercises classNamemodify={true}/>
+        >
+          <DialogHeader className="p-0">
+            añadir ejercicio a workout
+          </DialogHeader>
+          <LibreriaExercises classNamemodify={true} closeSelf={handleCloseExercises} exerciseID={getexerciseid} />
           <DialogFooter className="justify-start text-center gap-1">
             <IconButton
               size="sm"
