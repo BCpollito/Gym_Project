@@ -3,5 +3,5 @@ export interface Exercise {
     Nombre: string;
     Descripcion: string;
     Link: string;
-    Tag: string[];
+    Tag: string;
 }
