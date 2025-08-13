@@ -12,7 +12,6 @@ import axios from "axios";
 import { Plus } from "lucide-react";
 import AddexerciseModal from "./addExerciseModal";
 import { Exercise } from "../types/Exercises";
-import SlideUpworkoutElement from "./SlideUpworkoutElement";
 
 type Modo = "crear" | "Ver";
 
@@ -22,7 +21,11 @@ type props = {
   exerciseID?: (id: number) => void;
 };
 
-export default function LibreriaExercises({ classNamemodify, closeSelf, exerciseID }: props) {
+export default function LibreriaExercises({
+  classNamemodify,
+  closeSelf,
+  exerciseID,
+}: props) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
     null
@@ -96,13 +99,14 @@ export default function LibreriaExercises({ classNamemodify, closeSelf, exercise
   };
 
   const handleExerciseToBlock = (id: number) => {
-    if(exerciseID !== undefined) exerciseID(id)
-    if(closeSelf !== undefined) closeSelf();
-  }
+    if (exerciseID !== undefined) exerciseID(id);
+    if (closeSelf !== undefined) closeSelf();
+  };
 
   return (
     <>
       <div>
+        {/*// @ts-ignore*/}
         <Input
           variant="static"
           placeholder="Buscar por Nombre"
@@ -119,20 +123,30 @@ export default function LibreriaExercises({ classNamemodify, closeSelf, exercise
           ) : (
             <div className="flex flex-col items-center h-full gap-5 mt-4 pb-4 px-4 overflow-y-auto max-h-[75vh]">
               {filteredExercise.map((exercise) => (
+                // @ts-ignore
                 <Card
                   key={exercise.ID_ejercicio}
-                  className="w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50"
-                  onClick={classNamemodify === true ? () => handleExerciseToBlock(exercise.ID_ejercicio) : () => handleViewExercise(exercise)}
+                  className={`w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50 ${
+                    classNamemodify === true ? "flex flex-row items-center" : ""
+                  }`}
+                  onClick={
+                    classNamemodify === true
+                      ? () => handleExerciseToBlock(exercise.ID_ejercicio)
+                      : () => handleViewExercise(exercise)
+                  }
                 >
+                  {/*// @ts-ignore*/}
                   <CardHeader
                     floated={false}
                     shadow={false}
                     color="transparent"
-                    className="relative h-[180px] overflow-hidden m-0 rounded-none"
+                    className={`overflow-hidden m-0 ${
+                      classNamemodify === true ? "rounded-r-none min-w-[80px] max-w-[80px] h-[80px]" : "h-[180px] rounded-none"
+                    }`}
                   >
                     {exercise.Link.includes("youtube.com/embed") ? (
                       <iframe
-                        className="max-w-sm aspect-video"
+                        className="w-full h-full aspect-video"
                         src={`${exercise.Link}?controls=1&modestbranding=1&rel=0&showinfo=0`}
                         title="YouTube video"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -142,22 +156,28 @@ export default function LibreriaExercises({ classNamemodify, closeSelf, exercise
                       <img
                         src={exercise.Link}
                         alt={exercise.Nombre}
-                        className="w-full h-full object-contain"
+                        className={`h-full bg-white ${
+                          classNamemodify === true
+                            ? "min-w-[80px] max-w-[80px] object-cover"
+                            : "w-full object-contain"
+                        }`}
                       />
                     )}
                   </CardHeader>
-                  <CardBody className="py-1">
+                  {/*// @ts-ignore*/}
+                  <CardBody className={`py-1 ${classNamemodify === true && "flex-1 pr-0 overflow-hidden"}`}>
+                    {/*// @ts-ignore*/}
                     <Typography
                       variant="h5"
                       color="blue-gray"
-                      className="mb-2 font-semibold"
+                      className="mb-1 font-semibold line-clamp-2"
                     >
                       {exercise.Nombre}
                     </Typography>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap ">
                       {exercise.Tag.split(",").map((tag, index) => (
                         <Chip
-                          className="text-[10px] leading-3"
+                          className="text-[10px] leading-3 "
                           key={index}
                           size="sm"
                           value={tag.trim()}
@@ -174,6 +194,7 @@ export default function LibreriaExercises({ classNamemodify, closeSelf, exercise
       </div>
 
       <div className="fixed bottom-[75px] right-4">
+        {/*// @ts-ignore*/}
         <IconButton
           onClick={handleClickCreate}
           color="amber"
