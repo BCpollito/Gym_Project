@@ -13,14 +13,14 @@ import {
   DialogFooter,
   Card,
 } from "@material-tailwind/react";
-import { ChevronsLeft, Plus } from "lucide-react";
+import { ChevronsLeft, Plus, Goal, Repeat2, LayoutList, CirclePause, NotebookText } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { LayoutList, CirclePause } from "lucide-react";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
 import LibreriaExercises from "../Components/libreriaExercises";
+import convertirLink from "../services/ConvertLink";
 
 export default function NewWorkout() {
   const navigate = useNavigate();
@@ -98,16 +98,14 @@ export default function NewWorkout() {
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
           <Accordion
-            className={`${
-              elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
-            } mb-2 rounded-lg px-2`}
+            className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
+              } mb-2 rounded-lg px-2`}
             key={index}
             open={elemento.tipo === "Bloque" ? true : false}
           >
             <AccordionHeader
-              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${
-                elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
-              }`}
+              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
+                }`}
             >
               {elemento.tipo === "Bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
@@ -118,7 +116,7 @@ export default function NewWorkout() {
                   <CirclePause />
                 </div>
               )}
-              <div className="w-full justify-start overflow-hidden whitespace-nowrap">
+              <div className="w-8/12 justify-start overflow-hidden whitespace-nowrap">
                 {elemento.tipo === "Bloque" ? (
                   <Typography
                     className="font-black"
@@ -155,11 +153,35 @@ export default function NewWorkout() {
             </AccordionHeader>
             <AccordionBody className="p-0">
               {elemento.tipo === "Bloque" &&
-              elemento.data.WorkoutExercises.length > 0 ? (
-                <List>
+                elemento.data.WorkoutExercises.length > 0 ? (
+                <List className="px-0">
+                  {/*bg-blue-gray-400 bg-opacity-20*/}
                   {elemento.data.WorkoutExercises.map((we) => (
-                    <ListItem key={we.id}>
-                      {we.Ejercicio.Nombre} - {we.Ejercicio.Descripcion}
+                    <ListItem className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10" key={we.id}>
+                      <img className="w-10 h-9 object-cover rounded-sm bg-white"
+                        src={convertirLink(we.Ejercicio.Link) || ""} alt={we.Ejercicio.Nombre} />
+                      <div>
+                        <Typography variant="small">
+                          {we.Ejercicio.Nombre}
+                        </Typography>
+                        <div className="flex items-center gap-5">
+                          <div className="flex items-center">
+                            <Repeat2 size={16} />
+                            <span className="text-sm">{we.series}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Goal size={16} />
+                            <span className="text-sm">{we.objetivo}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <CirclePause size={16} />
+                            <span className="text-sm">{we.tiempoDescanso}</span>
+                          </div>
+                          <IconButton color="blue-gray" size="sm" className="h-5" variant="text">
+                            <NotebookText size={16} />
+                          </IconButton>
+                        </div>
+                      </div>
                     </ListItem>
                   ))}
                 </List>
