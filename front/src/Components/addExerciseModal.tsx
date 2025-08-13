@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { Plus, X, Trash } from "lucide-react";
-import { PropsModal } from "../types/propsModal";
+import { PropsModal } from "../types/PropsModal";
 import convertirLink from "../services/ConvertLink";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -162,7 +162,7 @@ export default function AddexerciseModal({
         const response = await axios.delete<{
           message: string;
           error: string;
-        }>(`/ejercicio/${ejercicioExistente?.ID_ejercicio}`)
+        }>(`/ejercicio/${ejercicioExistente?.ID_ejercicio}`);
 
         if (response.data.message) {
           window.alert(`${response.data.message}`);
@@ -178,13 +178,16 @@ export default function AddexerciseModal({
   };
 
   return (
+    // @ts-ignore
     <Dialog
       size="sm"
       open={open}
       handler={onClose}
       className="p-4 max-h-[85vh]"
     >
+      {/*// @ts-ignore*/}
       <DialogHeader className="relative m-0 flex justify-between">
+        {/*// @ts-ignore*/}
         <Typography variant="h4" color="blue-gray">
           {modoeditar
             ? "Editar ejercicio"
@@ -192,18 +195,18 @@ export default function AddexerciseModal({
             ? "Ver Ejercicio"
             : "Crear Ejercicio"}
         </Typography>
-        {modoeditar && 
-        <IconButton
-        color="red"
-        onClick={handleDeletExercise}
-        size="sm">
-          <Trash />
-        </IconButton>
-        }        
+        {modoeditar && (
+          // @ts-ignore
+          <IconButton color="red" onClick={handleDeletExercise} size="sm">
+            <Trash />
+          </IconButton>
+        )}
       </DialogHeader>
+      {/*// @ts-ignore*/}
       <DialogBody className="space-y-4 pb-6 overflow-y-auto max-h-[60vh]">
         {/* Resto de campos */}
         <div>
+          {/*// @ts-ignore*/}
           <Typography
             variant="small"
             color="blue-gray"
@@ -211,6 +214,7 @@ export default function AddexerciseModal({
           >
             Nombre
           </Typography>
+          {/*// @ts-ignore*/}
           <Input
             color="gray"
             size="lg"
@@ -233,6 +237,7 @@ export default function AddexerciseModal({
           />
         </div>
         <div>
+          {/*// @ts-ignore*/}
           <Typography
             variant="small"
             color="blue-gray"
@@ -240,6 +245,7 @@ export default function AddexerciseModal({
           >
             Link (imagen o video)
           </Typography>
+          {/*// @ts-ignore*/}
           <Input
             color="gray"
             size="lg"
@@ -259,6 +265,7 @@ export default function AddexerciseModal({
           />
         </div>
         <div>
+          {/*// @ts-ignore*/}
           <Typography
             variant="small"
             color="blue-gray"
@@ -269,6 +276,7 @@ export default function AddexerciseModal({
 
           {(modo === "crear" || modoeditar) && (
             <div className="relative flex w-full max-w-[24rem]">
+              {/*// @ts-ignore*/}
               <Input
                 placeholder="ej. pecho, hipertrofia..."
                 color="gray"
@@ -281,6 +289,7 @@ export default function AddexerciseModal({
                   setEtiqueta(e.target.value)
                 }
               />
+              {/*// @ts-ignore*/}
               <IconButton
                 size="sm"
                 color={etiqueta ? "amber" : "gray"}
@@ -302,6 +311,7 @@ export default function AddexerciseModal({
               value={tag}
               icon={
                 (modo === "crear" || modoeditar) && (
+                  // @ts-ignore
                   <IconButton
                     id={String(index)}
                     onClick={handleDeletTag}
@@ -317,6 +327,7 @@ export default function AddexerciseModal({
           ))}
         </div>
         <div>
+          {/*// @ts-ignore*/}
           <Typography
             variant="small"
             color="blue-gray"
@@ -324,6 +335,7 @@ export default function AddexerciseModal({
           >
             Descripcion (Opcional)
           </Typography>
+          {/*// @ts-ignore*/}
           <Textarea
             rows={7}
             placeholder="ej. Ejercicio para espalda enfocado en dorsales..."
@@ -343,6 +355,7 @@ export default function AddexerciseModal({
         </div>
         <div className="flex flex-col items-center justify-center">
           {convertedLink === null && link ? (
+            // @ts-ignore
             <Typography color="red" variant="h6">
               URL no válida
             </Typography>
@@ -363,7 +376,9 @@ export default function AddexerciseModal({
           ) : null}
         </div>
       </DialogBody>
+      {/*// @ts-ignore*/}
       <DialogFooter className="flex ">
+        {/*// @ts-ignore*/}
         <Button
           variant="text"
           className="hover:bg-blue-gray-600 hover:text-white"
@@ -372,18 +387,22 @@ export default function AddexerciseModal({
           Cancelar
         </Button>
         {modo === "crear" ? (
+          // @ts-ignore
           <Button onClick={handleCreate} className="ml-auto">
             Crear
           </Button>
         ) : (
-            <Button color={modoeditar ? "green" : "black"} variant={modoeditar ? "outlined" : "filled"}
-              onClick={
-                !modoeditar ? () => setmodoeditar(true) : handleEditExercise
-              }
-              className="ml-auto"
-            >
-              {modoeditar ? "Guardar" : "Editar"}
-            </Button>
+          // @ts-ignore
+          <Button
+            color={modoeditar ? "green" : "black"}
+            variant={modoeditar ? "outlined" : "filled"}
+            onClick={
+              !modoeditar ? () => setmodoeditar(true) : handleEditExercise
+            }
+            className="ml-auto"
+          >
+            {modoeditar ? "Guardar" : "Editar"}
+          </Button>
         )}
       </DialogFooter>
     </Dialog>

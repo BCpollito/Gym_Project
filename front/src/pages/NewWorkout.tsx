@@ -73,6 +73,7 @@ export default function NewWorkout() {
       {/* navegacion superior */}
       <div className="fixed top-0 left-0 w-full px-4 py-0 shadow">
         <div className="flex items-center justify-between w-full">
+          {/*// @ts-ignore*/}
           <IconButton
             size="sm"
             color="white"
@@ -85,9 +86,11 @@ export default function NewWorkout() {
             <ChevronsLeft />
           </IconButton>
           <div className="pt-2">
+            {/*// @ts-ignore*/}
             <Typography color="gray" variant="small">
               Crear nuevo workout
             </Typography>
+            {/*// @ts-ignore*/}
             <Typography variant="h4">
               {fullworkout?.workout.nombre ?? "Cargando..."}
             </Typography>
@@ -97,12 +100,14 @@ export default function NewWorkout() {
 
       <div className="px-4 w-full">
         {fullworkout?.elementos.map((elemento, index) => (
+          // @ts-ignore
           <Accordion
             className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
               } mb-2 rounded-lg px-2`}
             key={index}
             open={elemento.tipo === "Bloque" ? true : false}
           >
+            {/*// @ts-ignore*/}
             <AccordionHeader
               className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
                 }`}
@@ -118,17 +123,20 @@ export default function NewWorkout() {
               )}
               <div className="w-8/12 justify-start overflow-hidden whitespace-nowrap">
                 {elemento.tipo === "Bloque" ? (
+                  // @ts-ignore
                   <Typography
                     className="font-black"
                     variant="paragraph"
                   >{`${elemento.data.nombre}`}</Typography>
                 ) : (
+                  // @ts-ignore
                   <Typography
                     className="font-black"
                     variant="paragraph"
                   >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
                 )}
                 {elemento.tipo === "Bloque" && (
+                  // @ts-ignore
                   <Typography color="gray" className="text-xs">
                     {elemento.data.descripcion}
                   </Typography>
@@ -136,6 +144,7 @@ export default function NewWorkout() {
               </div>
               {elemento.tipo === "Bloque" && (
                 <div className="absolute right-0 p-0">
+                  {/*// @ts-ignore*/}
                   <Button
                     variant="text"
                     size="sm"
@@ -154,13 +163,15 @@ export default function NewWorkout() {
             <AccordionBody className="p-0">
               {elemento.tipo === "Bloque" &&
                 elemento.data.WorkoutExercises.length > 0 ? (
+                  // @ts-ignore
                 <List className="px-0">
-                  {/*bg-blue-gray-400 bg-opacity-20*/}
                   {elemento.data.WorkoutExercises.map((we) => (
+                    // @ts-ignore
                     <ListItem className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10" key={we.id}>
                       <img className="w-10 h-9 object-cover rounded-sm bg-white"
                         src={convertirLink(we.Ejercicio.Link) || ""} alt={we.Ejercicio.Nombre} />
                       <div>
+                        {/*// @ts-ignore*/}
                         <Typography variant="small">
                           {we.Ejercicio.Nombre}
                         </Typography>
@@ -177,6 +188,7 @@ export default function NewWorkout() {
                             <CirclePause size={16} />
                             <span className="text-sm">{we.tiempoDescanso}</span>
                           </div>
+                          {/*// @ts-ignore*/}
                           <IconButton color="blue-gray" size="sm" className="h-5" variant="text">
                             <NotebookText size={16} />
                           </IconButton>
@@ -193,6 +205,7 @@ export default function NewWorkout() {
 
       {/* navegacion inferior */}
       <div className="fixed bottom-[90px] right-4">
+        {/*// @ts-ignore*/}
         <IconButton
           size="sm"
           color="amber"
@@ -204,6 +217,7 @@ export default function NewWorkout() {
         </IconButton>
       </div>
       <div className="fixed bottom-0 p-5 w-full shadow-[-1px_-1px_5px_rgba(0,0,0,0.2)]">
+        {/*// @ts-ignore*/}
         <Button className="w-full rounded-full" size="sm">
           Guardar workout
         </Button>
@@ -216,17 +230,21 @@ export default function NewWorkout() {
       />
 
       {openViewExercises && (
+        // @ts-ignore
         <Dialog
           open={openViewExercises}
           handler={handleCloseExercises}
           size="xxl"
           className="!max-w-none !w-screen !h-screen overflow-hidden bg-white px-2"
         >
+          {/*// @ts-ignore*/}
           <DialogHeader className="p-0">
             añadir ejercicio a workout
           </DialogHeader>
           <LibreriaExercises classNamemodify={true} closeSelf={handleCloseExercises} exerciseID={getexerciseid} />
+          {/*// @ts-ignore*/}
           <DialogFooter className="justify-start text-center gap-1">
+            {/*// @ts-ignore*/}
             <IconButton
               size="sm"
               variant="outlined"

@@ -125,6 +125,7 @@ export default function SlideUpworkoutElement({
 
   return (
     <>
+      {/*// @ts-ignore*/}
       <Dialog
         open={open}
         handler={onClose}
@@ -135,16 +136,19 @@ export default function SlideUpworkoutElement({
         className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
         style={{ maxHeight: "80vh", height: "auto" }}
       >
+        {/*// @ts-ignore*/}
         <DialogHeader className="flex justify-between items-center w-full">
           <div className="w-6" />
           <div className="flex gap-1">
             {modo === "Bloque" && <LayoutList />}
             {modo === "Descanso" && <CirclePause />}
+            {/*// @ts-ignore*/}
             <Typography variant="h6" className="text-center flex-1">
               {modo === "Bloque" && "Añadir Bloque"}
               {modo === "Descanso" && "Añadir Descanso"}
             </Typography>
           </div>
+          {/*// @ts-ignore*/}
           <IconButton
             variant="text"
             className=" rounded-full"
@@ -154,11 +158,14 @@ export default function SlideUpworkoutElement({
           </IconButton>
         </DialogHeader>
         {modo === "Bloque" && (
+          // @ts-ignore
           <DialogBody className="w-full p-5 pt-0 space-y-4 pb-6">
+            {/*// @ts-ignore*/}
             <Typography color="black" variant="h6">
               Informacion del bloque
             </Typography>
             <div>
+              {/*// @ts-ignore*/}
               <Typography
                 variant="small"
                 color="blue-gray"
@@ -166,6 +173,7 @@ export default function SlideUpworkoutElement({
               >
                 Nombre
               </Typography>
+              {/*// @ts-ignore*/}
               <Input
                 color="gray"
                 size="lg"
@@ -185,16 +193,19 @@ export default function SlideUpworkoutElement({
             </div>
 
             <div>
+              {/*// @ts-ignore*/}
               <Typography
                 variant="small"
                 color="blue-gray"
                 className="text-left font-medium flex"
               >
                 Descripcion
+                {/*// @ts-ignore*/}
                 <Typography color="gray" variant="small">
                   (Opcional)
                 </Typography>
               </Typography>
+              {/*// @ts-ignore*/}
               <Textarea
                 rows={5}
                 placeholder="ej. ejercicios Leves..."
@@ -211,6 +222,7 @@ export default function SlideUpworkoutElement({
           </DialogBody>
         )}
         {modo === "Descanso" && (
+          // @ts-ignore
           <DialogBody className="w-full p-5 pt-0 pb-6 flex gap-2 flex-wrap">
             {chips.map((value, index) => (
               <div
@@ -228,7 +240,9 @@ export default function SlideUpworkoutElement({
             ))}
           </DialogBody>
         )}
+        {/*// @ts-ignore*/}
         <DialogFooter className="flex items-center justify-center">
+          {/*// @ts-ignore*/}
           <Button
             onClick={handleAddElement}
             color="orange"

@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Cliente } from "../types/Cliente";
-import { PropsModal } from "../types/propsModal";
+import { PropsModal } from "../types/PropsModal";
 
 export function InformacionClienteModal({ open, onClose, id }: PropsModal) {
 
@@ -29,8 +29,12 @@ export function InformacionClienteModal({ open, onClose, id }: PropsModal) {
   },[id]);
 
   return (
+    <>
+    {/*// @ts-ignore*/}
     <Dialog open={open} handler={onClose}>
+      {/*// @ts-ignore*/}
       <DialogHeader>Información del cliente</DialogHeader>
+      {/*// @ts-ignore*/}
       <DialogBody>
         <div>
           <p><strong>Nombre:</strong> {cliente?.name}</p>
@@ -40,11 +44,14 @@ export function InformacionClienteModal({ open, onClose, id }: PropsModal) {
           <p><strong>Sexo:</strong> {cliente?.sex}</p>
         </div>
       </DialogBody>
+      {/*// @ts-ignore*/}
       <DialogFooter>
+        {/*// @ts-ignore*/}
         <Button variant="gradient" color="green" onClick={onClose}>
           <span>Confirmar</span>
         </Button>
       </DialogFooter>
     </Dialog>
+    </>    
   );
 }

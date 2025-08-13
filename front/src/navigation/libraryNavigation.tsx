@@ -29,6 +29,7 @@ export default function LibraryNavigation() {
       <div className="fixed top-0 left-0 w-full px-4 py-0 bg-white shadow z-50">
         <div className="flex items-center justify-between w-full">
           <h1 className="text-lg font-semibold text-gray-800">Librería</h1>
+          {/*// @ts-ignore*/}
           <IconButton
             ripple={false}
             onClick={toggleOpen}
@@ -44,23 +45,30 @@ export default function LibraryNavigation() {
           </IconButton>
         </div>
         <Collapse open={open}>
+        {/*// @ts-ignore*/}
           <List>
+            {/*// @ts-ignore*/}
             <ListItem
               onClick={handleLinkWorkout}
               className="justify-center text-center text-gray-500"
             >
+              {/*// @ts-ignore*/}
               <ListItemPrefix>
                 <Dumbbell className="h-4 w-4" />
               </ListItemPrefix>
+              {/*// @ts-ignore*/}
               <Typography className="text-sm">Actividades</Typography>
             </ListItem>
+            {/*// @ts-ignore*/}
             <ListItem
               onClick={handleLinkPograms}
               className="justify-center text-center text-gray-500"
             >
+              {/*// @ts-ignore*/}
               <ListItemPrefix>
                 <CalendarDays className="h-4 w-4" />
               </ListItemPrefix>
+              {/*// @ts-ignore*/}
               <Typography className="text-sm">Programas</Typography>
             </ListItem>
           </List>

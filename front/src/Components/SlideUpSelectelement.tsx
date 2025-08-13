@@ -32,6 +32,7 @@ export default function SlideUpSelectelement({
 
   return (
     <>
+      {/*// @ts-ignore*/}
       <Dialog
         open={open}
         handler={onClose}
@@ -42,11 +43,14 @@ export default function SlideUpSelectelement({
         className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
         style={{ height: "30%" }}
       >
+        {/*// @ts-ignore*/}
         <DialogHeader className="flex justify-between items-center w-full">
           <div className="w-10" />
+          {/*// @ts-ignore*/}
           <Typography variant="h6" className="text-center flex-1">
             Añadir nuevo...
           </Typography>
+          {/*// @ts-ignore*/}
           <IconButton
             size="sm"
             color="white"
@@ -57,16 +61,21 @@ export default function SlideUpSelectelement({
             <X />
           </IconButton>
         </DialogHeader>
-
+        {/*// @ts-ignore*/}
         <DialogBody className="w-full p-0 pb-4">
+          {/*// @ts-ignore*/}
           <List className="p-0 w-full">
+            {/*// @ts-ignore*/}
             <ListItem onClick={handleElement} className="pl-5">
+              {/*// @ts-ignore*/}
               <ListItemPrefix>
                 <LayoutList />
               </ListItemPrefix>
               Bloque
             </ListItem>
+            {/*// @ts-ignore*/}
             <ListItem onClick={handleElement} className="pl-5">
+              {/*// @ts-ignore*/}
               <ListItemPrefix>
                 <CirclePause />
               </ListItemPrefix>

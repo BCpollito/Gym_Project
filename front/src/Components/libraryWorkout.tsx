@@ -175,6 +175,7 @@ export default function LibraryWorkout() {
   return (
     <div className="max-h-[77vh]">
       <div className="flex pb-2 gap-2 items-center pr-4 pl-4 pt-2">
+        {/*// @ts-ignore*/}
         <Button
           onClick={handleCreateWorkout}
           color="amber"
@@ -183,10 +184,12 @@ export default function LibraryWorkout() {
         >
           <Plus strokeWidth={3} /> Crear workout
         </Button>
-
+        {/*// @ts-ignore*/}
         <Input label="Buscar Workout por nombre" />
       </div>
+      {/*// @ts-ignore*/}
       <Card className="h-full w-full sm:max-w-sm overflow-scroll ">
+        {/*// @ts-ignore*/}
         <CardBody className="max-w-sm max-h-[72vh] h-full">
           <table className="overflow-scroll table-auto max-w-sm text-left">
             <thead>

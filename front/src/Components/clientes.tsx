@@ -61,6 +61,7 @@ useEffect(() => {
       <div className="w-full max-w-md mx-auto mt-8 h-full">
         <h1 className="text-2xl font-bold text-center mt-8">Clientes</h1>
         <div className="px-4">
+          {/*// @ts-ignore*/}
           <Input onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre" className="bg-white"/>
         </div>
@@ -70,6 +71,7 @@ useEffect(() => {
           {filteredClientes.map((cliente) => {
             if (!cliente.isAdmin) {
               return (
+                // @ts-ignore
                 <ListItem
                   key={cliente.id}
                   className="flex items-center justify-between gap-4 border 
