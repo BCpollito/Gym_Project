@@ -18,7 +18,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
+import { Exercise } from "../types/Exercises";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
+import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
 import LibreriaExercises from "../Components/libreriaExercises";
 import convertirLink from "../services/ConvertLink";
 
@@ -29,6 +31,7 @@ export default function NewWorkout() {
   const [fullworkout, setfullworkout] = useState<FullWorkoutResponse | null>(
     null
   );
+  const [LastElement, setLastElement] = useState<number | null>(null)
 
   const [refreshdata, setrefreshdata] = useState(false);
   const refresh = () => {
@@ -54,6 +57,14 @@ export default function NewWorkout() {
         );
         setfullworkout(workoutElements.data);
         console.log(workoutElements.data);
+
+        const ordenes = workoutElements.data.elementos
+          .map(e => e.orden ?? 0);
+
+        const LastAdded = ordenes.length > 0 ? Math.max(...ordenes) : 0;
+
+        setLastElement(LastAdded);
+
       } catch (error) {
         console.log("No se pudieron cargar los elementos del workout");
         console.log(error);
@@ -62,10 +73,12 @@ export default function NewWorkout() {
     getWorkoutElements();
   }, [refreshdata]);
 
-  const [exerciseID, setexerciseID] = useState<number | null>(null);
-  const getexerciseid = (id: number) => {
-    setexerciseID(id);
-    console.log(id);
+  const [openElement, setopenElement] = useState(false);
+  const handlerCloseElement = () => {setopenElement(false)};
+  const [exercise, setexercise] = useState<Exercise | null>(null);
+  const getexercise = (ejercicio: Exercise) => {  
+    setopenElement(true);  
+    setexercise(ejercicio);
   }
 
   return (
@@ -163,8 +176,8 @@ export default function NewWorkout() {
             <AccordionBody className="p-0">
               {elemento.tipo === "Bloque" &&
                 elemento.data.WorkoutExercises.length > 0 ? (
-                  // @ts-ignore
-                <List className="px-0">
+                // @ts-ignore
+                <List className="px-0 pt-0">
                   {elemento.data.WorkoutExercises.map((we) => (
                     // @ts-ignore
                     <ListItem className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10" key={we.id}>
@@ -226,6 +239,7 @@ export default function NewWorkout() {
         open={open}
         onClose={handleClose}
         idworkout={id}
+        elementorder={LastElement}
         refresh={refresh}
       />
 
@@ -241,7 +255,7 @@ export default function NewWorkout() {
           <DialogHeader className="p-0">
             añadir ejercicio a workout
           </DialogHeader>
-          <LibreriaExercises classNamemodify={true} closeSelf={handleCloseExercises} exerciseID={getexerciseid} />
+          <LibreriaExercises classNamemodify={true} closeSelf={handleCloseExercises} ejercicioExistente={getexercise} />
           {/*// @ts-ignore*/}
           <DialogFooter className="justify-start text-center gap-1">
             {/*// @ts-ignore*/}
@@ -256,6 +270,10 @@ export default function NewWorkout() {
           </DialogFooter>
         </Dialog>
       )}
+
+      {openElement === true && 
+        <SlideUpworkoutElement open={openElement} onClose={handlerCloseElement} ejercicioExistente={exercise} modo="Ejercicio"/>
+      }
     </>
   );
 }

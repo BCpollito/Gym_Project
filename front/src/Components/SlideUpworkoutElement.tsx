@@ -10,14 +10,21 @@ import {
   Button,
   Chip,
 } from "@material-tailwind/react";
-import { X, LayoutList, CirclePause } from "lucide-react";
+import {
+  X,
+  LayoutList,
+  CirclePause,
+  BicepsFlexed,
+  Goal,
+  Repeat2,
+  NotebookText
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { PropsModal } from "../types/propsModal";
 import axios from "axios";
 import { Workout } from "../types/workout";
 import { WorkoutElement } from "../types/WorkoutElement";
 import { Descanso } from "../types/Descanso";
-import { useNavigate } from "react-router-dom";
 import { chips } from "../types/RestTimes";
 
 export default function SlideUpworkoutElement({
@@ -26,14 +33,16 @@ export default function SlideUpworkoutElement({
   idworkout,
   modo,
   refresh,
+  elementorder,
+  ejercicioExistente,
 }: PropsModal) {
   const [nombre, setnombre] = useState<string>("");
   const [descripcion, setdescripcion] = useState<string>("");
   const [descanso, setdescanso] = useState<number>(0);
-  const [orden, setorden] = useState<number>(1);
+  const [series, setseries] = useState<number>(0);
+  const [objetivo, setobjetivo] = useState<number>(0)
+  const [instrucciones, setinstrucciones] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  const nav = useNavigate();
 
   const handleRestTime = (
     value: { label: string; value: number },
@@ -63,13 +72,11 @@ export default function SlideUpworkoutElement({
         workoutID: idworkout,
         tipo: modo,
         elementoID: response.data.newblock.id,
-        orden: orden,
+        orden: elementorder! + 1,
       });
 
       if (response.data.success) {
         if (responseElement.data.success) {
-          const newOrden = orden + 1;
-          setorden(newOrden);
           console.log(
             `Se agrego un nuevo elemento tipo: ${responseElement.data.newElement.tipo} al workoutde ID: ${responseElement.data.newElement.workoutID}`
           );
@@ -103,13 +110,11 @@ export default function SlideUpworkoutElement({
           workoutID: idworkout,
           tipo: modo,
           elementoID: response.data.newRest.id,
-          orden: orden,
+          orden: elementorder! + 1,
         });
 
         if (response.data.success) {
           if (responseElement.data.success) {
-            const newOrden = orden + 1;
-            setorden(newOrden);
             console.log(
               `Se agrego un nuevo elemento tipo: ${responseElement.data.newElement.tipo} al workoutde ID: ${responseElement.data.newElement.workoutID}`
             );
@@ -142,10 +147,12 @@ export default function SlideUpworkoutElement({
           <div className="flex gap-1">
             {modo === "Bloque" && <LayoutList />}
             {modo === "Descanso" && <CirclePause />}
+            {modo === "Ejercicio" && <BicepsFlexed />}
             {/*// @ts-ignore*/}
             <Typography variant="h6" className="text-center flex-1">
               {modo === "Bloque" && "Añadir Bloque"}
               {modo === "Descanso" && "Añadir Descanso"}
+              {modo === "Ejercicio" && "Añadir ejercicio"}
             </Typography>
           </div>
           {/*// @ts-ignore*/}
@@ -221,10 +228,75 @@ export default function SlideUpworkoutElement({
             </div>
           </DialogBody>
         )}
-        {modo === "Descanso" && (
+        {(modo === "Descanso" || modo === "Ejercicio") && (
           // @ts-ignore
-          <DialogBody className="w-full p-5 pt-0 pb-6 flex gap-2 flex-wrap">
-            {chips.map((value, index) => (
+          <DialogBody className="w-full p-5 pt-0 pb-6">
+            {modo === "Ejercicio" &&
+              (
+                <>
+                  {/*// @ts-ignore*/}
+                  <Typography color="black" variant="h6">
+                    {ejercicioExistente?.Nombre}
+                  </Typography>
+                  <div>
+                    {/*// @ts-ignore*/}
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="mb-2 text-left font-medium flex items-center"
+                    >
+                      <Repeat2 size={18} />
+                      Series
+                    </Typography>
+                    {/*// @ts-ignore*/}
+                    <Input
+                      color="gray"
+                      size="lg"
+                      placeholder="ej. 3"
+                      value={nombre}
+                      className="placeholder:opacity-100 focus:!border-t-gray-900"
+                      containerProps={{
+                        className: "!min-w-full",
+                      }}
+                      labelProps={{
+                        className: "hidden",
+                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setnombre(e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    {/*// @ts-ignore*/}
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="text-left font-medium flex"
+                    >
+                      <Goal size={18} />
+                      Objetivo
+                    </Typography>
+                    {/*// @ts-ignore*/}
+                    <Input
+                      color="gray"
+                      size="lg"
+                      placeholder="ej. 3"
+                      value={nombre}
+                      className="placeholder:opacity-100 focus:!border-t-gray-900"
+                      containerProps={{
+                        className: "!min-w-full",
+                      }}
+                      labelProps={{
+                        className: "hidden",
+                      }}
+                    />
+                  </div>
+                </>
+              )
+            }
+            <div className={`flex gap-2 flex-wrap ${modo === "Ejercicio" && "py-3"}`}>
+              {chips.map((value, index) => (
               <div
                 className="rounded-full"
                 onClick={() => handleRestTime(value, index)}
@@ -238,6 +310,37 @@ export default function SlideUpworkoutElement({
                 />
               </div>
             ))}
+            </div>
+            
+            {modo === "Ejercicio" &&
+              (
+                <>
+                  <div>
+                    {/*// @ts-ignore*/}
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="text-left font-medium flex"
+                    >
+                    <NotebookText size={18}/>
+                      instrucciones adicionales
+                    </Typography>
+                    {/*// @ts-ignore*/}
+                    <Textarea
+                      rows={5}
+                      placeholder="se puede detallar en que va a consistir la sesion etc..."
+                      value={descripcion}
+                      className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-600 ring-4 ring-transparent focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
+                      labelProps={{
+                        className: "hidden",
+                      }}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setdescripcion(e.target.value)
+                      }
+                    />
+                  </div>
+                </>)
+            }
           </DialogBody>
         )}
         {/*// @ts-ignore*/}
@@ -251,7 +354,7 @@ export default function SlideUpworkoutElement({
             Continuar
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog >
     </>
   );
 }

@@ -73,12 +73,12 @@ exports.getWorkoutById = async (req, res) => {
         });
 
         if (bloque) {
-          elementosDetallados.push({ tipo: 'Bloque', data: bloque });
+          elementosDetallados.push({ tipo: 'Bloque', data: bloque, orden: elem.orden });
         }
       } else if (elem.tipo === 'Descanso') {
         const descanso = await Descansos.findByPk(elem.elementoID);
         if (descanso) {
-          elementosDetallados.push({ tipo: 'Descanso', data: descanso });
+          elementosDetallados.push({ tipo: 'Descanso', data: descanso, orden: elem.orden });
         }
       }
     }

@@ -18,6 +18,7 @@ export default function SlideUpSelectelement({
   onClose,
   idworkout,
   refresh,
+  elementorder,
 }: PropsModal) {
   const [openElement, setopenElement] = useState(false);
   const [modo, setmodo] = useState<string | null>(null);
@@ -88,6 +89,7 @@ export default function SlideUpSelectelement({
         open={openElement}
         onClose={() => setopenElement(false)}
         idworkout={idworkout}
+        elementorder={elementorder}
         modo={modo === "Bloque" ? "Bloque" : "Descanso"}
         refresh={refresh}
       />
