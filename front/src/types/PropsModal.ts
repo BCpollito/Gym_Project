@@ -7,4 +7,5 @@ export interface PropsModal {
   modo?: "crear" | "Ver" | "Bloque" | "Descanso";
   ejercicioExistente?: Exercise | null;
   idworkout?: string | null;
+  id?: number | null; 
 }
