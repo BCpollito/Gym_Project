@@ -12,6 +12,7 @@ import axios from "axios";
 import { Plus } from "lucide-react";
 import AddexerciseModal from "./addExerciseModal";
 import { Exercise } from "../types/Exercises";
+import convertirLink from "../services/ConvertLink";
 
 type Modo = "crear" | "Ver";
 
@@ -126,9 +127,8 @@ export default function LibreriaExercises({
                 // @ts-ignore
                 <Card
                   key={exercise.ID_ejercicio}
-                  className={`w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50 ${
-                    classNamemodify === true ? "flex flex-row items-center" : ""
-                  }`}
+                  className={`w-full min-w-80 max-w-xs shadow-md cursor-pointer bg-blue-gray-50 ${classNamemodify === true ? "flex flex-row items-center" : ""
+                    }`}
                   onClick={
                     classNamemodify === true
                       ? () => handleExerciseToBlock(exercise.ID_ejercicio)
@@ -140,11 +140,10 @@ export default function LibreriaExercises({
                     floated={false}
                     shadow={false}
                     color="transparent"
-                    className={`overflow-hidden m-0 ${
-                      classNamemodify === true ? "rounded-r-none min-w-[80px] max-w-[80px] h-[80px]" : "h-[180px] rounded-none"
-                    }`}
+                    className={`overflow-hidden m-0 ${classNamemodify === true ? "rounded-r-none min-w-[100px] max-w-[100px] h-[80px]" : "h-[180px] rounded-none"
+                      }`}
                   >
-                    {exercise.Link.includes("youtube.com/embed") ? (
+                    {(exercise.Link.includes("youtube.com/embed") && classNamemodify !== true) ? (
                       <iframe
                         className="w-full h-full aspect-video"
                         src={`${exercise.Link}?controls=1&modestbranding=1&rel=0&showinfo=0`}
@@ -154,36 +153,37 @@ export default function LibreriaExercises({
                       />
                     ) : (
                       <img
-                        src={exercise.Link}
+                        src={classNamemodify === true ? convertirLink(exercise.Link) || "" : exercise.Link}
                         alt={exercise.Nombre}
-                        className={`h-full bg-white ${
-                          classNamemodify === true
-                            ? "min-w-[80px] max-w-[80px] object-cover"
-                            : "w-full object-contain"
-                        }`}
+                        className={`h-full w-full bg-white ${classNamemodify === true
+                          ? "object-cover"
+                          : "object-contain"
+                          }`}
                       />
                     )}
                   </CardHeader>
                   {/*// @ts-ignore*/}
-                  <CardBody className={`py-1 ${classNamemodify === true && "flex-1 pr-0 overflow-hidden"}`}>
+                  <CardBody className={`py-1 ${classNamemodify === true && "h-[80px] flex-1 pl-0 pr-2 py-0 overflow-hidden"}`}>
                     {/*// @ts-ignore*/}
                     <Typography
-                      variant="h5"
+                      variant="h6"
                       color="blue-gray"
-                      className="mb-1 font-semibold line-clamp-2"
+                      className={`mb-1 font-semibold line-clamp-2 ${classNamemodify === true && "ml-5"}`}
                     >
                       {exercise.Nombre}
                     </Typography>
-                    <div className="flex gap-2 flex-wrap ">
+                    <div className={`flex gap-2 flex-wrap ${classNamemodify === true && "justify-end mb-1"}`}>
                       {exercise.Tag.split(",").map((tag, index) => (
                         <Chip
-                          className="text-[10px] leading-3 "
+                          className={`text-[10px] leading-3 ${classNamemodify === true && "text-gray-500"} `}
+                          variant={classNamemodify === true ? "ghost" : "filled"}
                           key={index}
                           size="sm"
                           value={tag.trim()}
                         />
                       ))}
                     </div>
+
                   </CardBody>
                 </Card>
               ))}
