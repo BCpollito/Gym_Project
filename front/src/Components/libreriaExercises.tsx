@@ -19,13 +19,13 @@ type Modo = "crear" | "Ver";
 type props = {
   classNamemodify?: boolean;
   closeSelf?: () => void;
-  exerciseID?: (id: number) => void;
+  ejercicioExistente?: (ejercicio: Exercise) => void;
 };
 
 export default function LibreriaExercises({
   classNamemodify,
   closeSelf,
-  exerciseID,
+  ejercicioExistente,
 }: props) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
@@ -99,8 +99,8 @@ export default function LibreriaExercises({
     setSelectedExercise(exercise);
   };
 
-  const handleExerciseToBlock = (id: number) => {
-    if (exerciseID !== undefined) exerciseID(id);
+  const handleExerciseToBlock = (exercise: Exercise) => {
+    if (exercise !== undefined) ejercicioExistente!(exercise);
     if (closeSelf !== undefined) closeSelf();
   };
 
@@ -131,7 +131,7 @@ export default function LibreriaExercises({
                     }`}
                   onClick={
                     classNamemodify === true
-                      ? () => handleExerciseToBlock(exercise.ID_ejercicio)
+                      ? () => handleExerciseToBlock(exercise)
                       : () => handleViewExercise(exercise)
                   }
                 >
