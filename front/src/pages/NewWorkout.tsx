@@ -13,7 +13,15 @@ import {
   DialogFooter,
   Card,
 } from "@material-tailwind/react";
-import { ChevronsLeft, Plus, Goal, Repeat2, LayoutList, CirclePause, NotebookText } from "lucide-react";
+import {
+  ChevronsLeft,
+  Plus,
+  Goal,
+  Repeat2,
+  LayoutList,
+  CirclePause,
+  NotebookText,
+} from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -66,32 +74,32 @@ export default function NewWorkout() {
   const getexerciseid = (id: number) => {
     setexerciseID(id);
     console.log(id);
-  }
+  };
 
   return (
     <>
       {/* navegacion superior */}
-      <div className="fixed top-0 left-0 w-full px-4 py-0 shadow">
+      <div className="fixed top-0 left-0 w-full px-4 py-0 shadow truncate overflow-hidden">
         <div className="flex items-center justify-between w-full">
           {/*// @ts-ignore*/}
           <IconButton
             size="sm"
             color="white"
             variant="filled"
-            className="shadow-sm shadow-secondary rounded-full"
+            className="shadow-sm shadow-secondary rounded-full mr-2"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
               navigate("/admin/libreria/activity/workouts")
             }
           >
             <ChevronsLeft />
           </IconButton>
-          <div className="pt-2">
+          <div className="pt-2 flex-1 min-w-0 text-right">
             {/*// @ts-ignore*/}
             <Typography color="gray" variant="small">
               Crear nuevo workout
             </Typography>
             {/*// @ts-ignore*/}
-            <Typography variant="h4">
+            <Typography variant="h4" className="truncate">
               {fullworkout?.workout.nombre ?? "Cargando..."}
             </Typography>
           </div>
@@ -102,15 +110,17 @@ export default function NewWorkout() {
         {fullworkout?.elementos.map((elemento, index) => (
           // @ts-ignore
           <Accordion
-            className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
-              } mb-2 rounded-lg px-2`}
+            className={`${
+              elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
+            } mb-2 rounded-lg px-2`}
             key={index}
             open={elemento.tipo === "Bloque" ? true : false}
           >
             {/*// @ts-ignore*/}
             <AccordionHeader
-              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
-                }`}
+              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${
+                elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
+              }`}
             >
               {elemento.tipo === "Bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
@@ -162,14 +172,20 @@ export default function NewWorkout() {
             </AccordionHeader>
             <AccordionBody className="p-0">
               {elemento.tipo === "Bloque" &&
-                elemento.data.WorkoutExercises.length > 0 ? (
-                  // @ts-ignore
+              elemento.data.WorkoutExercises.length > 0 ? (
+                // @ts-ignore
                 <List className="px-0">
                   {elemento.data.WorkoutExercises.map((we) => (
                     // @ts-ignore
-                    <ListItem className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10" key={we.id}>
-                      <img className="w-10 h-9 object-cover rounded-sm bg-white"
-                        src={convertirLink(we.Ejercicio.Link) || ""} alt={we.Ejercicio.Nombre} />
+                    <ListItem
+                      className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
+                      key={we.id}
+                    >
+                      <img
+                        className="w-10 h-9 object-cover rounded-sm bg-white"
+                        src={convertirLink(we.Ejercicio.Link) || ""}
+                        alt={we.Ejercicio.Nombre}
+                      />
                       <div>
                         {/*// @ts-ignore*/}
                         <Typography variant="small">
@@ -189,7 +205,12 @@ export default function NewWorkout() {
                             <span className="text-sm">{we.tiempoDescanso}</span>
                           </div>
                           {/*// @ts-ignore*/}
-                          <IconButton color="blue-gray" size="sm" className="h-5" variant="text">
+                          <IconButton
+                            color="blue-gray"
+                            size="sm"
+                            className="h-5"
+                            variant="text"
+                          >
                             <NotebookText size={16} />
                           </IconButton>
                         </div>
@@ -241,7 +262,11 @@ export default function NewWorkout() {
           <DialogHeader className="p-0">
             añadir ejercicio a workout
           </DialogHeader>
-          <LibreriaExercises classNamemodify={true} closeSelf={handleCloseExercises} exerciseID={getexerciseid} />
+          <LibreriaExercises
+            classNamemodify={true}
+            closeSelf={handleCloseExercises}
+            exerciseID={getexerciseid}
+          />
           {/*// @ts-ignore*/}
           <DialogFooter className="justify-start text-center gap-1">
             {/*// @ts-ignore*/}
