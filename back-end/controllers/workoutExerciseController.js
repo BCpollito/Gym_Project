@@ -18,6 +18,23 @@ exports.addExerciseToBlock = async (req, res) => {
             workoutExercise: newWorkoutExercise
         });
     } catch (error) {
+        console.error("Error al agregar Ejercicio: ", error);
+        res.status(500).json({ message: "Error interno del servidor", error });
+    }
+}
 
+exports.FindAllByBlockId = async (req, res) => {
+    const { idelement } = req.params;
+    console.log("ID recibido: ", idelement)
+    try {
+        const Exercises = await WorkoutExercises.findAll({
+            where: {bloqueID : idelement}
+        });
+        res.status(200).json({
+            Exercises
+        })        
+    } catch (error) {
+        console.error("Error al obtener Elemento:", error);
+        res.status(500).json({ message: "Error interno del servidor", error });
     }
 }
