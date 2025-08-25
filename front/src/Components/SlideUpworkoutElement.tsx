@@ -20,10 +20,11 @@ import {
   NotebookText
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { PropsModal } from "../types/propsModal";
+import { PropsModal } from "../types/PropsModal";
 import axios from "axios";
 import { Workout } from "../types/workout";
 import { WorkoutElement } from "../types/WorkoutElement";
+import { WorkoutExercise } from "../types/WorkoutExercise";
 import { Descanso } from "../types/Descanso";
 import { chips } from "../types/RestTimes";
 
@@ -39,8 +40,8 @@ export default function SlideUpworkoutElement({
   const [nombre, setnombre] = useState<string>("");
   const [descripcion, setdescripcion] = useState<string>("");
   const [descanso, setdescanso] = useState<number>(0);
-  const [series, setseries] = useState<number>(0);
-  const [objetivo, setobjetivo] = useState<number>(0)
+  const [series, setseries] = useState<number | null>(null);
+  const [objetivo, setobjetivo] = useState<number| null>(null)
   const [instrucciones, setinstrucciones] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -126,7 +127,27 @@ export default function SlideUpworkoutElement({
         }
       }
     }
-  };
+
+    if (modo === "Ejercicio") {
+      if (selectedIndex == null && series == 0 && objetivo == 0) {
+        return alert("algunos campos estan incompletos")
+      }
+
+      const responseExerciseWorkout = await axios.post<{
+        message: string;
+        success: boolean;
+        newExerciseWorkout: WorkoutExercise;
+      }>("/workoutExercise", {
+        exerciseID: ejercicioExistente?.ID_ejercicio,
+        series: series,
+        objetivo: objetivo,
+        descansoEntreSeries: descanso,
+        instruccionesAdicionales: instrucciones
+      })
+
+      alert(responseExerciseWorkout.data.message);
+    }
+  }
 
   return (
     <>
@@ -139,7 +160,7 @@ export default function SlideUpworkoutElement({
           unmount: { y: 500 },
         }}
         className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
-        style={{ maxHeight: "80vh", height: "auto" }}
+        style={{ maxHeight: "85vh", height: "auto" }}
       >
         {/*// @ts-ignore*/}
         <DialogHeader className="flex justify-between items-center w-full">
@@ -230,7 +251,7 @@ export default function SlideUpworkoutElement({
         )}
         {(modo === "Descanso" || modo === "Ejercicio") && (
           // @ts-ignore
-          <DialogBody className="w-full p-5 pt-0 pb-6">
+          <DialogBody className={`w-full p-5 pt-0 pb-6 ${modo === "Ejercicio" && "max-h-[60vh] pb-0 overflow-y-auto space-y-3"}`}>
             {modo === "Ejercicio" &&
               (
                 <>
@@ -243,7 +264,7 @@ export default function SlideUpworkoutElement({
                     <Typography
                       variant="small"
                       color="blue-gray"
-                      className="mb-2 text-left font-medium flex items-center"
+                      className="text-left font-medium flex items-center"
                     >
                       <Repeat2 size={18} />
                       Series
@@ -253,7 +274,8 @@ export default function SlideUpworkoutElement({
                       color="gray"
                       size="lg"
                       placeholder="ej. 3"
-                      value={nombre}
+                      value={series!}
+                      type="number"
                       className="placeholder:opacity-100 focus:!border-t-gray-900"
                       containerProps={{
                         className: "!min-w-full",
@@ -262,7 +284,7 @@ export default function SlideUpworkoutElement({
                         className: "hidden",
                       }}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setnombre(e.target.value)
+                        setseries(Number(e.target.value))
                       }
                     />
                   </div>
@@ -282,7 +304,7 @@ export default function SlideUpworkoutElement({
                       color="gray"
                       size="lg"
                       placeholder="ej. 3"
-                      value={nombre}
+                      value={objetivo!}
                       className="placeholder:opacity-100 focus:!border-t-gray-900"
                       containerProps={{
                         className: "!min-w-full",
@@ -290,28 +312,44 @@ export default function SlideUpworkoutElement({
                       labelProps={{
                         className: "hidden",
                       }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setobjetivo(Number(e.target.value))
+                      }
                     />
                   </div>
                 </>
               )
             }
-            <div className={`flex gap-2 flex-wrap ${modo === "Ejercicio" && "py-3"}`}>
-              {chips.map((value, index) => (
-              <div
-                className="rounded-full"
-                onClick={() => handleRestTime(value, index)}
-              >
-                <Chip
-                  key={index}
-                  size="sm"
-                  value={value.label}
-                  variant={selectedIndex === index ? "filled" : "outlined"}
-                  className="rounded-full"
-                />
+            <div>
+              {modo === "Ejercicio" &&
+                /*// @ts-ignore*/
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="text-left font-medium flex"
+                >
+                  <CirclePause size={18} />
+                  Descanso
+                </Typography>
+              }
+              <div className={`flex gap-2 flex-wrap`}>
+                {chips.map((value, index) => (
+                  <div
+                    className="rounded-full"
+                    onClick={() => handleRestTime(value, index)}
+                  >
+                    <Chip
+                      key={index}
+                      size="sm"
+                      value={value.label}
+                      variant={selectedIndex === index ? "filled" : "outlined"}
+                      className="rounded-full"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
             </div>
-            
+
             {modo === "Ejercicio" &&
               (
                 <>
@@ -322,20 +360,20 @@ export default function SlideUpworkoutElement({
                       color="blue-gray"
                       className="text-left font-medium flex"
                     >
-                    <NotebookText size={18}/>
+                      <NotebookText size={18} />
                       instrucciones adicionales
                     </Typography>
                     {/*// @ts-ignore*/}
                     <Textarea
                       rows={5}
                       placeholder="se puede detallar en que va a consistir la sesion etc..."
-                      value={descripcion}
+                      value={instrucciones!}
                       className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-600 ring-4 ring-transparent focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
                       labelProps={{
                         className: "hidden",
                       }}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setdescripcion(e.target.value)
+                        setinstrucciones(e.target.value)
                       }
                     />
                   </div>

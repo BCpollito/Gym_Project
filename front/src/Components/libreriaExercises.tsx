@@ -163,27 +163,29 @@ export default function LibreriaExercises({
                     )}
                   </CardHeader>
                   {/*// @ts-ignore*/}
-                  <CardBody className={`py-1 ${classNamemodify === true && "h-[80px] flex-1 pl-0 pr-2 py-0 overflow-hidden"}`}>
+                  <CardBody className={`py-1 ${classNamemodify === true && "flex justify-center items-center h-[80px] pl-0 pr-2 py-0 overflow-hidden"}`}>
                     {/*// @ts-ignore*/}
                     <Typography
                       variant="h6"
                       color="blue-gray"
-                      className={`mb-1 font-semibold line-clamp-2 ${classNamemodify === true && "ml-5"}`}
+                      className={`mb-1 font-semibold line-clamp-2 ${classNamemodify === true && "ml-5 mb-0"}`}
                     >
                       {exercise.Nombre}
                     </Typography>
-                    <div className={`flex gap-2 flex-wrap ${classNamemodify === true && "justify-end mb-1"}`}>
-                      {exercise.Tag.split(",").map((tag, index) => (
-                        <Chip
-                          className={`text-[10px] leading-3 ${classNamemodify === true && "text-gray-500"} `}
-                          variant={classNamemodify === true ? "ghost" : "filled"}
-                          key={index}
-                          size="sm"
-                          value={tag.trim()}
-                        />
-                      ))}
-                    </div>
-
+                    {classNamemodify !== true && (
+                      <div className={`flex gap-2 flex-wrap`}>
+                        {exercise.Tag.split(",").map((tag, index) => (
+                          <Chip
+                            className={`text-[10px] leading-3 } `}
+                            variant={"filled"}
+                            key={index}
+                            size="sm"
+                            value={tag.trim()}
+                          />
+                        ))}
+                      </div>
+                    )
+                    }
                   </CardBody>
                 </Card>
               ))}
