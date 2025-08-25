@@ -215,7 +215,7 @@ export default function NewWorkout() {
                           </div>
                           <div className="flex items-center">
                             <CirclePause size={16} />
-                            <span className="text-sm">{we.tiempoDescanso}</span>
+                            <span className="text-sm">{we.tiempoDescanso}s</span>
                           </div>
                           {/*// @ts-ignore*/}
                           <IconButton
@@ -293,7 +293,14 @@ export default function NewWorkout() {
       )}
 
       {openElement === true && 
-        <SlideUpworkoutElement open={openElement} onClose={handlerCloseElement} ejercicioExistente={exercise} modo="Ejercicio"/>
+        <SlideUpworkoutElement
+        open={openElement} 
+        onClose={handlerCloseElement} 
+        ejercicioExistente={exercise} 
+        modo="Ejercicio"
+        refresh={refresh}
+        id={bloqueid}
+        />
       }
     </>
   );

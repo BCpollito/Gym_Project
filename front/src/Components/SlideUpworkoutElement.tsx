@@ -32,6 +32,7 @@ export default function SlideUpworkoutElement({
   open,
   onClose,
   idworkout,
+  id,
   modo,
   refresh,
   elementorder,
@@ -41,8 +42,8 @@ export default function SlideUpworkoutElement({
   const [descripcion, setdescripcion] = useState<string>("");
   const [descanso, setdescanso] = useState<number>(0);
   const [series, setseries] = useState<number | null>(null);
-  const [objetivo, setobjetivo] = useState<number| null>(null)
-  const [instrucciones, setinstrucciones] = useState<string | null>(null)
+  const [objetivo, setobjetivo] = useState<number | null>(null)
+  const [instrucciones, setinstrucciones] = useState<string>("")
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const handleRestTime = (
@@ -53,8 +54,38 @@ export default function SlideUpworkoutElement({
     setdescanso(value.value);
   };
 
+
+  interface WorkoutExerciseResponse {
+    Exercises: WorkoutExercise[];
+  }
+
+  const [ExerciseOrder, setExerciseOrder] = useState<number | null>(null);
+  useEffect(() => {
+    if (modo === "Ejercicio") {
+      const getElement = async () => {
+        const response = await axios.get<WorkoutExerciseResponse>(`/workoutExercises/${id}`);
+        console.log("Ejercicios: ", response.data);
+
+        const ejercicios = response.data.Exercises ?? [];
+
+        const ordenes = ejercicios.map(e => e.orden ?? 0);
+
+        const LastAdded = ordenes.length > 0 ? Math.max(...ordenes) : 0;
+
+        setExerciseOrder(LastAdded);
+      }
+      getElement();
+    }
+  }, [modo])
+
+  const [disabled, setdisable] = useState(false);
   const handleAddElement = async () => {
+    setdisable(true)
     if (modo === "Bloque") {
+      if(!idworkout!.trim() || !nombre.trim()){
+        setdisable(false)
+        return alert("algunos campos estan incompletos")
+      }
       const response = await axios.post<{
         success: boolean;
         message: string;
@@ -125,11 +156,15 @@ export default function SlideUpworkoutElement({
           refresh?.();
           alert(response.data.message);
         }
+      }else{
+        setdisable(false)
+        return alert("algunos campos estan incompletos")
       }
     }
 
     if (modo === "Ejercicio") {
-      if (selectedIndex == null && series == 0 && objetivo == 0) {
+      if (selectedIndex === null || series == 0 || objetivo == 0 || series === null || objetivo === null) {
+        setdisable(false)
         return alert("algunos campos estan incompletos")
       }
 
@@ -138,13 +173,19 @@ export default function SlideUpworkoutElement({
         success: boolean;
         newExerciseWorkout: WorkoutExercise;
       }>("/workoutExercise", {
-        exerciseID: ejercicioExistente?.ID_ejercicio,
+        bloqueID: id,
+        ejercicioID: ejercicioExistente?.ID_ejercicio,
         series: series,
         objetivo: objetivo,
-        descansoEntreSeries: descanso,
-        instruccionesAdicionales: instrucciones
+        tiempoDescanso: descanso,
+        instrucciones: instrucciones,
+        orden: ExerciseOrder! + 1
       })
 
+      setdescanso(0);
+      setinstrucciones("");
+      onClose();
+      refresh?.();
       alert(responseExerciseWorkout.data.message);
     }
   }
@@ -160,7 +201,7 @@ export default function SlideUpworkoutElement({
           unmount: { y: 500 },
         }}
         className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
-        style={{ maxHeight: "85vh", height: "auto" }}
+        style={{ maxHeight: "85svh", height: "auto" }}
       >
         {/*// @ts-ignore*/}
         <DialogHeader className="flex justify-between items-center w-full">
@@ -251,7 +292,7 @@ export default function SlideUpworkoutElement({
         )}
         {(modo === "Descanso" || modo === "Ejercicio") && (
           // @ts-ignore
-          <DialogBody className={`w-full p-5 pt-0 pb-6 ${modo === "Ejercicio" && "max-h-[60vh] pb-0 overflow-y-auto space-y-3"}`}>
+          <DialogBody className={`w-full p-5 pt-0 pb-6 ${modo === "Ejercicio" && "max-h-[60vh] pb-0 overflow-y-auto space-y-5"}`}>
             {modo === "Ejercicio" &&
               (
                 <>
@@ -274,7 +315,6 @@ export default function SlideUpworkoutElement({
                       color="gray"
                       size="lg"
                       placeholder="ej. 3"
-                      value={series!}
                       type="number"
                       className="placeholder:opacity-100 focus:!border-t-gray-900"
                       containerProps={{
@@ -304,7 +344,6 @@ export default function SlideUpworkoutElement({
                       color="gray"
                       size="lg"
                       placeholder="ej. 3"
-                      value={objetivo!}
                       className="placeholder:opacity-100 focus:!border-t-gray-900"
                       containerProps={{
                         className: "!min-w-full",
@@ -386,6 +425,7 @@ export default function SlideUpworkoutElement({
           {/*// @ts-ignore*/}
           <Button
             onClick={handleAddElement}
+            disabled={disabled}
             color="orange"
             className="rounded-full w-full "
           >
