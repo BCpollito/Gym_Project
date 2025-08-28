@@ -23,17 +23,17 @@ export default function Clientes() {
   const [id, setid] = useState<number>(0);
 
   const getClients = async () => {
-      try {
-        // Realiza la solicitud a la API
-        const response = await axios.get<Cliente[]>("/registros");
-        const clientsData = response.data.sort((a, b) => b.id - a.id); // Aquí asigno directamente la respuesta
-        setClientes(clientsData); // Almacena los clientes en el estado
-        setFilteredClientes(clientsData);
-        console.log(clientsData);
-      } catch (error) {
-        console.error("Error al obtener los clientes:", error);
-      }
+    try {
+      // Realiza la solicitud a la API
+      const response = await axios.get<Cliente[]>("/registros");
+      const clientsData = response.data.sort((a, b) => b.id - a.id); // Aquí asigno directamente la respuesta
+      setClientes(clientsData); // Almacena los clientes en el estado
+      setFilteredClientes(clientsData);
+      console.log(clientsData);
+    } catch (error) {
+      console.error("Error al obtener los clientes:", error);
     }
+  }
 
   useEffect(() => {
     getClients();
@@ -48,13 +48,13 @@ export default function Clientes() {
     setMostrarInformacion(false);
   };
 
-useEffect(() => {
-  const palabra = searchTerm.toLowerCase();
-  const result = clientes.filter(cliente =>
-    cliente.name.toLowerCase().includes(palabra)
-  );
-  setFilteredClientes(result);
-}, [searchTerm, clientes]); // también depende de clientes en caso de recarga
+  useEffect(() => {
+    const palabra = searchTerm.toLowerCase();
+    const result = clientes.filter(cliente =>
+      cliente.name.toLowerCase().includes(palabra)
+    );
+    setFilteredClientes(result);
+  }, [searchTerm, clientes]); // también depende de clientes en caso de recarga
 
   return (
     <>
@@ -63,7 +63,7 @@ useEffect(() => {
         <div className="px-4">
           {/*// @ts-ignore*/}
           <Input onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-          icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre" className="bg-white"/>
+            icon={<UserSearch />} variant="outlined" label="Buscar Cliente" placeholder="Nombre" className="bg-white" />
         </div>
 
         {/* @ts-expect-error */}
@@ -84,17 +84,10 @@ useEffect(() => {
                   <ListItemSuffix>
                     <Menu>
                       <MenuHandler>
-                        {/* @ts-expect-error */}
-                        <IconButton
-                          size="sm"
-                          variant="outlined"
-                          className="rounded-full"
-                        >
                           <EllipsisVertical />
-                        </IconButton>
                       </MenuHandler>
                       {/* @ts-expect-error */}
-                      <MenuList className="w-0">
+                      <MenuList className="w-0 p-0">
                         {/* @ts-expect-error */}
                         <MenuItem
                           id={String(cliente.id)}
@@ -113,11 +106,13 @@ useEffect(() => {
         </List>
       </div>
 
-      <InformacionClienteModal
-        open={mostrarInformacion}
-        onClose={handleClose}
-        id={id}
-      />
+      {mostrarInformacion === true &&
+        <InformacionClienteModal
+          open={mostrarInformacion}
+          onClose={handleClose}
+          id={id}
+        />
+      }
     </>
   );
 }
