@@ -85,7 +85,8 @@ export default function SlideUpSelectelement({
           </List>
         </DialogBody>
       </Dialog>
-      <SlideUpworkoutElement
+      {openElement === true &&
+         <SlideUpworkoutElement
         open={openElement}
         onClose={() => setopenElement(false)}
         idworkout={idworkout}
@@ -93,6 +94,7 @@ export default function SlideUpSelectelement({
         modo={modo === "Bloque" ? "Bloque" : "Descanso"}
         refresh={refresh}
       />
+      }     
     </>
   );
 }
