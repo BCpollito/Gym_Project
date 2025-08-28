@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import { useState } from "react";
 import { X, LayoutList, CirclePause } from "lucide-react";
-import { PropsModal } from "../types/propsModal";
+import { PropsModal } from "../types/PropsModal";
 import SlideUpworkoutElement from "./SlideUpworkoutElement";
 
 export default function SlideUpSelectelement({
