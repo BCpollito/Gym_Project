@@ -5,7 +5,7 @@ exports.addExerciseToBlock = async (req, res) => {
     try {
         const { bloqueID, ejercicioID, series, objetivo, tiempoDescanso, instrucciones, orden } = req.body;
 
-        if (!bloqueID || !ejercicioID || !series || !objetivo || !tiempoDescanso || !orden) {
+        if (!bloqueID || !ejercicioID || !series || !objetivo || !orden) {
             return res.status(400).json({ success: false, message: "Faltan datos obligatorios" });
         }
 
@@ -25,16 +25,31 @@ exports.addExerciseToBlock = async (req, res) => {
 
 exports.FindAllByBlockId = async (req, res) => {
     const { idelement } = req.params;
-    console.log("ID recibido: ", idelement)
     try {
         const Exercises = await WorkoutExercises.findAll({
-            where: {bloqueID : idelement}
+            where: { bloqueID: idelement }
         });
         res.status(200).json({
             Exercises
-        })        
+        })
     } catch (error) {
         console.error("Error al obtener Elemento:", error);
         res.status(500).json({ message: "Error interno del servidor", error });
+    }
+}
+
+exports.DeleteByID = async (req, res) => {
+    const { idelement } = req.params;
+
+    try {
+        await WorkoutExercises.destroy({
+            where: {
+                id: idelement
+            }
+        });
+
+        return res.json({message: "ejercicio eliminado del workout"});
+    } catch (error) {
+        return res.json({error: error});
     }
 }
