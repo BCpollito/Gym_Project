@@ -9,9 +9,11 @@ import {
   ListItem,
   Dialog,
   DialogHeader,
-  DialogBody,
   DialogFooter,
-  Card,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
 } from "@material-tailwind/react";
 import {
   ChevronsLeft,
@@ -21,6 +23,8 @@ import {
   LayoutList,
   CirclePause,
   NotebookText,
+  EllipsisVertical,
+  Trash
 } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -82,11 +86,33 @@ export default function NewWorkout() {
   }, [refreshdata]);
 
   const [openElement, setopenElement] = useState(false);
-  const handlerCloseElement = () => {setopenElement(false)};
+  const handlerCloseElement = () => { setopenElement(false) };
   const [exercise, setexercise] = useState<Exercise | null>(null);
-  const getexercise = (ejercicio: Exercise) => {  
-    setopenElement(true);  
+  const getexercise = (ejercicio: Exercise) => {
+    setopenElement(true);
     setexercise(ejercicio);
+  }
+
+  const DeleteElement = async (IDelement: Number) => {
+    const sino = window.confirm("Seguro que deseas eliminar?");
+    if (sino) {
+      try {
+        const response = await axios.delete<{
+          message: string;
+          error: string;
+        }>(`/workoutElement/${IDelement}`);
+
+        if (response.data.message) {
+          window.alert(`${response.data.message}`);
+        }
+        if (response.data.error) {
+          window.alert(`${response.data.error}`);
+        }
+        setrefreshdata((prev) => !prev);
+      } catch (error) {
+        console.error("Error al crear el ejercicio:", error);
+      }
+    }
   }
 
   return (
@@ -100,7 +126,7 @@ export default function NewWorkout() {
             color="white"
             variant="filled"
             className="shadow-sm shadow-secondary rounded-full mr-2"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+            onClick={() =>
               navigate("/admin/libreria/activity/workouts")
             }
           >
@@ -123,17 +149,15 @@ export default function NewWorkout() {
         {fullworkout?.elementos.map((elemento, index) => (
           // @ts-ignore
           <Accordion
-            className={`${
-              elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
-            } mb-2 rounded-lg px-2`}
+            className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
+              } mb-2 rounded-lg px-2`}
             key={index}
             open={elemento.tipo === "Bloque" ? true : false}
           >
             {/*// @ts-ignore*/}
             <AccordionHeader
-              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${
-                elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
-              }`}
+              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
+                }`}
             >
               {elemento.tipo === "Bloque" ? (
                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
@@ -165,23 +189,40 @@ export default function NewWorkout() {
                   </Typography>
                 )}
               </div>
-              {elemento.tipo === "Bloque" && (
-                <div className="absolute right-0 p-0">
-                  {/*// @ts-ignore*/}
-                  <Button
-                    variant="text"
-                    size="sm"
-                    className="font-thin flex flex-col items-center p-0 rounded-sm"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      setopenViewExercises(true);
-                      setbloqueid(elemento.data.id);
-                    }}
-                  >
-                    <Plus />
-                    ejercicio
-                  </Button>
-                </div>
-              )}
+              <div className="absolute right-0 p-0">
+                <Menu placement="left-end">
+                  <MenuHandler>
+                    <EllipsisVertical />
+                  </MenuHandler>
+                  {/* @ts-expect-error */}
+                  <MenuList className="!min-w-fit p-1 px-4 justify-center items-center text-md">
+                    {elemento.tipo === "Bloque" &&
+                      // @ts-expect-error
+                      <MenuItem
+                        onClick={() => {
+                          setopenViewExercises(true);
+                          setbloqueid(elemento.data.id);
+                        }}
+                        className="flex items-center justify-center font-thin p-0 text-green-500"
+                      >
+                        <Plus />
+                        ejercicio
+                      </MenuItem>
+                    }
+                    {elemento.tipo === "Bloque" &&
+                      <hr className="my-1" />
+                    }
+                    {/* @ts-expect-error */}
+                    <MenuItem
+                    onClick={() => DeleteElement(elemento.IDelement)}
+                      className="flex items-center justify-center font-thin p-0 text-red-500"
+                    >
+                      <Trash />
+                      eliminar
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </div>
             </AccordionHeader>
             <AccordionBody className="p-0">
               {elemento.tipo === "Bloque" &&
@@ -191,7 +232,7 @@ export default function NewWorkout() {
                   {elemento.data.WorkoutExercises.map((we) => (
                     // @ts-ignore
                     <ListItem
-                      className="px-2 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
+                      className="pl-2 pr-0 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
                       key={we.id}
                     >
                       <img
@@ -199,7 +240,7 @@ export default function NewWorkout() {
                         src={convertirLink(we.Ejercicio.Link) || ""}
                         alt={we.Ejercicio.Nombre}
                       />
-                      <div>
+                      <div className="w-8/12 overflow-hidden whitespace-nowrap">
                         {/*// @ts-ignore*/}
                         <Typography variant="small">
                           {we.Ejercicio.Nombre}
@@ -245,7 +286,7 @@ export default function NewWorkout() {
           color="amber"
           className="rounded-full"
           aria-label="Agregar nuevo ejercicio"
-          onClick={(e: React.MouseEvent<HTMLButtonElement>) => setopen(true)}
+          onClick={() => setopen(true)}
         >
           <Plus />
         </IconButton>
@@ -292,14 +333,14 @@ export default function NewWorkout() {
         </Dialog>
       )}
 
-      {openElement === true && 
+      {openElement === true &&
         <SlideUpworkoutElement
-        open={openElement} 
-        onClose={handlerCloseElement} 
-        ejercicioExistente={exercise} 
-        modo="Ejercicio"
-        refresh={refresh}
-        id={bloqueid}
+          open={openElement}
+          onClose={handlerCloseElement}
+          ejercicioExistente={exercise}
+          modo="Ejercicio"
+          refresh={refresh}
+          id={bloqueid}
         />
       }
     </>
