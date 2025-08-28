@@ -163,9 +163,10 @@ export default function SlideUpworkoutElement({
     }
 
     if (modo === "Ejercicio") {
-      if (selectedIndex === null || series == 0 || objetivo == 0 || series === null || objetivo === null) {
+      if (selectedIndex === null || series == 0 || objetivo == 0 
+        || isNaN(series!)  || isNaN(objetivo!) || series === null || objetivo === null) {
         setdisable(false)
-        return alert("algunos campos estan incompletos")
+        return alert("algunos campos estan incompletos o invalidos")
       }
 
       const responseExerciseWorkout = await axios.post<{
