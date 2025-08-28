@@ -78,7 +78,7 @@ exports.getWorkoutById = async (req, res) => {
       } else if (elem.tipo === 'Descanso') {
         const descanso = await Descansos.findByPk(elem.elementoID);
         if (descanso) {
-          elementosDetallados.push({ tipo: 'Descanso', data: descanso, orden: elem.orden });
+          elementosDetallados.push({ IDelement: elem.id, tipo: 'Descanso', data: descanso, orden: elem.orden });
         }
       }
     }
