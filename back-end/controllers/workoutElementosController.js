@@ -1,4 +1,5 @@
-const { WorkoutElementos } = require("../models")
+const { where } = require("sequelize");
+const { WorkoutElementos, Bloques, Descansos } = require("../models")
 
 exports.createElement = async (req, res) => {
     try {
@@ -20,8 +21,28 @@ exports.createElement = async (req, res) => {
 exports.deleteElement = async (req, res) => {
     try {
         const { id } = req.params;
+
+        const WorkoutElement = await WorkoutElementos.findByPk(id)
+
+        if (WorkoutElement.tipo === 'Bloque') {
+            await Bloques.destroy({
+                where: {
+                    id: WorkoutElement.elementoID
+                }
+            })
+        }
+
+        if (WorkoutElement.tipo === "Descanso") {
+            await Descansos.destroy({
+                where: {
+                    id: WorkoutElement.elementoID
+                }
+            })
+        }
+
         await WorkoutElementos.destroy({ where: { id: id } });
-        return res.json({ message: "Bloque eliminado satisfactoriamente" })
+        return res.json({ message: `${WorkoutElement.tipo} eliminado satisfactoriamente`})
+
     } catch (error) {
         return res.json({ error: `Algo salio mal: ${error}` });
     }
