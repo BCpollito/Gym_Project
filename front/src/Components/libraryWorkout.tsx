@@ -4,8 +4,12 @@ import {
   Typography,
   CardBody,
   Button,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
 } from "@material-tailwind/react";
-import { Plus } from "lucide-react";
+import { Plus, EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import CreateWorkoutModal from "./CreateWorkoutModal";
 import ScrollToTopButton from "./ScrollToTopButton";
@@ -21,49 +25,12 @@ const TABLE_HEAD = [
   },
 ];
 
-const TABLE_ROWS = [
-  {
-    number: "#MS-415646",
-    customer: "Viking Burrito",
-  },
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-  {
-    number: "#QW-103578",
-    customer: "Fiber Notion",
-  },
-  {
-    number: "#MS-415688",
-    customer: "Blue Bird",
-  },
-  ,
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-  {
-    number: "#RV-126749",
-    customer: "Stone Tech Zone",
-  },
-];
-
 export default function LibraryWorkout() {
   const [open, setOpen] = useState(false);
+
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredWorkouts, setFilteredWorkouts] = useState<Workout[]>([]);
 
   const handleCreateWorkout = () => {
     setOpen(true);
@@ -75,20 +42,27 @@ export default function LibraryWorkout() {
 
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-
   useEffect(() => {
     const getWorkouts = async () => {
       try {
         const response = await axios.get<Workout[]>('/workouts');
         const WorkoutsData = response.data.sort((a, b) => b.id - a.id);
         setWorkouts(WorkoutsData);
+        setFilteredWorkouts(WorkoutsData);
       } catch (error) {
         console.error("Error al cargar Workouts: ", error)
       }
     }
     getWorkouts();
   }, [])
+
+  useEffect(() => {
+    const palabra = searchTerm.toLowerCase();
+    const result = workouts.filter(workout =>
+      workout.nombre.toLowerCase().includes(palabra)
+    );
+    setFilteredWorkouts(result);
+  }, [searchTerm, workouts]);
 
   return (
     <div className="max-h-[77vh]">
@@ -103,12 +77,15 @@ export default function LibraryWorkout() {
           <Plus strokeWidth={3} /> Crear workout
         </Button>
         {/*// @ts-ignore*/}
-        <Input label="Buscar Workout por nombre" />
+        <Input
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          label="Buscar Workout por nombre"
+        />
       </div>
       {/*// @ts-ignore*/}
       <Card ref={scrollRef} className="h-full w-full sm:max-w-sm overflow-scroll">
         {/*// @ts-ignore*/}
-        <CardBody className="max-w-sm max-h-[72vh] h-full py-2">
+        <CardBody className="max-w-sm max-h-[72vh] h-full py-2 px-0">
           <table className="w-full table-auto max-w-sm text-left">
             <thead>
               <tr>
@@ -133,24 +110,37 @@ export default function LibraryWorkout() {
               </tr>
             </thead>
             <tbody>
-              {workouts?.map((workout, index) => {
+              {filteredWorkouts?.map((workout, index) => {
                 const isLast = index === workouts.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-gray-300";
+                const classes = isLast
+                  ? "p-2"
+                  : "p-2 pr-0 border-b border-gray-300";
 
                 return (
                   <tr key={workout.id}>
-                    <td>
-                      <Button></Button>
+                    <td className="p-0 ">
+                      <div className="flex items-center justify-center">
+                        {/* //@ts-ignore */}
+                        <Menu>
+                          <MenuHandler className="border border-1 border-gray-300 border-black rounded-full">
+                            <EllipsisVertical size={30}/>
+                          </MenuHandler>
+                          {/*//@ts-ignore */}
+                          <MenuList>
+                            {/* //@ts-ignore */}
+                            <MenuItem>                            
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </div>
                     </td>
-                    <td className={classes}>
+                    <td className={`${classes}`}>
                       <div className="flex items-center gap-1">
                         {/*// @ts-ignore*/}
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-bold"
+                          className="font-bold line-clamp-2 w-[130px]"
                         >
                           {workout.nombre}
                         </Typography>
@@ -160,7 +150,7 @@ export default function LibraryWorkout() {
                       {/*// @ts-ignore*/}
                       <Typography
                         variant="small"
-                        className="font-normal text-gray-600"
+                        className="font-normal text-gray-600 line-clamp-3 w-[140px]"
                       >
                         {workout.descripcion || "sin descripcion"}
                       </Typography>
