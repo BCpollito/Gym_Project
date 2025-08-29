@@ -22,7 +22,6 @@ import {
   Repeat2,
   LayoutList,
   CirclePause,
-  NotebookText,
   EllipsisVertical,
   Trash,
 } from "lucide-react";
@@ -226,7 +225,7 @@ export default function NewWorkout() {
                             setopenViewExercises(true);
                             setbloqueid(elemento.data.id);
                           }}
-                          className="flex items-center justify-center font-thin p-0 text-green-500"
+                          className="flex items-center justify-center p-0 text-green-500"
                         >
                           <Plus />
                           ejercicio
@@ -238,7 +237,7 @@ export default function NewWorkout() {
                       {/* @ts-expect-error */}
                       <MenuItem
                         onClick={() => DeleteElement(elemento.IDelement)}
-                        className="flex items-center justify-center font-thin p-0 text-red-500"
+                        className="flex items-center justify-center p-0 text-red-500"
                       >
                         <Trash />
                         eliminar
@@ -268,28 +267,19 @@ export default function NewWorkout() {
                           <Typography variant="small">
                             {we.Ejercicio.Nombre}
                           </Typography>
-                          <div className="flex items-center gap-5">
-                            <div className="flex items-center">
+                          <div className="flex justify-start items-center gap-5">
+                            <div className="flex items-center w-[39.59px]">
                               <Repeat2 size={16} />
                               <span className="text-sm">{we.series}</span>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center w-[39.59px]">
                               <Goal size={16} />
                               <span className="text-sm">{we.objetivo}</span>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center w-[46.81px]">
                               <CirclePause size={16} />
                               <span className="text-sm">{we.tiempoDescanso}s</span>
                             </div>
-                            {/*// @ts-ignore*/}
-                            <IconButton
-                              color="blue-gray"
-                              size="sm"
-                              className="h-5"
-                              variant="text"
-                            >
-                              <NotebookText size={16} />
-                            </IconButton>
                           </div>
                         </div>
                         <div className="absolute right-0 pr-2">
@@ -308,10 +298,14 @@ export default function NewWorkout() {
       {/* navegacion inferior */}
       <div className="flex gap-2 fixed bottom-0 p-4 w-full shadow-[-1px_-1px_5px_rgba(0,0,0,0.2)]">
         {/*// @ts-ignore*/}
-        <Button className="w-full rounded-full" size="sm">
-          Guardar workout
+        <Button
+          onClick={() =>
+            navigate("/admin/libreria/activity/workouts")
+          }
+          className="w-full rounded-full" size="sm">
+          Terminar
         </Button>
-         {/*// @ts-ignore*/}
+        {/*// @ts-ignore*/}
         <IconButton
           size="sm"
           color="amber"
