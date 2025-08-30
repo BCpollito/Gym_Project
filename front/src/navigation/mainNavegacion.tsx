@@ -1,13 +1,24 @@
 import { Button } from '@material-tailwind/react';
 import { Users, BookOpenText } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Navegacion() {
-  const [ clickClients, setClickClients ] = useState(true);
+  const [ clickClients, setClickClients ] = useState(false);
   const [ clickLibrary, setClickLibrary ] = useState(false);
 
   const navigate = useNavigate();
+  const currentRoute = useLocation();
+
+  useEffect(() => {
+    if (currentRoute.pathname === "/admin/clientes") {
+      setClickClients(true);
+      setClickLibrary(false);
+    } else if (currentRoute.pathname === "/admin/libreria/activity/exercises" || currentRoute.pathname === "/admin/libreria/activity/workouts") {
+      setClickLibrary(true);
+      setClickClients(false);
+    }
+  }, [currentRoute]);
 
   const handleClickClientes = () => {
     setClickClients(true);

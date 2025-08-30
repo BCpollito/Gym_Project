@@ -1,11 +1,22 @@
 import { Chip } from "@material-tailwind/react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function LibraryActivity(){
-  const [clickExercise, setClickExercise] = useState(true);
+  const [clickExercise, setClickExercise] = useState(false);
   const [clickWorkout, setClickWorkout] = useState(false);
   const navigate = useNavigate();
+  const currentRoute = useLocation();
+
+  useEffect(() => {
+    if (currentRoute.pathname === "/admin/libreria/activity/exercises") {
+      setClickExercise(true);
+      setClickWorkout(false);
+    } else if (currentRoute.pathname === "/admin/libreria/activity/workouts") {
+      setClickWorkout(true);
+      setClickExercise(false);
+    }
+  }, [currentRoute]);
 
     const handleClickExercise = () => {
         setClickExercise(true);
