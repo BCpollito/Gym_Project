@@ -309,7 +309,7 @@ export default function NewWorkout() {
         <IconButton
           size="sm"
           color="amber"
-          className="rounded-full"
+          className="rounded-full w-10 h-10"
           aria-label="Agregar nuevo ejercicio"
           onClick={() => setopen(true)}
         >
