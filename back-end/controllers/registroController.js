@@ -1,6 +1,5 @@
-const Registro = require("../models/Registro");
+const { Registro } = require("../models");
 const bcrypt = require("bcryptjs");
-const sequelize = require("../config/database");
 
 exports.getAllRegistros = async (req, res) => {
   const registros = await Registro.findAll();
