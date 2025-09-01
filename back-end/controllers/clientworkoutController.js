@@ -5,11 +5,24 @@ exports.assignWorkoutToClient = async (req, res) => {
     try {
         const { clienteID, workoutID, dateAssign } = req.body;
 
-        if (!clienteID || !workoutID || !dateAssign) {
+        if (!clienteID || !workoutID || workoutID === null || !dateAssign) {
             return res.status(400).json({ success: false, message: "Faltan datos obligatorios" });
         }
 
-        const newClienteWorkout = await newClienteWorkout.create({
+        const workouts = await ClientWorkout.findAll({
+            where: { clienteID: clienteID }
+        });
+
+        for(const workout of workouts){
+            if(workout.dateAssign === dateAssign){
+                return res.json({ 
+                    success: false, 
+                    message: "Ya existe un workout asignado para esa fecha" 
+                });
+            }
+        }
+
+        const newClienteWorkout = await ClientWorkout.create({
             clienteID, workoutID, dateAssign
         });
         res.status(201).json({
@@ -35,7 +48,7 @@ exports.getWorkoutsByClientId = async (req, res) => {
         });
         res.status(200).json({
             workouts
-        })        
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: error.message });
@@ -48,7 +61,7 @@ exports.deleteClienteWorkout = async (req, res) => {
 
     try {
         await ClientWorkout.destroy({ where: { id } });
-        res.status(200).json({ message: "Workout asignado eliminado exitosamente", success: true });        
+        res.status(200).json({ message: "Workout asignado eliminado exitosamente", success: true });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: error.message, success: false });
