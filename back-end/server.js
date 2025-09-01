@@ -18,6 +18,7 @@ app.use(require("./routes/bloquesRoutes"));
 app.use(require("./routes/workoutElementRoutes"));
 app.use(require("./routes/descansosRoutes"));
 app.use(require("./routes/workoutExerciseRoutes"));
+app.use(require("./routes/clientWorkoutRoutes"));
 
 // Ruta de prueba
 app.get("/", (req, res) => {
