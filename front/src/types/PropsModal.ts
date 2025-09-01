@@ -1,4 +1,5 @@
 import { Exercise } from "./Exercises";
+import { Workout } from "./workout"; }
 
 export interface PropsModal {
   open: boolean;
@@ -6,7 +7,8 @@ export interface PropsModal {
   refresh?: () => void;
   modo?: "crear" | "Ver" | "Bloque" | "Descanso" | "Ejercicio";
   ejercicioExistente?: Exercise | null;
-  idworkout?: string | null;
+  workoutExistente?: Workout | null; 
+  idworkout?: number | null;
   id?: number | null; 
   elementorder?: number | null;
 }

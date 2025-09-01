@@ -8,12 +8,17 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
+  Dialog,
+  DialogBody,
+  DialogFooter
 } from "@material-tailwind/react";
 import { Plus, EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateWorkoutModal from "./CreateWorkoutModal";
 import ScrollToTopButton from "./ScrollToTopButton";
+import Clientes from "./clientes";
+import { InformacionClienteModal } from "./informacionClienteModal";
 import { Workout } from "../types/workout";
 import axios from "axios";
 
@@ -31,6 +36,17 @@ export default function LibraryWorkout() {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [openClients, setOpenClients] = useState(false);
+  const [workout, setWorkout] = useState<Workout | null>(null);
+
+  const handleOpenClients = (workout: Workout) => {
+    setWorkout(workout)
+    setOpenClients(true)
+  }
+
+  const onClose = () => {
+    setOpenClients(false);
+  }
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -75,20 +91,27 @@ export default function LibraryWorkout() {
     try {
       const response = await axios.delete<{
         message: string;
-        error?: string;        
+        error?: string;
       }>(`/workouts/${id}`);
 
       if (response.data.message) {
         alert(response.data.message);
-        setRefreshdata(!refreshdata);        
+        setRefreshdata(!refreshdata);
       }
       if (response.data.error) {
-          window.alert(`${response.data.error}`);
-        }
+        window.alert(`${response.data.error}`);
+      }
     } catch (error) {
       alert(error);
       console.error("Error al eliminar el workout: ", error)
     }
+  }
+
+  const [openAssignWorkout, setOpenAssignWorkout] = useState(false);
+  const [ClientID, setClientID] = useState<number | null>(null);
+  const AssignWorkout = (id: number) => {
+    setClientID(id);
+    setOpenAssignWorkout(true)
   }
 
   return (
@@ -110,7 +133,7 @@ export default function LibraryWorkout() {
         />
       </div>
       {/*// @ts-ignore*/}
-      <Card ref={scrollRef} className="h-full w-full sm:max-w-sm overflow-scroll">
+      <Card ref={scrollRef} className="h-full w-full sm:max-w-sm overflow-y-scroll">
         {/*// @ts-ignore*/}
         <CardBody className="max-w-sm max-h-[72vh] h-full py-2 px-0">
           <table className="w-full table-auto max-w-sm text-left">
@@ -150,26 +173,26 @@ export default function LibraryWorkout() {
                         {/* //@ts-ignore */}
                         <Menu>
                           <MenuHandler className="border border-1 border-gray-700 rounded-full">
-                            <EllipsisVertical size={30}/>
+                            <EllipsisVertical size={30} />
                           </MenuHandler>
                           {/*//@ts-ignore */}
                           <MenuList>
                             {/* @ts-ignore */}
                             <MenuItem
-                            onClick={() => navigate(`/workout/${workout.id}`)}
-                            >  
+                              onClick={() => navigate(`/workout/${workout.id}`)}
+                            >
                               Editar
                             </MenuItem>
                             {/* @ts-ignore */}
                             <MenuItem
-                            onClick={() => DeleteWorkout(workout.id)}
-                            >  
+                              onClick={() => DeleteWorkout(workout.id)}
+                            >
                               Eliminar
                             </MenuItem>
                             {/* @ts-ignore */}
                             <MenuItem
-                            onClick={() => alert("Funcionalidad en desarrollo") }
-                            >  
+                              onClick={() => handleOpenClients(workout)}
+                            >
                               Asignar a Cliente
                             </MenuItem>
                           </MenuList>
@@ -210,6 +233,30 @@ export default function LibraryWorkout() {
       <div className="fixed bottom-[70px] right-4 z-50">
         <ScrollToTopButton scrollRef={scrollRef} />
       </div>
-    </div>
+
+      {openClients &&
+        //@ts-ignore
+        < Dialog open={openClients} handler={onClose}>
+          {/*@ts-ignore*/}
+          <DialogBody className="overflow-hidden max-h-[77svh]">
+            <Clientes Assign={true} ClienteID={AssignWorkout} closeSelf={onClose}/>
+          </DialogBody>
+          {/*@ts-ignore*/}
+          <DialogFooter>
+            {/*@ts-ignore*/}
+            <Button size="sm" onClick={onClose}>Cerrar</Button>
+          </DialogFooter>
+        </Dialog>
+      }
+
+      {openAssignWorkout &&
+        <InformacionClienteModal
+        open={openAssignWorkout}
+        onClose={() => setOpenAssignWorkout(false)}
+        id={ClientID}
+        workoutExistente={workout}
+        />
+      }
+    </div >
   );
 }
