@@ -8,6 +8,8 @@ const WorkoutExercises = require('./WorkoutExercises');
 const Ejercicio = require('./Ejercicio');
 const Descansos = require('./Descansos');
 const WorkoutElementos = require('./WorkoutElementos');
+const ClientWorkout = require('./ClientWorkout');
+const Registro = require('./Registro');
 
 // Relaciones
 
@@ -46,6 +48,13 @@ Workouts.hasMany(WorkoutElementos, {
 });
 WorkoutElementos.belongsTo(Workouts, { foreignKey: 'workoutID' });
 
+// Registro → ClientWorkout
+Registro.hasMany(ClientWorkout, {
+  foreignKey: 'clienteID',
+  onDelete: 'CASCADE',
+});
+ClientWorkout.belongsTo(Registro, { foreignKey: 'clienteID' });
+
 module.exports = {
   sequelize,
   Sequelize,
@@ -54,5 +63,7 @@ module.exports = {
   WorkoutExercises,
   Ejercicio,
   Descansos,
-  WorkoutElementos
+  WorkoutElementos,
+  ClientWorkout,
+  Registro
 };
