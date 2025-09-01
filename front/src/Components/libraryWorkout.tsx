@@ -11,6 +11,7 @@ import {
 } from "@material-tailwind/react";
 import { Plus, EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CreateWorkoutModal from "./CreateWorkoutModal";
 import ScrollToTopButton from "./ScrollToTopButton";
 import { Workout } from "../types/workout";
@@ -26,11 +27,15 @@ const TABLE_HEAD = [
 ];
 
 export default function LibraryWorkout() {
+
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredWorkouts, setFilteredWorkouts] = useState<Workout[]>([]);
+  const [refreshdata, setRefreshdata] = useState<boolean>(false);
 
   const handleCreateWorkout = () => {
     setOpen(true);
@@ -54,7 +59,7 @@ export default function LibraryWorkout() {
       }
     }
     getWorkouts();
-  }, [])
+  }, [refreshdata]);
 
   useEffect(() => {
     const palabra = searchTerm.toLowerCase();
@@ -63,6 +68,28 @@ export default function LibraryWorkout() {
     );
     setFilteredWorkouts(result);
   }, [searchTerm, workouts]);
+
+  const DeleteWorkout = async (id: number) => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este workout?");
+    if (!confirmDelete) return;
+    try {
+      const response = await axios.delete<{
+        message: string;
+        error?: string;        
+      }>(`/workouts/${id}`);
+
+      if (response.data.message) {
+        alert(response.data.message);
+        setRefreshdata(!refreshdata);        
+      }
+      if (response.data.error) {
+          window.alert(`${response.data.error}`);
+        }
+    } catch (error) {
+      alert(error);
+      console.error("Error al eliminar el workout: ", error)
+    }
+  }
 
   return (
     <div className="max-h-[77vh]">
@@ -118,17 +145,32 @@ export default function LibraryWorkout() {
 
                 return (
                   <tr key={workout.id}>
-                    <td className="p-0 ">
+                    <td className="pl-1">
                       <div className="flex items-center justify-center">
                         {/* //@ts-ignore */}
                         <Menu>
-                          <MenuHandler className="border border-1 border-gray-300 border-black rounded-full">
+                          <MenuHandler className="border border-1 border-gray-700 rounded-full">
                             <EllipsisVertical size={30}/>
                           </MenuHandler>
                           {/*//@ts-ignore */}
                           <MenuList>
-                            {/* //@ts-ignore */}
-                            <MenuItem>                            
+                            {/* @ts-ignore */}
+                            <MenuItem
+                            onClick={() => navigate(`/workout/${workout.id}`)}
+                            >  
+                              Editar
+                            </MenuItem>
+                            {/* @ts-ignore */}
+                            <MenuItem
+                            onClick={() => DeleteWorkout(workout.id)}
+                            >  
+                              Eliminar
+                            </MenuItem>
+                            {/* @ts-ignore */}
+                            <MenuItem
+                            onClick={() => alert("Funcionalidad en desarrollo") }
+                            >  
+                              Asignar a Cliente
                             </MenuItem>
                           </MenuList>
                         </Menu>
