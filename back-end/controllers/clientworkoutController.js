@@ -9,7 +9,7 @@ exports.assignWorkoutToClient = async (req, res) => {
             return res.status(400).json({ success: false, message: "Faltan datos obligatorios" });
         }
 
-        const workouts = await ClientWorkout.findAll({
+        /*const workouts = await ClientWorkout.findAll({
             where: { clienteID: clienteID }
         });
 
@@ -20,7 +20,7 @@ exports.assignWorkoutToClient = async (req, res) => {
                     message: "Ya existe un workout asignado para esa fecha" 
                 });
             }
-        }
+        }*/
 
         const newClienteWorkout = await ClientWorkout.create({
             clienteID, workoutID, dateAssign
