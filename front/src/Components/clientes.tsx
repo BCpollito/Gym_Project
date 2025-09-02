@@ -29,7 +29,6 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
       const clientsData = response.data.sort((a, b) => b.id - a.id); // Aquí asigno directamente la respuesta
       setClientes(clientsData); // Almacena los clientes en el estado
       setFilteredClientes(clientsData);
-      console.log(clientsData);
     } catch (error) {
       console.error("Error al obtener los clientes:", error);
     }
