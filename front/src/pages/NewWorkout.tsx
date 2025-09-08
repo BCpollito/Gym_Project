@@ -25,6 +25,12 @@ import {
   EllipsisVertical,
   Trash,
 } from "lucide-react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,6 +41,13 @@ import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
 import LibreriaExercises from "../Components/libreriaExercises";
 import convertirLink from "../services/ConvertLink";
 
+const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+};
+
 export default function NewWorkout() {
   const navigate = useNavigate();
 
@@ -42,6 +55,23 @@ export default function NewWorkout() {
   const [fullworkout, setfullworkout] = useState<FullWorkoutResponse | null>(
     null
   );
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination || !fullworkout) return;
+
+    // nuevo orden
+    const newElementos = reorder(
+      fullworkout.elementos,
+      result.source.index,
+      result.destination.index
+    );
+
+    setfullworkout({ ...fullworkout, elementos: newElementos });
+
+    // este espacio es para realizar la peticion y mandar el nuevo orden al back
+    // axios.post("/workoutElement/reorder", { ids: newElementos.map(e => e.IDelement) })
+  };
+
   const [LastElement, setLastElement] = useState<number | null>(null)
 
   const [refreshdata, setrefreshdata] = useState(false);
@@ -168,130 +198,157 @@ export default function NewWorkout() {
 
       <div className="px-4 w-full max-h-[80svh]">
         <div className="max-h-[80svh] overflow-y-auto">
-          {fullworkout?.elementos.map((elemento) => (
-            // @ts-ignore
-            <Accordion
-              className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
-                } mb-2 rounded-lg px-2`}
-              key={elemento.IDelement}
-              open={elemento.tipo === "Bloque" ? true : false}
-            >
-              {/*// @ts-ignore*/}
-              <AccordionHeader
-                className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
-                  }`}
-              >
-                {elemento.tipo === "Bloque" ? (
-                  <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
-                    <LayoutList />
-                  </div>
-                ) : (
-                  <div className="rounded-sm p-1 bg-green-300 bg-opacity-20">
-                    <CirclePause />
-                  </div>
-                )}
-                <div className="w-8/12 justify-start overflow-hidden whitespace-nowrap">
-                  {elemento.tipo === "Bloque" ? (
-                    // @ts-ignore
-                    <Typography
-                      className="font-black"
-                      variant="paragraph"
-                    >{`${elemento.data.nombre}`}</Typography>
-                  ) : (
-                    // @ts-ignore
-                    <Typography
-                      className="font-black"
-                      variant="paragraph"
-                    >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
-                  )}
-                  {elemento.tipo === "Bloque" && (
-                    // @ts-ignore
-                    <Typography color="gray" className="text-xs">
-                      {elemento.data.descripcion}
-                    </Typography>
-                  )}
-                </div>
-                <div className="absolute right-0 p-0">
-                  <Menu placement="left-end">
-                    <MenuHandler>
-                      <EllipsisVertical />
-                    </MenuHandler>
-                    {/* @ts-expect-error */}
-                    <MenuList className="!min-w-fit p-1 px-4 justify-center items-center text-md">
-                      {elemento.tipo === "Bloque" &&
-                        // @ts-expect-error
-                        <MenuItem
-                          onClick={() => {
-                            setopenViewExercises(true);
-                            setbloqueid(elemento.data.id);
-                          }}
-                          className="flex items-center justify-center p-0 text-green-500"
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="elementos-droppable">
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {fullworkout?.elementos.map((elemento, index) => (
+                    <Draggable
+                      key={elemento.IDelement.toString()}
+                      draggableId={elemento.IDelement.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
                         >
-                          <Plus />
-                          ejercicio
-                        </MenuItem>
-                      }
-                      {elemento.tipo === "Bloque" &&
-                        <hr className="my-1" />
-                      }
-                      {/* @ts-expect-error */}
-                      <MenuItem
-                        onClick={() => DeleteElement(elemento.IDelement)}
-                        className="flex items-center justify-center p-0 text-red-500"
-                      >
-                        <Trash />
-                        eliminar
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
-                </div>
-              </AccordionHeader>
-              <AccordionBody className="relative p-0">
-                {elemento.tipo === "Bloque" &&
-                  elemento.data.WorkoutExercises.length > 0 ? (
-                  // @ts-ignore
-                  <List className="px-0 pt-0">
-                    {elemento.data.WorkoutExercises.map((we) => (
-                      // @ts-ignore
-                      <ListItem
-                        className="pl-2 pr-0 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
-                        key={we.id}
-                      >
-                        <img
-                          className="w-10 h-9 object-cover rounded-sm bg-white"
-                          src={convertirLink(we.Ejercicio.Link) || ""}
-                          alt={we.Ejercicio.Nombre}
-                        />
-                        <div className="w-8/12 overflow-hidden whitespace-nowrap">
                           {/*// @ts-ignore*/}
-                          <Typography variant="small">
-                            {we.Ejercicio.Nombre}
-                          </Typography>
-                          <div className="flex justify-start items-center gap-5">
-                            <div className="flex items-center w-[39.59px]">
-                              <Repeat2 size={16} />
-                              <span className="text-sm">{we.series}</span>
-                            </div>
-                            <div className="flex items-center w-[39.59px]">
-                              <Goal size={16} />
-                              <span className="text-sm">{we.objetivo}</span>
-                            </div>
-                            <div className="flex items-center w-[46.81px]">
-                              <CirclePause size={16} />
-                              <span className="text-sm">{we.tiempoDescanso}s</span>
-                            </div>
-                          </div>
+                          <Accordion
+                            className={`${elemento.tipo === "Bloque"
+                                ? "bg-blue-50"
+                                : "bg-green-50"
+                              } mb-2 rounded-lg px-2`}
+                            open={elemento.tipo === "Bloque" ? true : false}
+                          >
+                            {/*// @ts-ignore*/}
+                            <AccordionHeader
+                              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
+                                }`}
+                                {...provided.dragHandleProps}
+                            >
+                              {elemento.tipo === "Bloque" ? (
+                                <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
+                                  <LayoutList />
+                                </div>
+                              ) : (
+                                <div className="rounded-sm p-1 bg-green-300 bg-opacity-20">
+                                  <CirclePause />
+                                </div>
+                              )}
+                              <div className="w-8/12 justify-start overflow-hidden whitespace-nowrap">
+                                {elemento.tipo === "Bloque" ? (
+                                  // @ts-ignore
+                                  <Typography
+                                    className="font-black"
+                                    variant="paragraph"
+                                  >{`${elemento.data.nombre}`}</Typography>
+                                ) : (
+                                  // @ts-ignore
+                                  <Typography
+                                    className="font-black"
+                                    variant="paragraph"
+                                  >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
+                                )}
+                                {elemento.tipo === "Bloque" && (
+                                  // @ts-ignore
+                                  <Typography color="gray" className="text-xs">
+                                    {elemento.data.descripcion}
+                                  </Typography>
+                                )}
+                              </div>
+                              <div className="absolute right-0 p-0">
+                                <Menu placement="left-end">
+                                  <MenuHandler>
+                                    <EllipsisVertical />
+                                  </MenuHandler>
+                                  {/* @ts-expect-error */}
+                                  <MenuList className="!min-w-fit p-1 px-4 justify-center items-center text-md">
+                                    {elemento.tipo === "Bloque" &&
+                                      // @ts-expect-error
+                                      <MenuItem
+                                        onClick={() => {
+                                          setopenViewExercises(true);
+                                          setbloqueid(elemento.data.id);
+                                        }}
+                                        className="flex items-center justify-center p-0 text-green-500"
+                                      >
+                                        <Plus />
+                                        ejercicio
+                                      </MenuItem>
+                                    }
+                                    {elemento.tipo === "Bloque" &&
+                                      <hr className="my-1" />
+                                    }
+                                    {/* @ts-expect-error */}
+                                    <MenuItem
+                                      onClick={() => DeleteElement(elemento.IDelement)}
+                                      className="flex items-center justify-center p-0 text-red-500"
+                                    >
+                                      <Trash />
+                                      eliminar
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
+                              </div>
+                            </AccordionHeader>
+                            <AccordionBody className="relative p-0">
+                              {elemento.tipo === "Bloque" &&
+                                elemento.data.WorkoutExercises.length > 0 ? (
+                                // @ts-ignore
+                                <List className="px-0 pt-0">
+                                  {elemento.data.WorkoutExercises.map((we) => (
+                                    // @ts-ignore
+                                    <ListItem
+                                      className="pl-2 pr-0 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
+                                      key={we.id}
+                                    >
+                                      <img
+                                        className="w-10 h-9 object-cover rounded-sm bg-white"
+                                        src={convertirLink(we.Ejercicio.Link) || ""}
+                                        alt={we.Ejercicio.Nombre}
+                                      />
+                                      <div className="w-8/12 overflow-hidden whitespace-nowrap">
+                                        {/*// @ts-ignore*/}
+                                        <Typography variant="small">
+                                          {we.Ejercicio.Nombre}
+                                        </Typography>
+                                        <div className="flex justify-start items-center gap-5">
+                                          <div className="flex items-center w-[39.59px]">
+                                            <Repeat2 size={16} />
+                                            <span className="text-sm">{we.series}</span>
+                                          </div>
+                                          <div className="flex items-center w-[39.59px]">
+                                            <Goal size={16} />
+                                            <span className="text-sm">{we.objetivo}</span>
+                                          </div>
+                                          <div className="flex items-center w-[46.81px]">
+                                            <CirclePause size={16} />
+                                            <span className="text-sm">{we.tiempoDescanso}s</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="absolute right-0 pr-2">
+                                        <Trash onClick={() => DeleteWorkoutExercise(we.id)} />
+                                      </div>
+                                    </ListItem>
+                                  ))}
+                                </List>
+                              ) : null}
+                            </AccordionBody>
+                          </Accordion>
                         </div>
-                        <div className="absolute right-0 pr-2">
-                          <Trash onClick={() => DeleteWorkoutExercise(we.id)} />
-                        </div>
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : null}
-              </AccordionBody>
-            </Accordion>
-          ))}
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
       </div>
 
