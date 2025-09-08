@@ -168,12 +168,12 @@ export default function NewWorkout() {
 
       <div className="px-4 w-full max-h-[80svh]">
         <div className="max-h-[80svh] overflow-y-auto">
-          {fullworkout?.elementos.map((elemento, index) => (
+          {fullworkout?.elementos.map((elemento) => (
             // @ts-ignore
             <Accordion
               className={`${elemento.tipo === "Bloque" ? "bg-blue-50" : "bg-green-50"
                 } mb-2 rounded-lg px-2`}
-              key={index}
+              key={elemento.IDelement}
               open={elemento.tipo === "Bloque" ? true : false}
             >
               {/*// @ts-ignore*/}
@@ -319,7 +319,7 @@ export default function NewWorkout() {
       <SlideUpSelectelement
         open={open}
         onClose={handleClose}
-        idworkout={id}
+        idworkout={Number(id)}
         elementorder={LastElement}
         refresh={refresh}
       />
