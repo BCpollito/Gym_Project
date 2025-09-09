@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const { WorkoutElementos, Bloques, Descansos } = require("../models")
 
 exports.createElement = async (req, res) => {
@@ -41,9 +40,30 @@ exports.deleteElement = async (req, res) => {
         }
 
         await WorkoutElementos.destroy({ where: { id: id } });
-        return res.json({ message: `${WorkoutElement.tipo} eliminado satisfactoriamente`})
+        return res.json({ message: `${WorkoutElement.tipo} eliminado satisfactoriamente` })
 
     } catch (error) {
+        return res.json({ error: `Algo salio mal: ${error}` });
+    }
+}
+
+exports.reorder = async (req, res) => {
+    const { ids = [] } = req.body;
+
+    try {
+
+            await Promise.all(
+                ids.map((id, i) =>
+                    WorkoutElementos.update(
+                        { orden: i + 1 },
+                        { where: { id } }
+                    )
+                )
+            );
+
+        return res.status(200);
+    } catch (error) {
+        console.log(error)
         return res.json({ error: `Algo salio mal: ${error}` });
     }
 }
