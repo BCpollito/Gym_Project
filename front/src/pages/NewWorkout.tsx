@@ -35,6 +35,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
+import { WorkoutElementDetail } from "../types/WorkoutElementDetail";
 import { Exercise } from "../types/Exercises";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
 import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
@@ -56,6 +57,7 @@ export default function NewWorkout() {
     null
   );
 
+  const [newElementArray, setElement] = useState<WorkoutElementDetail[] | null>(null);
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination || !fullworkout) return;
 
@@ -66,11 +68,23 @@ export default function NewWorkout() {
       result.destination.index
     );
 
+    console.log(newElementos);
+    setElement(newElementos);
     setfullworkout({ ...fullworkout, elementos: newElementos });
-
-    // este espacio es para realizar la peticion y mandar el nuevo orden al back
-    // axios.post("/workoutElement/reorder", { ids: newElementos.map(e => e.IDelement) })
   };
+
+  const handleReorder = async () => {
+    try{
+      await axios.put<{
+        error?: string;
+      }>("/workoutElement", {
+        ids: fullworkout?.elementos.map(e => e.IDelement)
+      })
+      setElement(null);
+    }catch(error){
+      alert(error);
+    }
+  }
 
   const [LastElement, setLastElement] = useState<number | null>(null)
 
@@ -356,11 +370,10 @@ export default function NewWorkout() {
       <div className="flex gap-2 fixed bottom-0 p-4 w-full shadow-[-1px_-1px_5px_rgba(0,0,0,0.2)]">
         {/*// @ts-ignore*/}
         <Button
-          onClick={() =>
-            navigate("/admin/libreria/activity/workouts")
-          }
+          onClick={newElementArray ? handleReorder : () => navigate("/admin/libreria/activity/workouts")}
+          color={newElementArray ? "lime" : "black"}
           className="w-full rounded-full" size="sm">
-          Terminar
+          {newElementArray ? "Guardar" : "Terminar"}
         </Button>
         {/*// @ts-ignore*/}
         <IconButton
