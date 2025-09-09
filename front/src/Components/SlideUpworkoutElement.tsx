@@ -82,7 +82,7 @@ export default function SlideUpworkoutElement({
   const handleAddElement = async () => {
     setdisable(true)
     if (modo === "Bloque") {
-      if(!idworkout!.trim() || !nombre.trim()){
+      if(!nombre.trim()){
         setdisable(false)
         return alert("algunos campos estan incompletos")
       }
