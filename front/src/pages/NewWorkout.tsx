@@ -68,21 +68,28 @@ export default function NewWorkout() {
       result.destination.index
     );
 
-    console.log(newElementos);
     setElement(newElementos);
     setfullworkout({ ...fullworkout, elementos: newElementos });
   };
 
   const handleReorder = async () => {
     try{
-      await axios.put<{
-        error?: string;
+      const response = await axios.put<{
+        message: string;
+        success: boolean;
       }>("/workoutElement", {
         ids: fullworkout?.elementos.map(e => e.IDelement)
       })
-      setElement(null);
-    }catch(error){
-      alert(error);
+
+      if(response.data.success === true){       
+        alert(response.data.message)
+        setElement(null);
+        return;
+      }
+      
+    }catch(error: any){
+      const message = error.response?.data?.message || "error desconocido";
+      alert("Error: " + message)
     }
   }
 
