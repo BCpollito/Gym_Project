@@ -70,6 +70,7 @@ exports.getWorkoutById = async (req, res) => {
               include: [{ model: Ejercicio }],
             },
           ],
+          order: [[WorkoutExercises, 'orden', 'ASC']],
         });
 
         if (bloque) {
