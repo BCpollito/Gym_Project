@@ -48,8 +48,34 @@ exports.DeleteByID = async (req, res) => {
             }
         });
 
-        return res.json({message: "ejercicio eliminado del workout"});
+        return res.json({ message: "ejercicio eliminado del workout" });
     } catch (error) {
-        return res.json({error: error});
+        return res.json({ error: error });
+    }
+}
+
+exports.reorder = async (req, res) => {
+    const { ids = [] } = req.body;
+
+    try {
+
+        if (ids && ids.length > 0) {
+            await Promise.all(
+                ids.map((id, i) =>
+                    WorkoutExercises.update(
+                        { orden: i + 1 },
+                        { where: { id } }
+                    )
+                )
+            );
+
+            return res.status(200).json({ success: true, message: "👍" });
+        }
+
+        return res.status(200).json({ success: true, message: "-" });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: `Algo salio mal: ${error.message || error}`, success: false });
     }
 }
