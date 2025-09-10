@@ -37,6 +37,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
 import { WorkoutElementDetail } from "../types/WorkoutElementDetail";
 import { Exercise } from "../types/Exercises";
+import { WorkoutExercise } from "../types/WorkoutExercise";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
 import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
 import LibreriaExercises from "../Components/libreriaExercises";
@@ -58,36 +59,77 @@ export default function NewWorkout() {
   );
 
   const [newElementArray, setElement] = useState<WorkoutElementDetail[] | null>(null);
+  const [newExercisesArray, setExercises] = useState<WorkoutExercise[] | null>(null);
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination || !fullworkout) return;
 
-    // nuevo orden
-    const newElementos = reorder(
-      fullworkout.elementos,
-      result.source.index,
-      result.destination.index
-    );
+    if (result.type === "BLOCK") {
+      // nuevo orden
+      const newElementos = reorder(
+        fullworkout.elementos,
+        result.source.index,
+        result.destination.index
+      );
 
-    setElement(newElementos);
-    setfullworkout({ ...fullworkout, elementos: newElementos });
+      setElement(newElementos);
+      setfullworkout({ ...fullworkout, elementos: newElementos });
+      return;
+    }
+
+    if (result.type === "EXERCISE") {
+      const sourceBlockId = parseInt(result.source.droppableId.replace("block-", ""));
+      const destBlockId = parseInt(result.destination.droppableId.replace("block-", ""));
+
+      // Buscamos los bloques fuente y destino
+      const sourceBlock = fullworkout.elementos.find(e => e.IDelement === sourceBlockId);
+      const destBlock = fullworkout.elementos.find(e => e.IDelement === destBlockId);
+
+      if (!sourceBlock || !destBlock) return;
+
+      // Si es el mismo bloque, solo reordenar
+      if (sourceBlockId === destBlockId) {
+        const exercises = sourceBlock.tipo === "Bloque" ? sourceBlock.data.WorkoutExercises : null;
+        const newExercises = reorder(
+          exercises!,
+          result.source.index,
+          result.destination.index
+        );
+        setExercises(newExercises);
+        const newElementos = fullworkout.elementos.map(e =>
+          (e.IDelement === sourceBlockId && e.tipo === "Bloque")
+            ? { ...e, data: { ...e.data, WorkoutExercises: newExercises } }
+            : e
+        );
+        setfullworkout({ ...fullworkout, elementos: newElementos });
+      }
+      // loigica para mover de bloque a bloque pendiente
+    }
   };
 
   const handleReorder = async () => {
-    try{
+    try {
       const response = await axios.put<{
         message: string;
         success: boolean;
       }>("/workoutElement", {
-        ids: fullworkout?.elementos.map(e => e.IDelement)
-      })
+        ids: fullworkout!.elementos.map(e => e.IDelement)
+      });
 
-      if(response.data.success === true){       
-        alert(response.data.message)
-        setElement(null);
+      const responseExercise = await axios.put<{
+        message: string;
+        success: boolean;
+      }>("/workoutExercises", {
+        ids: newExercisesArray !== null ? newExercisesArray.map(e => e.id)  : []
+      });
+
+      if (response.data.success === true || responseExercise.data.success === true) {
+        alert(response.data.message + responseExercise.data.message)
+        setElement(null)
+        setExercises(null);
         return;
       }
-      
-    }catch(error: any){
+
+    } catch (error: any) {
       const message = error.response?.data?.message || "error desconocido";
       alert("Error: " + message)
     }
@@ -220,7 +262,7 @@ export default function NewWorkout() {
       <div className="px-4 w-full max-h-[80svh]">
         <div className="max-h-[80svh] overflow-y-auto">
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="elementos-droppable">
+            <Droppable droppableId="elementos-droppable" type="BLOCK">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -240,8 +282,8 @@ export default function NewWorkout() {
                           {/*// @ts-ignore*/}
                           <Accordion
                             className={`${elemento.tipo === "Bloque"
-                                ? "bg-blue-50"
-                                : "bg-green-50"
+                              ? "bg-blue-50"
+                              : "bg-green-50"
                               } mb-2 rounded-lg px-2`}
                             open={elemento.tipo === "Bloque" ? true : false}
                           >
@@ -249,7 +291,7 @@ export default function NewWorkout() {
                             <AccordionHeader
                               className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
                                 }`}
-                                {...provided.dragHandleProps}
+                              {...provided.dragHandleProps}
                             >
                               {elemento.tipo === "Bloque" ? (
                                 <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
@@ -316,49 +358,68 @@ export default function NewWorkout() {
                                 </Menu>
                               </div>
                             </AccordionHeader>
-                            <AccordionBody className="relative p-0">
-                              {elemento.tipo === "Bloque" &&
-                                elemento.data.WorkoutExercises.length > 0 ? (
-                                // @ts-ignore
-                                <List className="px-0 pt-0">
-                                  {elemento.data.WorkoutExercises.map((we) => (
-                                    // @ts-ignore
-                                    <ListItem
-                                      className="pl-2 pr-0 py-1  gap-3 bg-blue-gray-400 bg-opacity-10"
-                                      key={we.id}
+                            <AccordionBody className="relative py-0">
+                              {elemento.tipo === "Bloque" && (
+                                <Droppable droppableId={`block-${elemento.IDelement}`} type="EXERCISE">
+                                  {(provided) => (
+                                    //@ts-ignore
+                                    <List
+                                      ref={provided.innerRef}
+                                      {...provided.droppableProps}
+                                      className={`px-0 pt-0 
+                                      ${(elemento.data.WorkoutExercises.length == 0)  && "pb-0"}`}
                                     >
-                                      <img
-                                        className="w-10 h-9 object-cover rounded-sm bg-white"
-                                        src={convertirLink(we.Ejercicio.Link) || ""}
-                                        alt={we.Ejercicio.Nombre}
-                                      />
-                                      <div className="w-8/12 overflow-hidden whitespace-nowrap">
-                                        {/*// @ts-ignore*/}
-                                        <Typography variant="small">
-                                          {we.Ejercicio.Nombre}
-                                        </Typography>
-                                        <div className="flex justify-start items-center gap-5">
-                                          <div className="flex items-center w-[39.59px]">
-                                            <Repeat2 size={16} />
-                                            <span className="text-sm">{we.series}</span>
-                                          </div>
-                                          <div className="flex items-center w-[39.59px]">
-                                            <Goal size={16} />
-                                            <span className="text-sm">{we.objetivo}</span>
-                                          </div>
-                                          <div className="flex items-center w-[46.81px]">
-                                            <CirclePause size={16} />
-                                            <span className="text-sm">{we.tiempoDescanso}s</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="absolute right-0 pr-2">
-                                        <Trash onClick={() => DeleteWorkoutExercise(we.id)} />
-                                      </div>
-                                    </ListItem>
-                                  ))}
-                                </List>
-                              ) : null}
+                                      {elemento.data.WorkoutExercises.map((we, idx) => (
+                                        <Draggable
+                                          key={we.id.toString()}
+                                          draggableId={`exercise-${we.id}`}
+                                          index={idx}
+                                        >
+                                          {(provided) => (
+                                            //@ts-ignore
+                                            <ListItem
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                              className="pl-2 pr-0 py-1 gap-3 bg-blue-gray-400 bg-opacity-10"
+                                            >
+                                              <img
+                                                className="w-10 h-9 object-cover rounded-sm bg-white"
+                                                src={convertirLink(we.Ejercicio.Link) || ""}
+                                                alt={we.Ejercicio.Nombre}
+                                              />
+                                              <div className="w-8/12 overflow-hidden whitespace-nowrap">
+                                                {/*// @ts-ignore*/}
+                                                <Typography variant="small">
+                                                  {we.Ejercicio.Nombre}
+                                                </Typography>
+                                                <div className="flex justify-start items-center gap-5">
+                                                  <div className="flex items-center w-[39.59px]">
+                                                    <Repeat2 size={16} />
+                                                    <span className="text-sm">{we.series}</span>
+                                                  </div>
+                                                  <div className="flex items-center w-[39.59px]">
+                                                    <Goal size={16} />
+                                                    <span className="text-sm">{we.objetivo}</span>
+                                                  </div>
+                                                  <div className="flex items-center w-[46.81px]">
+                                                    <CirclePause size={16} />
+                                                    <span className="text-sm">{we.tiempoDescanso}s</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="absolute right-0 pr-2">
+                                                <Trash onClick={() => DeleteWorkoutExercise(we.id)} />
+                                              </div>
+                                            </ListItem>
+                                          )}
+                                        </Draggable>
+                                      ))}
+                                      {provided.placeholder}
+                                    </List>
+                                  )}
+                                </Droppable>
+                              )}
                             </AccordionBody>
                           </Accordion>
                         </div>
@@ -377,10 +438,10 @@ export default function NewWorkout() {
       <div className="flex gap-2 fixed bottom-0 p-4 w-full shadow-[-1px_-1px_5px_rgba(0,0,0,0.2)]">
         {/*// @ts-ignore*/}
         <Button
-          onClick={newElementArray ? handleReorder : () => navigate("/admin/libreria/activity/workouts")}
-          color={newElementArray ? "lime" : "black"}
+          onClick={(newElementArray || newExercisesArray) ? handleReorder : () => navigate("/admin/libreria/activity/workouts")}
+          color={(newElementArray || newExercisesArray) ? "lime" : "black"}
           className="w-full rounded-full" size="sm">
-          {newElementArray ? "Guardar" : "Terminar"}
+          {(newElementArray || newExercisesArray) ? "Guardar" : "Terminar"}
         </Button>
         {/*// @ts-ignore*/}
         <IconButton
