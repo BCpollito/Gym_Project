@@ -55,7 +55,7 @@ exports.DeleteByID = async (req, res) => {
 }
 
 exports.reorder = async (req, res) => {
-    const { ids = [] } = req.body;
+    const { ids = [], exerciseid, blockid } = req.body;
 
     try {
 
@@ -68,11 +68,19 @@ exports.reorder = async (req, res) => {
                     )
                 )
             );
-
-            return res.status(200).json({ success: true, message: "👍" });
+            console.log("movido internamente");
         }
 
-        return res.status(200).json({ success: true, message: "-" });
+        if (exerciseid && blockid) {
+            await WorkoutExercises.update(
+                { bloqueID: blockid },
+                { where: { id: exerciseid } }
+            );
+            console.log("movido entre bloques")
+        }
+
+        return res.status(200).json({ success: true, message: "👍" });
+
 
     } catch (error) {
         console.log(error)
