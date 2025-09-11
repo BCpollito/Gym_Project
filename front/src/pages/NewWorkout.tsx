@@ -35,7 +35,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
-import { WorkoutElementDetail } from "../types/WorkoutElementDetail";
 import { Exercise } from "../types/Exercises";
 import { WorkoutExercise } from "../types/WorkoutExercise";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
@@ -58,11 +57,14 @@ export default function NewWorkout() {
     null
   );
 
-  const [newElementArray, setElement] = useState<WorkoutElementDetail[] | null>(null);
+  const [ActivateSaveButton, setActivate] = useState(false);
   const [newExercisesArray, setExercises] = useState<WorkoutExercise[] | null>(null);
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination || !fullworkout) return;
-
+  const [idexerciseToBlock, setIdExerciseToBlock] = useState<number>()
+  const [destBlockId, setDestblockId] = useState<number>();
+  const handleDragEnd = (result: DropResult) => {    
+    
+    if (!result.destination || !fullworkout) return;       
+    
     if (result.type === "BLOCK") {
       // nuevo orden
       const newElementos = reorder(
@@ -71,18 +73,22 @@ export default function NewWorkout() {
         result.destination.index
       );
 
-      setElement(newElementos);
+      setActivate(true);
       setfullworkout({ ...fullworkout, elementos: newElementos });
       return;
     }
 
-    if (result.type === "EXERCISE") {
-      const sourceBlockId = parseInt(result.source.droppableId.replace("block-", ""));
-      const destBlockId = parseInt(result.destination.droppableId.replace("block-", ""));
+    const sourceBlockId = parseInt(result.source.droppableId.replace("block-", ""));
+    const destBlockId = parseInt(result.destination.droppableId.replace("block-", ""));
 
-      // Buscamos los bloques fuente y destino
-      const sourceBlock = fullworkout.elementos.find(e => e.IDelement === sourceBlockId);
-      const destBlock = fullworkout.elementos.find(e => e.IDelement === destBlockId);
+    // busco los bloques fuente y destino
+    const sourceBlock = fullworkout.elementos.find(e => e.IDelement === sourceBlockId);
+    const destBlock = fullworkout.elementos.find(e => e.IDelement === destBlockId);
+    if(destBlock?.tipo === "Bloque")    {
+      setDestblockId(destBlock.data.id);
+    }
+    
+    if (result.type === "EXERCISE") {
 
       if (!sourceBlock || !destBlock) return;
 
@@ -95,14 +101,43 @@ export default function NewWorkout() {
           result.destination.index
         );
         setExercises(newExercises);
+        setActivate(true);
         const newElementos = fullworkout.elementos.map(e =>
           (e.IDelement === sourceBlockId && e.tipo === "Bloque")
             ? { ...e, data: { ...e.data, WorkoutExercises: newExercises } }
             : e
         );
         setfullworkout({ ...fullworkout, elementos: newElementos });
-      }
-      // loigica para mover de bloque a bloque pendiente
+      }      
+    }
+    
+    // Si el ejercicio se mueve ENTRE bloques:
+    if (sourceBlockId !== destBlockId && sourceBlock?.tipo === "Bloque" && destBlock?.tipo === "Bloque") {
+      // copia de los arrays de ejercicios
+      const sourceExercises = Array.from(sourceBlock.data.WorkoutExercises);
+      const destExercises = Array.from(destBlock.data.WorkoutExercises);
+
+      // se quita el ejercicio del bloque fuente
+      const [movedExercise] = sourceExercises.splice(result.source.index, 1);
+      //
+      setIdExerciseToBlock(movedExercise.id)
+      setActivate(true)
+
+      // se Inserta en el bloque destino
+      destExercises.splice(result.destination.index, 0, movedExercise);
+
+      // armo el nuevo array de elementos
+      const newElementos = fullworkout.elementos.map(e => {
+        if (e.IDelement === sourceBlockId && e.tipo === "Bloque") {
+          return { ...e, data: { ...e.data, WorkoutExercises: sourceExercises } };
+        }
+        if (e.IDelement === destBlockId && e.tipo === "Bloque") {
+          return { ...e, data: { ...e.data, WorkoutExercises: destExercises } };
+        }
+        return e;
+      });
+
+      setfullworkout({ ...fullworkout, elementos: newElementos });
     }
   };
 
@@ -119,13 +154,14 @@ export default function NewWorkout() {
         message: string;
         success: boolean;
       }>("/workoutExercises", {
-        ids: newExercisesArray !== null ? newExercisesArray.map(e => e.id)  : []
+        ids: newExercisesArray !== null ? newExercisesArray.map(e => e.id) : [],
+        exerciseid: idexerciseToBlock,
+        blockid: destBlockId,
       });
 
       if (response.data.success === true || responseExercise.data.success === true) {
         alert(response.data.message + responseExercise.data.message)
-        setElement(null)
-        setExercises(null);
+        setActivate(false);
         return;
       }
 
@@ -367,7 +403,10 @@ export default function NewWorkout() {
                                       ref={provided.innerRef}
                                       {...provided.droppableProps}
                                       className={`px-0 pt-0 
-                                      ${(elemento.data.WorkoutExercises.length == 0)  && "pb-0"}`}
+                                      ${(elemento.data.WorkoutExercises.length == 0) && "pb-0"}
+                                      ${elemento.data.WorkoutExercises.length === 0 
+                                        ? "min-h-14 bg-blue-100 border-2 border-dashed border-blue-200" 
+                                        : ""}`}
                                     >
                                       {elemento.data.WorkoutExercises.map((we, idx) => (
                                         <Draggable
@@ -438,10 +477,10 @@ export default function NewWorkout() {
       <div className="flex gap-2 fixed bottom-0 p-4 w-full shadow-[-1px_-1px_5px_rgba(0,0,0,0.2)]">
         {/*// @ts-ignore*/}
         <Button
-          onClick={(newElementArray || newExercisesArray) ? handleReorder : () => navigate("/admin/libreria/activity/workouts")}
-          color={(newElementArray || newExercisesArray) ? "lime" : "black"}
+          onClick={ActivateSaveButton ? handleReorder : () => navigate("/admin/libreria/activity/workouts")}
+          color={ActivateSaveButton ? "lime" : "black"}
           className="w-full rounded-full" size="sm">
-          {(newElementArray || newExercisesArray) ? "Guardar" : "Terminar"}
+          {ActivateSaveButton ? "Guardar" : "Terminar"}
         </Button>
         {/*// @ts-ignore*/}
         <IconButton
