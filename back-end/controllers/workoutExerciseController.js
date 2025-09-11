@@ -68,7 +68,6 @@ exports.reorder = async (req, res) => {
                     )
                 )
             );
-            console.log("movido internamente");
         }
 
         if (exerciseid && blockid) {
@@ -76,7 +75,6 @@ exports.reorder = async (req, res) => {
                 { bloqueID: blockid },
                 { where: { id: exerciseid } }
             );
-            console.log("movido entre bloques")
         }
 
         return res.status(200).json({ success: true, message: "👍" });

@@ -195,8 +195,7 @@ export default function NewWorkout() {
         const workoutElements = await axios.get<FullWorkoutResponse>(
           `/workouts/${id}?include=full`
         );
-        setfullworkout(workoutElements.data);
-        console.log(workoutElements.data);
+        setfullworkout(workoutElements.data);       
 
         const ordenes = workoutElements.data.elementos
           .map(e => e.orden ?? 0);
