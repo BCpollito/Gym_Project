@@ -19,13 +19,8 @@ import {
   Repeat2,
   NotebookText
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useWorkoutElementForm } from "../Hooks/useWorkoutElementForm";
 import { PropsModal } from "../types/PropsModal";
-import axios from "axios";
-import { Workout } from "../types/workout";
-import { WorkoutElement } from "../types/WorkoutElement";
-import { WorkoutExercise } from "../types/WorkoutExercise";
-import { Descanso } from "../types/Descanso";
 import { chips } from "../types/RestTimes";
 
 export default function SlideUpworkoutElement({
@@ -38,341 +33,95 @@ export default function SlideUpworkoutElement({
   elementorder,
   ejercicioExistente,
 }: PropsModal) {
-  const [nombre, setnombre] = useState<string>("");
-  const [descripcion, setdescripcion] = useState<string>("");
-  const [descanso, setdescanso] = useState<number>(0);
-  const [series, setseries] = useState<number | null>(null);
-  const [objetivo, setobjetivo] = useState<number | null>(null)
-  const [instrucciones, setinstrucciones] = useState<string>("")
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  const handleRestTime = (
-    value: { label: string; value: number },
-    index: number
-  ) => {
-    setSelectedIndex(index);
-    setdescanso(value.value);
+  const handleSuccess = () => {
+    refresh?.();    // refresca los datos del listado
+    onClose?.();    // cierra el modal
   };
 
-
-  interface WorkoutExerciseResponse {
-    Exercises: WorkoutExercise[];
-  }
-
-  const [ExerciseOrder, setExerciseOrder] = useState<number | null>(null);
-  useEffect(() => {
-    if (modo === "Ejercicio") {
-      const getElement = async () => {
-        const response = await axios.get<WorkoutExerciseResponse>(`/workoutExercises/${id}`);
-        console.log("Ejercicios: ", response.data);
-
-        const ejercicios = response.data.Exercises ?? [];
-
-        const ordenes = ejercicios.map(e => e.orden ?? 0);
-
-        const LastAdded = ordenes.length > 0 ? Math.max(...ordenes) : 0;
-
-        setExerciseOrder(LastAdded);
-      }
-      getElement();
-    }
-  }, [modo])
-
-  const [disabled, setdisable] = useState(false);
-  const handleAddElement = async () => {
-    setdisable(true)
-    if (modo === "Bloque") {
-      if(!nombre.trim()){
-        setdisable(false)
-        return alert("algunos campos estan incompletos")
-      }
-      const response = await axios.post<{
-        success: boolean;
-        message: string;
-        newblock: Workout;
-      }>("/bloques", {
-        workoutID: idworkout,
-        nombre: nombre,
-        descripcion: descripcion,
-      });
-
-      const responseElement = await axios.post<{
-        success: boolean;
-        message: string;
-        newElement: WorkoutElement;
-      }>("/workoutElement", {
-        workoutID: idworkout,
-        tipo: modo,
-        elementoID: response.data.newblock.id,
-        orden: elementorder! + 1,
-      });
-
-      if (response.data.success) {
-        if (responseElement.data.success) {
-          console.log(
-            `Se agrego un nuevo elemento tipo: ${responseElement.data.newElement.tipo} al workoutde ID: ${responseElement.data.newElement.workoutID}`
-          );
-        }
-        alert(`${response.data.message}`);
-        setnombre("");
-        setdescripcion("");
-        onClose();
-        refresh?.();
-      }
-    }
-
-    if (modo === "Descanso") {
-      console.log("DESCANSO");
-
-      if (selectedIndex !== null) {
-        const response = await axios.post<{
-          newRest: Descanso;
-          success: boolean;
-          message: string;
-        }>("/descansos", {
-          workoutID: idworkout,
-          duracionSegundos: descanso,
-        });
-
-        const responseElement = await axios.post<{
-          success: boolean;
-          message: string;
-          newElement: WorkoutElement;
-        }>("/workoutElement", {
-          workoutID: idworkout,
-          tipo: modo,
-          elementoID: response.data.newRest.id,
-          orden: elementorder! + 1,
-        });
-
-        if (response.data.success) {
-          if (responseElement.data.success) {
-            console.log(
-              `Se agrego un nuevo elemento tipo: ${responseElement.data.newElement.tipo} al workoutde ID: ${responseElement.data.newElement.workoutID}`
-            );
-          }
-          setdescanso(0);
-          onClose();
-          refresh?.();
-          alert(response.data.message);
-        }
-      }else{
-        setdisable(false)
-        return alert("algunos campos estan incompletos")
-      }
-    }
-
-    if (modo === "Ejercicio") {
-      if (selectedIndex === null || series == 0 || objetivo == 0 
-        || isNaN(series!)  || isNaN(objetivo!) || series === null || objetivo === null) {
-        setdisable(false)
-        return alert("algunos campos estan incompletos o invalidos")
-      }
-
-      const responseExerciseWorkout = await axios.post<{
-        message: string;
-        success: boolean;
-        newExerciseWorkout: WorkoutExercise;
-      }>("/workoutExercise", {
-        bloqueID: id,
-        ejercicioID: ejercicioExistente?.ID_ejercicio,
-        series: series,
-        objetivo: objetivo,
-        tiempoDescanso: descanso,
-        instrucciones: instrucciones,
-        orden: ExerciseOrder! + 1
-      })
-
-      setdescanso(0);
-      setinstrucciones("");
-      onClose();
-      refresh?.();
-      alert(responseExerciseWorkout.data.message);
-    }
-  }
+  const {
+    nombre, setNombre,
+    descripcion, setDescripcion,
+    series, setSeries,
+    objetivo, setObjetivo,
+    instrucciones, setInstrucciones,
+    selectedIndex,
+    disabled,
+    handleRestTime,
+    handleSubmit,
+  } = useWorkoutElementForm({
+    modo,
+    idworkout,
+    id,
+    elementorder,
+    ejercicioExistente,
+    onSuccess: handleSuccess,
+  });
 
   return (
-    <>
-      {/*// @ts-ignore*/}
-      <Dialog
-        open={open}
-        handler={onClose}
-        animate={{
-          mount: { y: 0 },
-          unmount: { y: 500 },
-        }}
-        className="fixed bottom-0 w-full max-w-full m-0 rounded-t-2xl bg-white"
-        style={{ maxHeight: "85svh", height: "auto" }}
-      >
-        {/*// @ts-ignore*/}
-        <DialogHeader className="flex justify-between items-center w-full">
-          <div className="w-6" />
-          <div className="flex gap-1">
-            {modo === "Bloque" && <LayoutList />}
-            {modo === "Descanso" && <CirclePause />}
-            {modo === "Ejercicio" && <BicepsFlexed />}
-            {/*// @ts-ignore*/}
-            <Typography variant="h6" className="text-center flex-1">
-              {modo === "Bloque" && "Añadir Bloque"}
-              {modo === "Descanso" && "Añadir Descanso"}
-              {modo === "Ejercicio" && "Añadir ejercicio"}
-            </Typography>
-          </div>
-          {/*// @ts-ignore*/}
-          <IconButton
-            variant="text"
-            className=" rounded-full"
-            onClick={onClose}
-          >
-            <X />
-          </IconButton>
-        </DialogHeader>
+    //@ts-ignore
+    <Dialog open={open} handler={onClose} size="lg">
+      {/*@ts-ignore*/}
+      <DialogHeader className="flex justify-between items-center w-full">
+        <div className="flex gap-1">
+          {modo === "Bloque" && <LayoutList />}
+          {modo === "Descanso" && <CirclePause />}
+          {modo === "Ejercicio" && <BicepsFlexed />}
+        </div>
+        {/*@ts-ignore*/}
+        <Typography variant="h6">
+          {/*@ts-ignore*/}
+          {modo === "Bloque" && "Agregar Bloque"}
+          {modo === "Descanso" && "Agregar Descanso"}
+          {modo === "Ejercicio" && "Agregar Ejercicio"}
+        </Typography>
+        {/*@ts-ignore*/}
+        <IconButton variant="text" onClick={onClose}>
+          <X />
+        </IconButton>
+      </DialogHeader>
+      {/*@ts-ignore*/}
+      <DialogBody className="flex flex-col gap-4 py-0">
         {modo === "Bloque" && (
-          // @ts-ignore
-          <DialogBody className="w-full p-5 pt-0 space-y-4 pb-6">
-            {/*// @ts-ignore*/}
-            <Typography color="black" variant="h6">
-              Informacion del bloque
-            </Typography>
-            <div>
-              {/*// @ts-ignore*/}
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="mb-2 text-left font-medium"
-              >
-                Nombre
-              </Typography>
-              {/*// @ts-ignore*/}
-              <Input
-                color="gray"
-                size="lg"
-                placeholder="ej. Fuerza"
-                value={nombre}
-                className="placeholder:opacity-100 focus:!border-t-gray-900"
-                containerProps={{
-                  className: "!min-w-full",
-                }}
-                labelProps={{
-                  className: "hidden",
-                }}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setnombre(e.target.value)
-                }
-              />
-            </div>
-
-            <div>
-              {/*// @ts-ignore*/}
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="text-left font-medium flex"
-              >
-                Descripcion
-                {/*// @ts-ignore*/}
-                <Typography color="gray" variant="small">
-                  (Opcional)
-                </Typography>
-              </Typography>
-              {/*// @ts-ignore*/}
-              <Textarea
-                rows={5}
-                placeholder="ej. ejercicios Leves..."
-                value={descripcion}
-                className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-600 ring-4 ring-transparent focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-                labelProps={{
-                  className: "hidden",
-                }}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setdescripcion(e.target.value)
-                }
-              />
-            </div>
-          </DialogBody>
+          <>
+            {/*@ts-ignore*/}
+            <Input
+              label="Nombre del bloque"
+              value={nombre}
+              onChange={e => setNombre(e.target.value)}
+            />
+            {/*@ts-ignore*/}
+            <Textarea
+              label="Descripción"
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
+            />
+          </>
         )}
-        {(modo === "Descanso" || modo === "Ejercicio") && (
-          // @ts-ignore
-          <DialogBody className={`w-full p-5 pt-0 pb-6 ${modo === "Ejercicio" && "max-h-[60vh] pb-0 overflow-y-auto space-y-5"}`}>
-            {modo === "Ejercicio" &&
-              (
-                <>
-                  {/*// @ts-ignore*/}
-                  <Typography color="black" variant="h6">
-                    {ejercicioExistente?.Nombre}
-                  </Typography>
-                  <div>
-                    {/*// @ts-ignore*/}
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="text-left font-medium flex items-center"
-                    >
-                      <Repeat2 size={18} />
-                      Series
-                    </Typography>
-                    {/*// @ts-ignore*/}
-                    <Input
-                      color="gray"
-                      size="lg"
-                      placeholder="ej. 3"
-                      type="number"
-                      className="placeholder:opacity-100 focus:!border-t-gray-900"
-                      containerProps={{
-                        className: "!min-w-full",
-                      }}
-                      labelProps={{
-                        className: "hidden",
-                      }}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setseries(Number(e.target.value))
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    {/*// @ts-ignore*/}
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="text-left font-medium flex"
-                    >
-                      <Goal size={18} />
-                      Objetivo
-                    </Typography>
-                    {/*// @ts-ignore*/}
-                    <Input
-                      color="gray"
-                      size="lg"
-                      placeholder="ej. 3"
-                      className="placeholder:opacity-100 focus:!border-t-gray-900"
-                      containerProps={{
-                        className: "!min-w-full",
-                      }}
-                      labelProps={{
-                        className: "hidden",
-                      }}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setobjetivo(Number(e.target.value))
-                      }
-                    />
-                  </div>
-                </>
-              )
-            }
+        {modo === "Ejercicio" && (
+          <>
+            {/*@ts-ignore*/}
+            <Typography color="black" variant="h6">
+              {ejercicioExistente?.Nombre}
+            </Typography>
+            <div className="space-y-2">
+              {/*@ts-ignore*/}
+              <Input
+                label="Series"
+                type="number"
+                onChange={e => setSeries(Number(e.target.value))}
+                icon={<Repeat2 />}
+              />
+              {/*@ts-ignore*/}
+              <Input
+                label="Objetivo"
+                type="number"
+                onChange={e => setObjetivo(Number(e.target.value))}
+                icon={<Goal />}
+              />
+            </div>
             <div>
-              {modo === "Ejercicio" &&
-                /*// @ts-ignore*/
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="text-left font-medium flex"
-                >
-                  <CirclePause size={18} />
-                  Descanso
-                </Typography>
-              }
-              <div className={`flex gap-2 flex-wrap`}>
+              <div className="mb-1">Descanso:</div>
+              <div className={`flex gap-2 flex-wrap px-3`}>
                 {chips.map((value, index) => (
                   <div
                     className="rounded-full"
@@ -389,51 +138,45 @@ export default function SlideUpworkoutElement({
                 ))}
               </div>
             </div>
-
-            {modo === "Ejercicio" &&
-              (
-                <>
-                  <div>
-                    {/*// @ts-ignore*/}
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="text-left font-medium flex"
-                    >
-                      <NotebookText size={18} />
-                      instrucciones adicionales
-                    </Typography>
-                    {/*// @ts-ignore*/}
-                    <Textarea
-                      rows={5}
-                      placeholder="se puede detallar en que va a consistir la sesion etc..."
-                      value={instrucciones!}
-                      className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-600 ring-4 ring-transparent focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-                      labelProps={{
-                        className: "hidden",
-                      }}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setinstrucciones(e.target.value)
-                      }
-                    />
-                  </div>
-                </>)
-            }
-          </DialogBody>
+            {/*@ts-ignore*/}
+            <Textarea
+              label="Instrucciones"
+              value={instrucciones}
+              onChange={e => setInstrucciones(e.target.value)}
+            />
+          </>
         )}
-        {/*// @ts-ignore*/}
-        <DialogFooter className="flex items-center justify-center">
-          {/*// @ts-ignore*/}
-          <Button
-            onClick={handleAddElement}
-            disabled={disabled}
-            color="orange"
-            className="rounded-full w-full "
-          >
-            Continuar
-          </Button>
-        </DialogFooter>
-      </Dialog >
-    </>
+        {modo === "Descanso" && (
+          <div className={`flex gap-2 flex-wrap`}>
+            {chips.map((value, index) => (
+              <div
+                className="rounded-full"
+                onClick={() => handleRestTime(value, index)}
+              >
+                <Chip
+                  key={index}
+                  size="sm"
+                  value={value.label}
+                  variant={selectedIndex === index ? "filled" : "outlined"}
+                  className="rounded-full"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </DialogBody>
+      {/*@ts-ignore*/}
+      <DialogFooter>
+        {/*@ts-ignore*/}
+        <Button
+          variant="gradient"
+          color="blue"
+          onClick={handleSubmit}
+          disabled={disabled}
+        >
+          Agregar
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }
