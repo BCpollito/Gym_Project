@@ -2,144 +2,57 @@ import {
   IconButton,
   Typography,
   Button,
-  Accordion,
-  AccordionBody,
-  AccordionHeader,
-  List,
-  ListItem,
   Dialog,
   DialogHeader,
   DialogFooter,
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
 } from "@material-tailwind/react";
-import {
-  ChevronsLeft,
-  Plus,
-  Goal,
-  Repeat2,
-  LayoutList,
-  CirclePause,
-  EllipsisVertical,
-  Trash,
-} from "lucide-react";
+import { ChevronsLeft, Plus } from "lucide-react";
 import {
   DragDropContext,
   Droppable,
   Draggable,
-  DropResult,
 } from "@hello-pangea/dnd";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
-import { Exercise } from "../types/Exercises";
-import { WorkoutExercise } from "../types/WorkoutExercise";
+import axios from "axios";
 import SlideUpSelectelement from "../Components/SlideUpSelectelement";
 import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
 import LibreriaExercises from "../Components/libreriaExercises";
-import convertirLink from "../services/ConvertLink";
-
-const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
+import WorkoutBlockAccordion from "../Components/WorkoutBlockAccordion";
+import { WorkoutExercise } from "../types/WorkoutExercise";
+import { useWorkoutData } from "../Hooks/useWorkoutData";
+import { useWorkoutDnD } from "../Hooks/useWorkoutDnD";
+import { useState } from "react";
 
 export default function NewWorkout() {
   const navigate = useNavigate();
-
   const { id } = useParams();
-  const [fullworkout, setfullworkout] = useState<FullWorkoutResponse | null>(
-    null
-  );
 
+  // Custom hook: lógica de datos y control de diálogos
+  const {
+    fullworkout, setfullworkout,
+    LastElement,
+    open, setopen, handleClose,
+    openViewExercises, setopenViewExercises, bloqueid, setbloqueid, handleCloseExercises,
+    openElement, exercise, getexercise, handlerCloseElement,
+    DeleteElement, DeleteWorkoutExercise,
+    refresh,
+  } = useWorkoutData(id);
+
+  // Estados para DnD
   const [ActivateSaveButton, setActivate] = useState(false);
   const [newExercisesArray, setExercises] = useState<WorkoutExercise[] | null>(null);
-  const [idexerciseToBlock, setIdExerciseToBlock] = useState<number>()
+  const [idexerciseToBlock, setIdExerciseToBlock] = useState<number>();
   const [destBlockId, setDestblockId] = useState<number>();
-  const handleDragEnd = (result: DropResult) => {    
-    
-    if (!result.destination || !fullworkout) return;       
-    
-    if (result.type === "BLOCK") {
-      // nuevo orden
-      const newElementos = reorder(
-        fullworkout.elementos,
-        result.source.index,
-        result.destination.index
-      );
 
-      setActivate(true);
-      setfullworkout({ ...fullworkout, elementos: newElementos });
-      return;
-    }
-
-    const sourceBlockId = parseInt(result.source.droppableId.replace("block-", ""));
-    const destBlockId = parseInt(result.destination.droppableId.replace("block-", ""));
-
-    // busco los bloques fuente y destino
-    const sourceBlock = fullworkout.elementos.find(e => e.IDelement === sourceBlockId);
-    const destBlock = fullworkout.elementos.find(e => e.IDelement === destBlockId);
-    if(destBlock?.tipo === "Bloque")    {
-      setDestblockId(destBlock.data.id);
-    }
-    
-    if (result.type === "EXERCISE") {
-
-      if (!sourceBlock || !destBlock) return;
-
-      // Si es el mismo bloque, solo reordenar
-      if (sourceBlockId === destBlockId) {
-        const exercises = sourceBlock.tipo === "Bloque" ? sourceBlock.data.WorkoutExercises : null;
-        const newExercises = reorder(
-          exercises!,
-          result.source.index,
-          result.destination.index
-        );
-        setExercises(newExercises);
-        setActivate(true);
-        const newElementos = fullworkout.elementos.map(e =>
-          (e.IDelement === sourceBlockId && e.tipo === "Bloque")
-            ? { ...e, data: { ...e.data, WorkoutExercises: newExercises } }
-            : e
-        );
-        setfullworkout({ ...fullworkout, elementos: newElementos });
-      }      
-    }
-    
-    // Si el ejercicio se mueve ENTRE bloques:
-    if (sourceBlockId !== destBlockId && sourceBlock?.tipo === "Bloque" && destBlock?.tipo === "Bloque") {
-      // copia de los arrays de ejercicios
-      const sourceExercises = Array.from(sourceBlock.data.WorkoutExercises);
-      const destExercises = Array.from(destBlock.data.WorkoutExercises);
-
-      // se quita el ejercicio del bloque fuente
-      const [movedExercise] = sourceExercises.splice(result.source.index, 1);
-      //
-      setIdExerciseToBlock(movedExercise.id)
-      setActivate(true)
-
-      // se Inserta en el bloque destino
-      destExercises.splice(result.destination.index, 0, movedExercise);
-
-      // armo el nuevo array de elementos
-      const newElementos = fullworkout.elementos.map(e => {
-        if (e.IDelement === sourceBlockId && e.tipo === "Bloque") {
-          return { ...e, data: { ...e.data, WorkoutExercises: sourceExercises } };
-        }
-        if (e.IDelement === destBlockId && e.tipo === "Bloque") {
-          return { ...e, data: { ...e.data, WorkoutExercises: destExercises } };
-        }
-        return e;
-      });
-
-      setfullworkout({ ...fullworkout, elementos: newElementos });
-    }
-  };
+  // Custom hook: lógica de drag and drop
+  const { handleDragEnd } = useWorkoutDnD({
+    fullworkout,
+    setfullworkout,
+    setActivate,
+    setExercises,
+    setIdExerciseToBlock,
+    setDestblockId,
+  });
 
   const handleReorder = async () => {
     try {
@@ -168,99 +81,6 @@ export default function NewWorkout() {
     } catch (error: any) {
       const message = error.response?.data?.message || "error desconocido";
       alert("Error: " + message)
-    }
-  }
-
-  const [LastElement, setLastElement] = useState<number | null>(null)
-
-  const [refreshdata, setrefreshdata] = useState(false);
-  const refresh = () => {
-    setrefreshdata((prev) => !prev);
-  };
-
-  const [open, setopen] = useState(false);
-  const handleClose = () => {
-    setopen(false);
-  };
-
-  const [openViewExercises, setopenViewExercises] = useState(false);
-  const [bloqueid, setbloqueid] = useState<number | null>(null);
-  const handleCloseExercises = () => {
-    setopenViewExercises(false);
-  };
-
-  useEffect(() => {
-    const getWorkoutElements = async () => {
-      try {
-        const workoutElements = await axios.get<FullWorkoutResponse>(
-          `/workouts/${id}?include=full`
-        );
-        setfullworkout(workoutElements.data);       
-
-        const ordenes = workoutElements.data.elementos
-          .map(e => e.orden ?? 0);
-
-        const LastAdded = ordenes.length > 0 ? Math.max(...ordenes) : 0;
-
-        setLastElement(LastAdded);
-
-      } catch (error) {
-        console.log("No se pudieron cargar los elementos del workout");
-        console.log(error);
-      }
-    };
-    getWorkoutElements();
-  }, [refreshdata]);
-
-  const [openElement, setopenElement] = useState(false);
-  const handlerCloseElement = () => { setopenElement(false) };
-  const [exercise, setexercise] = useState<Exercise | null>(null);
-  const getexercise = (ejercicio: Exercise) => {
-    setopenElement(true);
-    setexercise(ejercicio);
-  }
-
-  const DeleteElement = async (IDelement: Number) => {
-    const sino = window.confirm("Seguro que deseas eliminar?");
-    if (sino) {
-      try {
-        const response = await axios.delete<{
-          message: string;
-          error: string;
-        }>(`/workoutElement/${IDelement}`);
-
-        if (response.data.message) {
-          window.alert(`${response.data.message}`);
-        }
-        if (response.data.error) {
-          window.alert(`${response.data.error}`);
-        }
-        setrefreshdata((prev) => !prev);
-      } catch (error) {
-        console.error("Error al crear el ejercicio:", error);
-      }
-    }
-  }
-
-  const DeleteWorkoutExercise = async (WorkoutExerciseID: Number) => {
-    const sino = window.confirm("Seguro que deseas eliminar?");
-    if (sino) {
-      try {
-        const response = await axios.delete<{
-          message: string;
-          error: string;
-        }>(`/workoutExercise/${WorkoutExerciseID}`);
-
-        if (response.data.message) {
-          window.alert(`${response.data.message}`);
-        }
-        if (response.data.error) {
-          window.alert(`${response.data.error}`);
-        }
-        setrefreshdata((prev) => !prev);
-      } catch (error) {
-        console.error("Error al crear el ejercicio:", error);
-      }
     }
   }
 
@@ -299,171 +119,23 @@ export default function NewWorkout() {
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="elementos-droppable" type="BLOCK">
               {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
+                <div ref={provided.innerRef} {...provided.droppableProps}>
                   {fullworkout?.elementos.map((elemento, index) => (
-                    <Draggable
-                      key={elemento.IDelement.toString()}
-                      draggableId={elemento.IDelement.toString()}
+                    <WorkoutBlockAccordion
+                      key={elemento.IDelement}
+                      block={elemento}
                       index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
-                          {/*// @ts-ignore*/}
-                          <Accordion
-                            className={`${elemento.tipo === "Bloque"
-                              ? "bg-blue-50"
-                              : "bg-green-50"
-                              } mb-2 rounded-lg px-2`}
-                            open={elemento.tipo === "Bloque" ? true : false}
-                          >
-                            {/*// @ts-ignore*/}
-                            <AccordionHeader
-                              className={`relative gap-x-2 py-0 px-0 h-12 max-h-12 justify-start border-b-0 ${elemento.tipo === "Bloque" ? " text-blue-500" : "text-green-500"
-                                }`}
-                              {...provided.dragHandleProps}
-                            >
-                              {elemento.tipo === "Bloque" ? (
-                                <div className="rounded-sm p-1 bg-blue-gray-400 bg-opacity-20">
-                                  <LayoutList />
-                                </div>
-                              ) : (
-                                <div className="rounded-sm p-1 bg-green-300 bg-opacity-20">
-                                  <CirclePause />
-                                </div>
-                              )}
-                              <div className="w-8/12 justify-start overflow-hidden whitespace-nowrap">
-                                {elemento.tipo === "Bloque" ? (
-                                  // @ts-ignore
-                                  <Typography
-                                    className="font-black"
-                                    variant="paragraph"
-                                  >{`${elemento.data.nombre}`}</Typography>
-                                ) : (
-                                  // @ts-ignore
-                                  <Typography
-                                    className="font-black"
-                                    variant="paragraph"
-                                  >{`Descanso de ${elemento.data.duracionSegundos} segundos`}</Typography>
-                                )}
-                                {elemento.tipo === "Bloque" && (
-                                  // @ts-ignore
-                                  <Typography color="gray" className="text-xs">
-                                    {elemento.data.descripcion}
-                                  </Typography>
-                                )}
-                              </div>
-                              <div className="absolute right-0 p-0">
-                                <Menu placement="left-end">
-                                  <MenuHandler>
-                                    <EllipsisVertical />
-                                  </MenuHandler>
-                                  {/* @ts-expect-error */}
-                                  <MenuList className="!min-w-fit p-1 px-4 justify-center items-center text-md">
-                                    {elemento.tipo === "Bloque" &&
-                                      // @ts-expect-error
-                                      <MenuItem
-                                        onClick={() => {
-                                          setopenViewExercises(true);
-                                          setbloqueid(elemento.data.id);
-                                        }}
-                                        className="flex items-center justify-center p-0 text-green-500"
-                                      >
-                                        <Plus />
-                                        ejercicio
-                                      </MenuItem>
-                                    }
-                                    {elemento.tipo === "Bloque" &&
-                                      <hr className="my-1" />
-                                    }
-                                    {/* @ts-expect-error */}
-                                    <MenuItem
-                                      onClick={() => DeleteElement(elemento.IDelement)}
-                                      className="flex items-center justify-center p-0 text-red-500"
-                                    >
-                                      <Trash />
-                                      eliminar
-                                    </MenuItem>
-                                  </MenuList>
-                                </Menu>
-                              </div>
-                            </AccordionHeader>
-                            <AccordionBody className="relative py-0">
-                              {elemento.tipo === "Bloque" && (
-                                <Droppable droppableId={`block-${elemento.IDelement}`} type="EXERCISE">
-                                  {(provided) => (
-                                    //@ts-ignore
-                                    <List
-                                      ref={provided.innerRef}
-                                      {...provided.droppableProps}
-                                      className={`px-0 pt-0 
-                                      ${(elemento.data.WorkoutExercises.length == 0) && "pb-0"}
-                                      ${elemento.data.WorkoutExercises.length === 0 
-                                        ? "min-h-14 bg-blue-100 border-2 border-dashed border-blue-200" 
-                                        : ""}`}
-                                    >
-                                      {elemento.data.WorkoutExercises.map((we, idx) => (
-                                        <Draggable
-                                          key={we.id.toString()}
-                                          draggableId={`exercise-${we.id}`}
-                                          index={idx}
-                                        >
-                                          {(provided) => (
-                                            //@ts-ignore
-                                            <ListItem
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
-                                              className="pl-2 pr-0 py-1 gap-3 bg-blue-gray-400 bg-opacity-10"
-                                            >
-                                              <img
-                                                className="w-10 h-9 object-cover rounded-sm bg-white"
-                                                src={convertirLink(we.Ejercicio.Link) || ""}
-                                                alt={we.Ejercicio.Nombre}
-                                              />
-                                              <div className="w-8/12 overflow-hidden whitespace-nowrap">
-                                                {/*// @ts-ignore*/}
-                                                <Typography variant="small">
-                                                  {we.Ejercicio.Nombre}
-                                                </Typography>
-                                                <div className="flex justify-start items-center gap-5">
-                                                  <div className="flex items-center w-[39.59px]">
-                                                    <Repeat2 size={16} />
-                                                    <span className="text-sm">{we.series}</span>
-                                                  </div>
-                                                  <div className="flex items-center w-[39.59px]">
-                                                    <Goal size={16} />
-                                                    <span className="text-sm">{we.objetivo}</span>
-                                                  </div>
-                                                  <div className="flex items-center w-[46.81px]">
-                                                    <CirclePause size={16} />
-                                                    <span className="text-sm">{we.tiempoDescanso}s</span>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <div className="absolute right-0 pr-2">
-                                                <Trash onClick={() => DeleteWorkoutExercise(we.id)} />
-                                              </div>
-                                            </ListItem>
-                                          )}
-                                        </Draggable>
-                                      ))}
-                                      {provided.placeholder}
-                                    </List>
-                                  )}
-                                </Droppable>
-                              )}
-                            </AccordionBody>
-                          </Accordion>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                      draggableId={elemento.IDelement.toString()}
+                      DraggableComponent={Draggable}
+                      DroppableComponent={Droppable}
+                      onClickAddExercise={e => {
+                        setbloqueid(e); 
+                        setopenViewExercises(true);
+                      }}
+                  onClickDeleteBlock={e => DeleteElement(e)}
+                  onClickDeleteExercise={e => DeleteWorkoutExercise(e)}
+          />
+        ))}
                   {provided.placeholder}
                 </div>
               )}
