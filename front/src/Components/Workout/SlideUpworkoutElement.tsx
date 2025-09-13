@@ -19,9 +19,9 @@ import {
   Repeat2,
   NotebookText
 } from "lucide-react";
-import { useWorkoutElementForm } from "../Hooks/useWorkoutElementForm";
-import { PropsModal } from "../types/PropsModal";
-import { chips } from "../types/RestTimes";
+import { useWorkoutElementForm } from "../../Hooks/useWorkoutElementForm";
+import { PropsModal } from "../../types/PropsModal";
+import { chips } from "../../types/Workout/RestTimes";
 
 export default function SlideUpworkoutElement({
   open,

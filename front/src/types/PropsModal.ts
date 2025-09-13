@@ -1,5 +1,5 @@
 import { Exercise } from "./Exercises";
-import { Workout } from "./workout"; }
+import { Workout } from "./Workout/workout";
 
 export interface PropsModal {
   open: boolean;

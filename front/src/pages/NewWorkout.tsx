@@ -14,11 +14,11 @@ import {
 } from "@hello-pangea/dnd";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import SlideUpSelectelement from "../Components/SlideUpSelectelement";
-import SlideUpworkoutElement from "../Components/SlideUpworkoutElement";
+import SlideUpSelectelement from "../Components/Workout/SlideUpSelectelement";
+import SlideUpworkoutElement from "../Components/Workout/SlideUpworkoutElement";
 import LibreriaExercises from "../Components/libreriaExercises";
-import WorkoutBlockAccordion from "../Components/WorkoutBlockAccordion";
-import { WorkoutExercise } from "../types/WorkoutExercise";
+import WorkoutBlockAccordion from "../Components/Workout/WorkoutBlockAccordion";
+import { WorkoutExercise } from "../types/Workout/WorkoutExercise";
 import { useWorkoutData } from "../Hooks/useWorkoutData";
 import { useWorkoutDnD } from "../Hooks/useWorkoutDnD";
 import { useState } from "react";

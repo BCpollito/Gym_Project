@@ -1,6 +1,6 @@
 import { DropResult } from "@hello-pangea/dnd";
-import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
-import { WorkoutExercise } from "../types/WorkoutExercise";
+import { FullWorkoutResponse } from "../types/Workout/FullWorkoutResponse";
+import { WorkoutExercise } from "../types/Workout/WorkoutExercise";
 
 type DnDParams = {
   fullworkout: FullWorkoutResponse | null;

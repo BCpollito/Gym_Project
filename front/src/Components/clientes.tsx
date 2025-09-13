@@ -13,7 +13,7 @@ import {
 import { Cliente } from "../types/Cliente";
 import { EllipsisVertical, BookText, UserSearch } from "lucide-react";
 import { InformacionClienteModal } from "./informacionClienteModal";
-import { AssignWorkout } from "../types/AssignWorkout";
+import { AssignWorkout } from "../types/Workout/AssignWorkout";
 
 export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout) {
   const [clientes, setClientes] = useState<Cliente[]>([]);

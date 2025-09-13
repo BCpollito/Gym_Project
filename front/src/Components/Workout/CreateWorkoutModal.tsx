@@ -10,11 +10,11 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import { PropsModal } from "../types/PropsModal";
+import { PropsModal } from "../../types/PropsModal";
 import { ArrowLeftToLine } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Workout } from "../types/workout";
+import { Workout } from "../../types/Workout/workout";
 
 export default function CreateWorkoutModal({ open, onClose }: PropsModal) {
   const [nombre, setnombre] = useState<string>("");

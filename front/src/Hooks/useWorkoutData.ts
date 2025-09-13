@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { FullWorkoutResponse } from "../types/FullWorkoutResponse";
+import { FullWorkoutResponse } from "../types/Workout/FullWorkoutResponse";
 import { Exercise } from "../types/Exercises";
 
 export function useWorkoutData(id: string | undefined) {

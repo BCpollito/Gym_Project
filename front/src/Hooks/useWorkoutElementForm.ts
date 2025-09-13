@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { WorkoutExercise } from "../types/WorkoutExercise";
+import { WorkoutExercise } from "../types/Workout/WorkoutExercise";
 import { Exercise } from "../types/Exercises";
 import { Descanso } from "../types/Descanso";
-import { WorkoutElement } from "../types/WorkoutElement";
+import { WorkoutElement } from "../types/Workout/WorkoutElement";
 import { PropsModal } from "../types/PropsModal";
 
 interface UseWorkoutElementFormProps {

@@ -16,10 +16,10 @@ import { Plus, EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateWorkoutModal from "./CreateWorkoutModal";
-import ScrollToTopButton from "./ScrollToTopButton";
-import Clientes from "./clientes";
-import { InformacionClienteModal } from "./informacionClienteModal";
-import { Workout } from "../types/workout";
+import ScrollToTopButton from "../ScrollToTopButton";
+import Clientes from "../clientes";
+import { InformacionClienteModal } from "../informacionClienteModal";
+import { Workout } from "../../types/Workout/workout";
 import axios from "axios";
 
 const TABLE_HEAD = [

@@ -20,8 +20,8 @@ import {
   Goal,
 } from "lucide-react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import convertirLink from "../services/ConvertLink";
-import { WorkoutElementDetail } from "../types/WorkoutElementDetail";
+import convertirLink from "../../services/ConvertLink";
+import { WorkoutElementDetail } from "../../types/Workout/WorkoutElementDetail";
 
 
 type WorkoutBlockAccordionProps = {

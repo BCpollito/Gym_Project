@@ -6,7 +6,7 @@ import LibraryLayout from "./layouts/LibraryLayout";
 import './services/axios.config';
 import Clientes from "./Components/clientes";
 import LibreriaExercises from "./Components/libreriaExercises";
-import LibraryWorkout from "./Components/libraryWorkout";
+import LibraryWorkout from "./Components/Workout/libraryWorkout";
 import LibraryActivityLayout from "./layouts/LibraryActivityLayout";
 import NewWorkout from "./pages/NewWorkout";
 

@@ -1,4 +1,4 @@
-import { WorkoutExercise } from "./WorkoutExercise";
+import { WorkoutExercise } from "./Workout/WorkoutExercise";
 
 export interface Bloque {
   id: number;
