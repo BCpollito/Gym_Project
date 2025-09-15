@@ -29,7 +29,7 @@ export function useWorkoutDnD({
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination || !fullworkout) return;
 
-    if (result.type === "BLOCK") {
+    if (result.type === "BLOCK" && result.source.index != result.destination.index) {
       const newElementos = reorder(
         fullworkout.elementos,
         result.source.index,
@@ -47,7 +47,7 @@ export function useWorkoutDnD({
     const destBlock = fullworkout.elementos.find(e => e.IDelement === destBlockId);
     if (destBlock?.tipo === "Bloque") setDestblockId(destBlock.data.id);
 
-    if (result.type === "EXERCISE") {
+    if (result.type === "EXERCISE" && result.source.index != result.destination.index) {
       if (!sourceBlock || !destBlock) return;
       if (sourceBlockId === destBlockId) {
         const exercises = sourceBlock.tipo === "Bloque" ? sourceBlock.data.WorkoutExercises : null;
