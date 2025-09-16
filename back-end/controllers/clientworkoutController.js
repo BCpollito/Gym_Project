@@ -46,12 +46,10 @@ exports.getWorkoutsByClientId = async (req, res) => {
         const workouts = await ClientWorkout.findAll({
             where: { clienteID }
         });
-        res.status(200).json({
-            workouts
-        })
+        res.status(200).json(workouts)
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 
