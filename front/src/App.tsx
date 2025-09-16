@@ -9,12 +9,14 @@ import LibreriaExercises from "./Components/libreriaExercises";
 import LibraryWorkout from "./Components/Workout/libraryWorkout";
 import LibraryActivityLayout from "./layouts/LibraryActivityLayout";
 import NewWorkout from "./pages/NewWorkout";
+import Calendary from "./Components/Calendary/Calendary"
+import ClientCalendary from "./pages/ClientCalendary";
 
 function App() {
   return (
     <Router>  
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Calendary />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -29,7 +31,7 @@ function App() {
           </Route>
         </Route>
         <Route path="/workout/:id" element={<NewWorkout />} />
-
+        <Route path="/client-program" element={<ClientCalendary />} />
       </Routes>
     </Router>
   );

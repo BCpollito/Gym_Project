@@ -1,5 +1,5 @@
 export interface AssignWorkout {
 	ClienteID?: ((id: number) => void);
-	Assign: boolean;
+	Assign?: boolean;
 	closeSelf?: () => void;
 }

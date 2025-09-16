@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import {
   List,
   ListItem,
@@ -20,7 +21,6 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
   const [mostrarInformacion, setMostrarInformacion] = useState(false);
-  const [id, setid] = useState<number>(0);
 
   const getClients = async () => {
     try {
@@ -36,11 +36,14 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
 
   useEffect(() => {
     getClients();
+
   }, []);
 
-  const handleClick = (event: React.MouseEvent) => {
-    setid(Number(event.currentTarget.id));
-    setMostrarInformacion(true);
+  const nav = useNavigate();
+  const handleClick = (cliente: Cliente) => {
+    nav(`/client-program`,{
+      state: {cliente}
+    })    
   };
 
   const handleClose = () => {
@@ -53,6 +56,7 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
       cliente.name.toLowerCase().includes(palabra)
     );
     setFilteredClientes(result);
+    console.log(clientes[0])
   }, [searchTerm, clientes]); // también depende de clientes en caso de recarga
 
   const handleAssignCliente = (idcliente: number) => {
@@ -100,7 +104,7 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
                               {/* @ts-expect-error */}
                               <MenuItem
                                 id={String(cliente.id)}
-                                onClick={handleClick}
+                                onClick={() => handleClick(cliente)}
                                 className="flex items-center gap-2"
                               >
                                 <BookText size={16} /> Ver Información
@@ -122,7 +126,6 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
         <InformacionClienteModal
           open={mostrarInformacion}
           onClose={handleClose}
-          id={id}
         />
       }
     </>
