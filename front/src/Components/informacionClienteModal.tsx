@@ -31,10 +31,6 @@ export function InformacionClienteModal({ open, onClose, id, workoutExistente }:
     DatosCliente();
   }, [id]);
 
-  useEffect(() => {
-    console.log(assignDate);
-  }, [assignDate])
-
   const handleAssign = async () => {
     const currentDate = new Date();
     const currentFormatedDate = currentDate.toISOString().split("T")[0];
