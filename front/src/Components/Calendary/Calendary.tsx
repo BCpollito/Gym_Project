@@ -13,7 +13,7 @@ import { CalendaryProps } from "../../types/Calendary/CalendaryProps";
 import axios from "axios";
 import { ClientsWorkout } from "../../types/ClientsWorkout";
 
-const TABLE_HEAD = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sab", "Dom"];
+const TABLE_HEAD = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sab"];
 
 const FechaActual = new Date();
 const mesesDelAño = [
@@ -31,12 +31,12 @@ const mesesDelAño = [
 	"Diciembre"];
 
 function Calendary({ mode, idClient }: CalendaryProps) {
-	const [CurrentDate, setCurrentDate] = useState<Date>(new Date(FechaActual.getFullYear(), FechaActual.getMonth() + 1, 0));
+	const [CurrentDate, setCurrentDate] = useState<Date>(new Date(FechaActual.getFullYear(), FechaActual.getMonth(), 1));
 	const [Day, setDay] = useState<(number | string)[][]>([]);
 
 	const [WorkoutsOfClient, setWorkouts] = useState<ClientsWorkout[]>([]);
 
-	if (mode === "cliente") {
+	useEffect(() => {
 		const getClientsWorkouts = async () => {
 			try {
 				const response = await axios.get<ClientsWorkout[]>(`/client-workouts/${idClient}`)
@@ -45,55 +45,61 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 				const message = error.response?.data?.message || "error desconocido";
 				alert("Error: " + message)
 			}
-		}
-		useEffect(() => {
+		};
+
+		if (mode === "cliente") {
 			getClientsWorkouts();
-		}, [])
-	}
+		}
+	}, [mode, idClient]);
+
+
 
 	useEffect(() => {
 		const newDays: (number | string)[][] = [];
 
-		for (let Sem = 0; Sem < 5; Sem++) {
-			newDays.push([]);
-		}
+		const year = CurrentDate.getFullYear();
+		const month = CurrentDate.getMonth();
 
-		let a = 0;
-		let d = 1;
-		while (d <= CurrentDate.getDate()) {
-			if (!newDays[a]) {
-				newDays[a] = [];
-			}
+		const firstDayOfMonth = new Date(year, month, 1);
 
-			if (newDays[a].length < 7 && d <= CurrentDate.getDate()) {
-				newDays[a].push(d);
-				d++;
-			}
+		const firstWeekDay = firstDayOfMonth.getDay();
 
-			if (d > CurrentDate.getDate()) {
-				while (newDays[a].length < 7) {
-					newDays[a].push("");
+		const lastDayPrevMonth = new Date(year, month, 0).getDate();
+
+		const lastDayCurrentMonth = new Date(year, month + 1, 0).getDate();
+
+		let dayCounter = 1;
+
+		for (let week = 0; week < 5; week++) {
+			const weekDays: (number | string)[] = [];
+
+			for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+				if (week === 0 && dayOfWeek < firstWeekDay) {
+					weekDays.push("");
+				} else if (dayCounter > lastDayCurrentMonth) {
+					weekDays.push("");
+				} else {
+					weekDays.push(dayCounter);
+					dayCounter++;
 				}
 			}
 
-			if (newDays[a].length === 7) {
-				a++;
-			}
+			newDays.push(weekDays);
 		}
 		setDay(newDays);
 	}, [CurrentDate])
 
 	const handlePassDate = (sign: "next" | "prev" | "restar") => {
 		if (sign === "next") {
-			setCurrentDate(new Date(CurrentDate.getFullYear(), CurrentDate.getMonth() + 2, 0));
+			setCurrentDate(new Date(CurrentDate.getFullYear(), CurrentDate.getMonth() + 1, 1));
 		}
 
 		if (sign === "prev") {
-			setCurrentDate(new Date(CurrentDate.getFullYear(), CurrentDate.getMonth(), 0));
+			setCurrentDate(new Date(CurrentDate.getFullYear(), CurrentDate.getMonth() - 1, 1));
 		}
 
 		if (sign === "restar") {
-			setCurrentDate(new Date(FechaActual.getFullYear(), FechaActual.getMonth() + 1, 0));
+			setCurrentDate(new Date(FechaActual.getFullYear(), FechaActual.getMonth(), 1));
 		}
 	};
 
@@ -107,7 +113,8 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 					{`${mesesDelAño[CurrentDate.getMonth()]} - ${CurrentDate.getFullYear()}`}
 				</h6>
 				<div className="flex items-center space-x-2">
-					{FechaActual.getMonth() != CurrentDate.getMonth() &&
+					{(FechaActual.getMonth() != CurrentDate.getMonth() ||
+						FechaActual.getFullYear() != CurrentDate.getFullYear()) &&
 						//@ts-ignore
 						<IconButton
 							onClick={() => handlePassDate("restar")}
@@ -166,13 +173,14 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 							{Day.map((days, rowIndex) => (
 								<tr key={rowIndex}>
 									{days.map((day, colIndex) => {
-										const isEmpty = day === "";
-										const isLast = rowIndex === Day.length - 1;
-										const classes = `p-2 sm:p-4 text-center ${isEmpty ? 'bg-gray-100' : ''} ${isLast ? '' : 'border border-gray-200'}`;
+										const isEmpty = day == ""
+										const classes = `p-2 sm:p-4 text-center border border-gray-200 
+										${isEmpty  && 'bg-blue-gray-50 text-blue-gray-200'}`;
+
 										return (
 											<td key={colIndex} className={classes}>
-												<span className={`font-normal ${isEmpty ? 'text-gray-400' : 'text-gray-800'}`}>
-													{isEmpty ? '' : day}
+												<span className={`font-normal text-gray-800}`}>
+													{day}
 												</span>
 											</td>
 										);
