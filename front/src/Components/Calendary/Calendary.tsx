@@ -35,6 +35,7 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 	const [Day, setDay] = useState<(number | string)[][]>([]);
 
 	const [WorkoutsOfClient, setWorkouts] = useState<ClientsWorkout[]>([]);
+	const [assignedDays, setAssignedDays] = useState<number[]>([]);
 
 	useEffect(() => {
 		const getClientsWorkouts = async () => {
@@ -64,8 +65,6 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 
 		const firstWeekDay = firstDayOfMonth.getDay();
 
-		const lastDayPrevMonth = new Date(year, month, 0).getDate();
-
 		const lastDayCurrentMonth = new Date(year, month + 1, 0).getDate();
 
 		let dayCounter = 1;
@@ -87,6 +86,29 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 			newDays.push(weekDays);
 		}
 		setDay(newDays);
+
+		if (mode === "cliente") {
+			// Extrae los días asignados del mes actual
+			const assignedDays = WorkoutsOfClient
+				.map(workout => {
+					const parts = workout.dateAssign.split('-');
+					const workoutDate = new Date(
+						Number(parts[0]), // año
+						Number(parts[1]) - 1, // mes 
+						Number(parts[2]) // día
+					);
+					if (
+						workoutDate.getMonth() === CurrentDate.getMonth() &&
+						workoutDate.getFullYear() === CurrentDate.getFullYear()
+					) {
+						return workoutDate.getDate();
+					}
+					return null;
+				})
+				.filter(day => day !== null);
+
+			setAssignedDays(assignedDays);
+		}
 	}, [CurrentDate])
 
 	const handlePassDate = (sign: "next" | "prev" | "restar") => {
@@ -102,7 +124,6 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 			setCurrentDate(new Date(FechaActual.getFullYear(), FechaActual.getMonth(), 1));
 		}
 	};
-
 
 	return (
 		<div className="w-full sm:w-sm flex flex-col border border-blue-gray-100 rounded-[10px] p-4">
@@ -174,13 +195,16 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 								<tr key={rowIndex}>
 									{days.map((day, colIndex) => {
 										const isEmpty = day == ""
+										const isAssigned = !isEmpty && assignedDays.includes(day as number);
 										const classes = `p-2 sm:p-4 text-center border border-gray-200 
-										${isEmpty  && 'bg-blue-gray-50 text-blue-gray-200'}`;
+										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}
+										${isAssigned && 'bg-green-200 font-bold border-green-600'}`;
 
 										return (
 											<td key={colIndex} className={classes}>
 												<span className={`font-normal text-gray-800}`}>
 													{day}
+													{isAssigned && <span className="ml-1 text-green-700">●</span>} {/* icono opcional */}
 												</span>
 											</td>
 										);
