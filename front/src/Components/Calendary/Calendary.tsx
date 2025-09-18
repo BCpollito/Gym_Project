@@ -1,7 +1,8 @@
 import {
 	Card,
 	Typography,
-	IconButton
+	IconButton,
+	Chip
 } from "@material-tailwind/react";
 import {
 	ChevronLeft,
@@ -52,7 +53,6 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 			getClientsWorkouts();
 		}
 	}, [mode, idClient]);
-
 
 
 	useEffect(() => {
@@ -109,7 +109,7 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 
 			setAssignedDays(assignedDays);
 		}
-	}, [CurrentDate])
+	}, [CurrentDate, WorkoutsOfClient])
 
 	const handlePassDate = (sign: "next" | "prev" | "restar") => {
 		if (sign === "next") {
@@ -196,16 +196,32 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 									{days.map((day, colIndex) => {
 										const isEmpty = day == ""
 										const isAssigned = !isEmpty && assignedDays.includes(day as number);
-										const classes = `p-2 sm:p-4 text-center border border-gray-200 
+										const classes = `p-2 text-center border border-gray-200 
 										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}
-										${isAssigned && 'bg-green-200 font-bold border-green-600'}`;
-
+										${isAssigned && 'font-bold bg-green-100'}`;
 										return (
-											<td key={colIndex} className={classes}>
-												<span className={`font-normal text-gray-800}`}>
+											<td key={colIndex} className={`${classes}`}>
+												{/*@ts-ignore*/}
+												<Typography className="font-normal text-gray-800">
 													{day}
-													{isAssigned && <span className="ml-1 text-green-700">●</span>} {/* icono opcional */}
-												</span>
+												</Typography>
+												<div className="flex flex-col justify-center items-center gap-1">
+													{(isAssigned && typeof (day) === "number") && (
+
+														WorkoutsOfClient.filter(w => Number(w.dateAssign.split("-")[2]) === day)
+															.slice(0, 3).map((w) => (
+																<div key={w.id} className="w-14 overflow-hidden whitespace-nowrap p-0 text-left" onClick={() => console.log("presionado")}>
+																	<Chip
+																		className="text-[10px] py-0"
+																		size="sm"
+																		color="green"
+																		value={w.Workout.nombre}
+																	/>
+																</div>
+															))
+													)
+													}
+												</div>
 											</td>
 										);
 									})}
