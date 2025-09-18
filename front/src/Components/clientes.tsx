@@ -56,7 +56,6 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
       cliente.name.toLowerCase().includes(palabra)
     );
     setFilteredClientes(result);
-    console.log(clientes[0])
   }, [searchTerm, clientes]); // también depende de clientes en caso de recarga
 
   const handleAssignCliente = (idcliente: number) => {
