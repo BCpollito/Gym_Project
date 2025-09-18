@@ -1,4 +1,4 @@
-const { ClientWorkout } = require('../models');
+const { ClientWorkout, Workouts } = require('../models');
 
 // Asignar un workout a un cliente
 exports.assignWorkoutToClient = async (req, res) => {
@@ -44,7 +44,12 @@ exports.getWorkoutsByClientId = async (req, res) => {
 
     try {
         const workouts = await ClientWorkout.findAll({
-            where: { clienteID }
+            where: { clienteID },
+            include: [
+                {
+                    model: Workouts
+                }
+            ]
         });
         res.status(200).json(workouts)
     } catch (error) {

@@ -55,6 +55,12 @@ Registro.hasMany(ClientWorkout, {
 });
 ClientWorkout.belongsTo(Registro, { foreignKey: 'clienteID' });
 
+// ClientWorkout → Workout
+Workouts.hasMany(ClientWorkout, {
+  foreignKey: 'workoutID'
+});
+ClientWorkout.belongsTo(Workouts, { foreignKey: 'workoutID' });
+
 module.exports = {
   sequelize,
   Sequelize,
