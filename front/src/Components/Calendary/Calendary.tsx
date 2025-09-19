@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { CalendaryProps } from "../../types/Calendary/CalendaryProps";
 import axios from "axios";
 import { ClientsWorkout } from "../../types/ClientsWorkout";
+import DayWorkoutModal from "./DayWorkoutModal";
 
 const TABLE_HEAD = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sab"];
 
@@ -125,6 +126,15 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 		}
 	};
 
+	const [opendayWorkouts, setOpenDayWorkout] = useState(false);
+	const [workoutday, setWorkoutday] = useState<number | null>(null)
+	const [workoutSday, setWorkoutSday] = useState<ClientsWorkout[]>([])
+	const showWorkouts = (day: number, Workouts: ClientsWorkout[]) => {
+		setOpenDayWorkout(prev => !prev);
+		setWorkoutday(day);
+		setWorkoutSday(Workouts);
+	}
+
 	return (
 		<div className="w-full sm:w-sm flex flex-col border border-blue-gray-100 rounded-[10px] p-4">
 			<h1 className="text-xl sm:text-2xl font-semibold text-center sm:text-left">CALENDARIO</h1>
@@ -200,7 +210,14 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}
 										${isAssigned && 'font-bold bg-green-100'}`;
 										return (
-											<td key={colIndex} className={`${classes}`}>
+											<td
+												onClick={(isAssigned && typeof (day) === "number")
+													? () => showWorkouts(day, WorkoutsOfClient.filter(w => Number(w.dateAssign.split("-")[2]) === day))
+													: () => console.log("En desarrollo")
+												}
+												key={colIndex}
+												className={`${classes}`}
+												>
 												{/*@ts-ignore*/}
 												<Typography className="font-normal text-gray-800">
 													{day}
@@ -231,6 +248,13 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 					</table>
 				</div>
 			</Card>
+			{opendayWorkouts &&
+				<DayWorkoutModal 
+				open={opendayWorkouts} 
+				onClose={() => setOpenDayWorkout(false)} 
+				day={workoutday}
+				workoutsDay={workoutSday}/>
+			}
 		</div>
 	);
 
