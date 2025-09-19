@@ -29,9 +29,9 @@ function App() {
 
           </Route>
           </Route>
+          <Route path="/admin/client-program" element={<ClientCalendary />} />
         </Route>
-        <Route path="/workout/:id" element={<NewWorkout />} />
-        <Route path="/client-program" element={<ClientCalendary />} />
+        <Route path="/workout/:id" element={<NewWorkout />} />        
       </Routes>
     </Router>
   );
