@@ -28,7 +28,6 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
       const response = await axios.get<Cliente[]>("/registros");
       const clientsData = response.data.sort((a, b) => b.id - a.id); // Aquí asigno directamente la respuesta
       setClientes(clientsData); // Almacena los clientes en el estado
-      setFilteredClientes(clientsData);
     } catch (error) {
       console.error("Error al obtener los clientes:", error);
     }
@@ -41,7 +40,7 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
 
   const nav = useNavigate();
   const handleClick = (cliente: Cliente) => {
-    nav(`/client-program`,{
+    nav(`/admin/client-program`,{
       state: {cliente}
     })    
   };
@@ -52,11 +51,14 @@ export default function Clientes({ Assign, ClienteID, closeSelf }: AssignWorkout
 
   useEffect(() => {
     const palabra = searchTerm.toLowerCase();
+    if(palabra == ""){
+     return setFilteredClientes([])
+    }
     const result = clientes.filter(cliente =>
       cliente.name.toLowerCase().includes(palabra)
     );
     setFilteredClientes(result);
-  }, [searchTerm, clientes]); // también depende de clientes en caso de recarga
+  }, [searchTerm]);
 
   const handleAssignCliente = (idcliente: number) => {
     ClienteID!(idcliente);
