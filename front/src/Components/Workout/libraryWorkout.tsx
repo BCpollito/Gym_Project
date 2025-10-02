@@ -14,7 +14,7 @@ import {
 } from "@material-tailwind/react";
 import { Plus, EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CreateWorkoutModal from "./CreateWorkoutModal";
 import ScrollToTopButton from "../ScrollToTopButton";
 import Clientes from "../clientes";
@@ -31,9 +31,23 @@ const TABLE_HEAD = [
   },
 ];
 
-export default function LibraryWorkout() {
+type LibraryWorkoutProps = {
+  workoutid: (id: number) => void; 
+};
+
+export default function LibraryWorkout({ workoutid }: LibraryWorkoutProps) {
 
   const navigate = useNavigate();
+  const currentRoute = useLocation();
+
+  const [disableContent, setDisable] = useState(false);
+  useEffect(() => {
+    if(currentRoute.pathname === "/admin/client-program"){
+      setDisable(true);
+    }else{
+      setDisable(false);
+    }
+  },[])
 
   const [open, setOpen] = useState(false);
   const [openClients, setOpenClients] = useState(false);
@@ -139,7 +153,9 @@ export default function LibraryWorkout() {
           <table className="w-full table-auto max-w-sm text-left">
             <thead>
               <tr>
-                <th></th>
+                {disableContent === false &&
+                  <th></th>
+                }                
                 {TABLE_HEAD.map(({ head }) => (
                   <th
                     key={head}
@@ -167,38 +183,43 @@ export default function LibraryWorkout() {
                   : "p-2 pr-0 border-b border-gray-300";
 
                 return (
-                  <tr key={workout.id}>
-                    <td className="pl-1">
-                      <div className="flex items-center justify-center">
-                        {/* //@ts-ignore */}
-                        <Menu>
-                          <MenuHandler className="border border-1 border-gray-700 rounded-full">
-                            <EllipsisVertical size={30} />
-                          </MenuHandler>
-                          {/*//@ts-ignore */}
-                          <MenuList>
-                            {/* @ts-ignore */}
-                            <MenuItem
-                              onClick={() => navigate(`/workout/${workout.id}`)}
-                            >
-                              Editar
-                            </MenuItem>
-                            {/* @ts-ignore */}
-                            <MenuItem
-                              onClick={() => DeleteWorkout(workout.id)}
-                            >
-                              Eliminar
-                            </MenuItem>
-                            {/* @ts-ignore */}
-                            <MenuItem
-                              onClick={() => handleOpenClients(workout)}
-                            >
-                              Asignar a Cliente
-                            </MenuItem>
-                          </MenuList>
+                  <tr onClick={disableContent === true 
+                    ? () => workoutid(workout.id) 
+                    : () => console.log("just table")} 
+                  key={workout.id}>
+                    {disableContent === false &&
+                       <td className="pl-1">
+                        <div className="flex items-center justify-center">
+                         {/* //@ts-ignore */}
+                          <Menu>
+                            <MenuHandler className="border border-1 border-gray-700 rounded-full">
+                             <EllipsisVertical size={30} />
+                            </MenuHandler>
+                            {/*//@ts-ignore */}
+                            <MenuList>
+                             {/* @ts-ignore */}
+                              <MenuItem
+                                onClick={() => navigate(`/workout/${workout.id}`)}
+                              >
+                                Editar
+                              </MenuItem>
+                             {/* @ts-ignore */}
+                              <MenuItem
+                                onClick={() => DeleteWorkout(workout.id)}
+                              >
+                                Eliminar
+                             </MenuItem>
+                             {/* @ts-ignore */}
+                             <MenuItem
+                               onClick={() => handleOpenClients(workout)}
+                             >
+                               Asignar a Cliente
+                             </MenuItem>
+                            </MenuList>
                         </Menu>
                       </div>
                     </td>
+                    }                   
                     <td className={`${classes}`}>
                       <div className="flex items-center gap-1">
                         {/*// @ts-ignore*/}
