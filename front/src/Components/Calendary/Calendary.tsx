@@ -7,32 +7,18 @@ import {
 import {
 	ChevronLeft,
 	ChevronRight,
-	RotateCcw
+	RotateCcw,
+	Zap 
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CalendaryProps } from "../../types/Calendary/CalendaryProps";
 import axios from "axios";
 import { ClientsWorkout } from "../../types/ClientsWorkout";
-import DayWorkoutModal from "./DayWorkoutModal";
-
-const TABLE_HEAD = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sab"];
+import { mesesDelAño, TABLE_HEAD } from "../../types/Calendary/MonthsOfYears"
 
 const FechaActual = new Date();
-const mesesDelAño = [
-	"Enero",
-	"Febrero",
-	"Marzo",
-	"Abril",
-	"Mayo",
-	"Junio",
-	"Julio",
-	"Agosto",
-	"Septiembre",
-	"Octubre",
-	"Noviembre",
-	"Diciembre"];
 
-function Calendary({ mode, idClient }: CalendaryProps) {
+function Calendary({ mode, idClient, signBack, setday, setWorkoutsDay, refresh }: CalendaryProps) {
 	const [CurrentDate, setCurrentDate] = useState<Date>(new Date(FechaActual.getFullYear(), FechaActual.getMonth(), 1));
 	const [Day, setDay] = useState<(number | string)[][]>([]);
 
@@ -53,7 +39,7 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 		if (mode === "cliente") {
 			getClientsWorkouts();
 		}
-	}, [mode, idClient]);
+	}, [mode, idClient, refresh]);
 
 
 	useEffect(() => {
@@ -126,20 +112,15 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 		}
 	};
 
-	const [opendayWorkouts, setOpenDayWorkout] = useState(false);
-	const [workoutday, setWorkoutday] = useState<number | null>(null)
-	const [workoutSday, setWorkoutSday] = useState<ClientsWorkout[]>([])
-	const showWorkouts = (day: number, Workouts: ClientsWorkout[]) => {
-		setOpenDayWorkout(prev => !prev);
-		setWorkoutday(day);
-		setWorkoutSday(Workouts);
+	const showWorkouts = (day: number, month: string, year: Number, Workouts: ClientsWorkout[]) => {
+		signBack!();
+		setday!({day, month, year})
+		setWorkoutsDay!(Workouts)
 	}
 
 	return (
 		<div className="w-full sm:w-sm flex flex-col border border-blue-gray-100 rounded-[10px] p-4">
-			<h1 className="text-xl sm:text-2xl font-semibold text-center sm:text-left">CALENDARIO</h1>
-
-			<div className="flex items-center justify-between sm:justify-end mt-4 space-x-4">
+			<div className="flex items-center justify-between sm:justify-end space-x-4">
 				<h6 className="text-sm sm:text-base">
 					{`${mesesDelAño[CurrentDate.getMonth()]} - ${CurrentDate.getFullYear()}`}
 				</h6>
@@ -206,13 +187,14 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 									{days.map((day, colIndex) => {
 										const isEmpty = day == ""
 										const isAssigned = !isEmpty && assignedDays.includes(day as number);
-										const classes = `p-2 text-center border border-gray-200 
+										const classes = `p-2 text-center border border-gray-200
 										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}
 										${isAssigned && 'font-bold bg-green-100'}`;
 										return (
 											<td
-												onClick={(isAssigned && typeof (day) === "number")
-													? () => showWorkouts(day, WorkoutsOfClient.filter(w => Number(w.dateAssign.split("-")[2]) === day))
+												onClick={(typeof (day) === "number")
+													? () => showWorkouts(day, CurrentDate.getMonth(), CurrentDate.getFullYear(), 
+														WorkoutsOfClient.filter(w => Number(w.dateAssign.split("-")[2]) === day))
 													: () => console.log("En desarrollo")
 												}
 												key={colIndex}
@@ -229,10 +211,11 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 															.slice(0, 3).map((w) => (
 																<div key={w.id} className="w-14 overflow-hidden whitespace-nowrap p-0 text-left" onClick={() => console.log("presionado")}>
 																	<Chip
-																		className="text-[10px] py-0"
+																		className="text-[10px] py-0 space-x-3 flex rounded rounded-2"
 																		size="sm"
 																		color="green"
 																		value={w.Workout.nombre}
+																		icon={<Zap  size={12} className="h-full"/>}
 																	/>
 																</div>
 															))
@@ -247,14 +230,7 @@ function Calendary({ mode, idClient }: CalendaryProps) {
 						</tbody>
 					</table>
 				</div>
-			</Card>
-			{opendayWorkouts &&
-				<DayWorkoutModal 
-				open={opendayWorkouts} 
-				onClose={() => setOpenDayWorkout(false)} 
-				day={workoutday}
-				workoutsDay={workoutSday}/>
-			}
+			</Card>			
 		</div>
 	);
 

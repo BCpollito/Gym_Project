@@ -7,12 +7,24 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Calendary from "../Components/Calendary/Calendary";
+import DayWorkoutModal from "../Components/Calendary/DayWorkoutModal";
+import { ClientsWorkout } from "../types/ClientsWorkout";
+import NewElement from "../Components/Calendary/NewElement";
+import { useState } from "react";
 
 export default function ClientCalendary() {
 	const location = useLocation();
 	const user = location.state?.cliente;
 
 	const navigate = useNavigate();
+
+	const [opendayWorkouts, setOpenDayWorkouts] = useState<boolean>(false);
+	const [workoutday, setWorkoutday] = useState<{ day: number, month: number, year: number } | null>(null)
+	const [workoutSday, setWorkoutSday] = useState<ClientsWorkout[]>([])
+	const [openAddNew, setOpenAddNew] = useState<boolean>(false);
+
+	const [refresh, setrefresh] = useState(false);
+
 	return (
 		<>
 			<div className="fixed top-0 left-0 w-full px-4 py-0 shadow truncate overflow-hidden">
@@ -41,7 +53,33 @@ export default function ClientCalendary() {
 					</div>
 				</div>
 			</div>
-			<Calendary mode="cliente" idClient={user?.id} />
+			<Calendary 
+				mode="cliente"
+				idClient={user?.id}
+				signBack={() => setOpenDayWorkouts(true)}
+				setday={(e) => setWorkoutday(e)}
+				setWorkoutsDay={(e) => setWorkoutSday(e)}
+				refresh={refresh}
+			/>
+
+			{opendayWorkouts &&
+				<DayWorkoutModal
+					open={opendayWorkouts}
+					onClose={() => setOpenDayWorkouts(false)}
+					day={workoutday}
+					workoutsDay={workoutSday} 
+					signback={() => setOpenAddNew(true)}
+				/>					
+			}
+			{openAddNew && 
+				<NewElement
+				idClient={user?.id}
+				open={openAddNew}
+				onClose={() => setOpenAddNew(false)}
+				day={workoutday}
+				signback={() => {setrefresh(!refresh); setOpenAddNew(false);}}
+				/>
+			}
 		</>
 	);
 }
