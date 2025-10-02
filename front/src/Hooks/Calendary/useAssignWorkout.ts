@@ -43,7 +43,30 @@ export const useAssignWorkout = ({pulse}: props) => {
 	    }
 	}
 
+	const DeleteWorkoutClient = async (id: number)  => {
+		try {
+			const response = await axios.delete<{
+        		message: string;
+        		success: boolean;
+        		error: string
+      		}>(`/client-workout/${id}`)
+
+      		if (response.data.success === true) {
+      			pulse();
+      			alert(response.data.message);
+      		}
+      		if (response.data.success === false) {
+      			alert(response.data.error);
+      		}
+
+		} catch (error: any) {
+          const message = error.response?.data?.message || error;
+          alert("Error: " + message)
+        }
+	}
+
 	return {
-		handleAssignW
+		handleAssignW,
+		DeleteWorkoutClient
 	};
 }

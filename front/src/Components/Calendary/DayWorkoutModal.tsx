@@ -7,7 +7,11 @@ import {
 	Button,
 	List,
 	ListItem,
-	IconButton
+	IconButton,
+	Menu,
+  	MenuHandler,
+  	MenuList,
+  	MenuItem,
 } from "@material-tailwind/react";
 import {
 	Zap,
@@ -15,11 +19,34 @@ import {
 } from "lucide-react";
 import { WorkoutClientData } from "../../types/Calendary/WorkoutClientData";
 import { mesesDelAño } from "../../types/Calendary/MonthsOfYears";
+import { useAssignWorkout } from "../../Hooks/Calendary/useAssignWorkout"
+import { ClientsWorkout } from "../types/ClientsWorkout";
+import { useState } from "react";
 
 export default function DayWorkoutModal({ open, onClose, day, workoutsDay, signback }: WorkoutClientData) {
+
+	const [workoutsDayFilter, setWKday] = useState<ClientsWorkout[]>(workoutsDay);
+
+	const pulse = () => {
+		console.log("recibido");
+	}
+
+	const {
+		DeleteWorkoutClient
+	} = useAssignWorkout({pulse});
+
 	const handleAddNew = () => {
 		signback!();
 		onClose();
+	}
+
+	const WorkoutOptions = (id: number, name: string) => {
+		const sino = window.confirm(`Eliminar ${name}?`)
+
+		if (sino) {
+			DeleteWorkoutClient(id);
+			setWKday(prev => prev.filter(WK => WK.id !== id));
+		}
 	}
 	return (
 		<>
@@ -44,9 +71,11 @@ export default function DayWorkoutModal({ open, onClose, day, workoutsDay, signb
 					{/*@ts-ignore*/}
 					{/*@ts-ignore*/}
 					<List color="red" className="w-full">
-						{workoutsDay?.map((w) => (
+						{workoutsDayFilter?.map((w) => (
 							//@ts-ignore
-							<ListItem className="border border-gray-500 p-2 grid grid-cols-1 rounded rounded-1">
+							<ListItem 
+							onClick={() => WorkoutOptions(w.id, w.Workout.nombre)}
+							className="border border-gray-500 p-2 grid grid-cols-1 rounded rounded-1">
 								{/*@ts-ignore*/}
 								<Typography variant="paragraph" className="font-bold line-clamp-1">{w.Workout.nombre}</Typography>
 								<span className="flex text-xs items-center gap-1"><Zap size={15} />Workout</span>
