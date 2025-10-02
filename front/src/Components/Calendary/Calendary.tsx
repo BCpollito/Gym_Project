@@ -159,7 +159,7 @@ function Calendary({ mode, idClient, signBack, setday, setWorkoutsDay, refresh }
 			</div>
 
 			{/*@ts-ignore*/}
-			<Card className="h-full w-full mt-4">
+			<Card className="h-full w-full mt-1">
 				<div className="overflow-x-auto">
 					<table className="min-w-full table-auto text-left">
 						<thead>
@@ -187,9 +187,8 @@ function Calendary({ mode, idClient, signBack, setday, setWorkoutsDay, refresh }
 									{days.map((day, colIndex) => {
 										const isEmpty = day == ""
 										const isAssigned = !isEmpty && assignedDays.includes(day as number);
-										const classes = `p-2 text-center border border-gray-200
-										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}
-										${isAssigned && 'font-bold bg-green-100'}`;
+										const classes = `p-1 pt-0 text-center border border-gray-200
+										${isEmpty && 'bg-blue-gray-50 text-blue-gray-200'}`;
 										return (
 											<td
 												onClick={(typeof (day) === "number")
@@ -213,7 +212,7 @@ function Calendary({ mode, idClient, signBack, setday, setWorkoutsDay, refresh }
 																	<Chip
 																		className="text-[10px] py-0 space-x-3 flex rounded rounded-2"
 																		size="sm"
-																		color="green"
+																		color="amber"
 																		value={w.Workout.nombre}
 																		icon={<Zap  size={12} className="h-full"/>}
 																	/>
