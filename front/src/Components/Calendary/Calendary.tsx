@@ -112,7 +112,7 @@ function Calendary({ mode, idClient, signBack, setday, setWorkoutsDay, refresh }
 		}
 	};
 
-	const showWorkouts = (day: number, month: string, year: Number, Workouts: ClientsWorkout[]) => {
+	const showWorkouts = (day: number, month: number, year: number, Workouts: ClientsWorkout[]) => {
 		signBack!();
 		setday!({day, month, year})
 		setWorkoutsDay!(Workouts)
