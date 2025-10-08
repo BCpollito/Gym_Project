@@ -20,7 +20,7 @@ export default function NewElement({idClient ,open, onClose, day, signback}: Wor
 	const handleopenAcc = (value: number) => setopenAcc(openAcc === value ? 0 : value)
 
 	const pulse = () => {
-		signback();
+		signback!();
 	}
 
 	const {
@@ -58,7 +58,7 @@ export default function NewElement({idClient ,open, onClose, day, signback}: Wor
 						</div>
 					</AccordionHeader>
 					<AccordionBody className="py-0 border-2 border-t-0 bg-orange-50">
-						<LibraryWorkout workoutid={(e) => handleAssignW(e, idClient, new Date(day.year, day.month, day.day))}/>				
+						<LibraryWorkout workoutid={(e) => handleAssignW(e, idClient!, new Date(day!.year, day!.month, day!.day))}/>				
 					</AccordionBody>
 				</Accordion>
 			</DialogBody>

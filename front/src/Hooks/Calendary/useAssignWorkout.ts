@@ -28,7 +28,7 @@ export const useAssignWorkout = ({pulse}: props) => {
       		});
 
 	      if (response.data.success === true) {
-	      	pulse();
+	      	pulse!();
 	        return alert(response.data.message);
 	      }
 
@@ -52,7 +52,7 @@ export const useAssignWorkout = ({pulse}: props) => {
       		}>(`/client-workout/${id}`)
 
       		if (response.data.success === true) {
-      			pulse();
+      			pulse!();
       			alert(response.data.message);
       		}
       		if (response.data.success === false) {

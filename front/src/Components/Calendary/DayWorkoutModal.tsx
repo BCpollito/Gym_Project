@@ -20,12 +20,12 @@ import {
 import { WorkoutClientData } from "../../types/Calendary/WorkoutClientData";
 import { mesesDelAño } from "../../types/Calendary/MonthsOfYears";
 import { useAssignWorkout } from "../../Hooks/Calendary/useAssignWorkout"
-import { ClientsWorkout } from "../types/ClientsWorkout";
+import { ClientsWorkout } from "../../types/ClientsWorkout";
 import { useState } from "react";
 
 export default function DayWorkoutModal({ open, onClose, day, workoutsDay, signback }: WorkoutClientData) {
 
-	const [workoutsDayFilter, setWKday] = useState<ClientsWorkout[]>(workoutsDay);
+	const [workoutsDayFilter, setWKday] = useState<ClientsWorkout[]>(workoutsDay!);
 
 	const pulse = () => {
 		console.log("recibido");
