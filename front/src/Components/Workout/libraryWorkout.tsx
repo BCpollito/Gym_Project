@@ -32,7 +32,7 @@ const TABLE_HEAD = [
 ];
 
 type LibraryWorkoutProps = {
-  workoutid: (id: number) => void; 
+  workoutid?: (id: number) => void; 
 };
 
 export default function LibraryWorkout({ workoutid }: LibraryWorkoutProps) {
@@ -184,7 +184,7 @@ export default function LibraryWorkout({ workoutid }: LibraryWorkoutProps) {
 
                 return (
                   <tr onClick={disableContent === true 
-                    ? () => workoutid(workout.id) 
+                    ? () => workoutid!(workout.id) 
                     : () => console.log("just table")} 
                   key={workout.id}>
                     {disableContent === false &&
