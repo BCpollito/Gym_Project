@@ -6,4 +6,5 @@ export interface ClientsWorkout {
   workoutID: number; 
   dateAssign: string;
   Workout: Workout;
+  orden: number;
 }
