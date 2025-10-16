@@ -29,7 +29,11 @@ const ClientWorkout = sequelize.define("ClientWorkout", {
     dateAssign:{
         type: DataTypes.DATEONLY,
         allowNull: false,
-    }
+    },
+    orden: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 }, {
     timestamps: false,
 });

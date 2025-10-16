@@ -23,7 +23,7 @@ exports.assignWorkoutToClient = async (req, res) => {
         }*/
 
         const newClienteWorkout = await ClientWorkout.create({
-            clienteID, workoutID, dateAssign
+            clienteID, workoutID, dateAssign, orden
         });
         res.status(201).json({
             message: "Workout asignado al cliente exitosamente",
@@ -49,7 +49,8 @@ exports.getWorkoutsByClientId = async (req, res) => {
                 {
                     model: Workouts
                 }
-            ]
+            ],
+            order: [['orden', 'ASC']]
         });
         res.status(200).json(workouts)
     } catch (error) {
