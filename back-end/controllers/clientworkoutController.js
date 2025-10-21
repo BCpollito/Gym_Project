@@ -23,7 +23,7 @@ exports.assignWorkoutToClient = async (req, res) => {
         }*/
 
         const newClienteWorkout = await ClientWorkout.create({
-            clienteID, workoutID, dateAssign, orden
+            clienteID, workoutID, dateAssign
         });
         res.status(201).json({
             message: "Workout asignado al cliente exitosamente",
@@ -56,6 +56,26 @@ exports.getWorkoutsByClientId = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.reorderClientWorkouts = async (req, res) => {
+    const { ids = [] } = req.body;
+
+    try {
+        await Promise.all(
+            ids.map((id,i) =>
+                ClientWorkout.update(
+                    { orden: i + 1 },
+                    { where: { id } }
+                )                            
+            )
+        );
+
+        return res.status(200).json({success: true, message: "👍"});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: error.message, success: false });
     }
 }
 
