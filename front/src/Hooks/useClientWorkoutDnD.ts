@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DropResult } from "@hello-pangea/dnd";
 import { ClientsWorkout } from "../types/ClientsWorkout";
+import axios from "axios";
 
 export function useClientWorkoutDnD(initialItems: ClientsWorkout[] = []) {
 	const [items, setItems] = useState<ClientsWorkout[]>(initialItems ?? []);
@@ -25,6 +26,27 @@ export function useClientWorkoutDnD(initialItems: ClientsWorkout[] = []) {
 
 		setItems(prev => {
 			const newList = reorder(prev, source.index, destination.index);
+
+			const updateOrder = async () => {
+				try {
+					const response = await axios.put<{
+						message: string;
+						success: boolean;
+					}>('/client-workouts/reorder', {
+						ids: newList.map(item => item.id)
+					});
+
+					if (response.data.success === true){
+						console.log(response.data.message);
+					}
+				} catch (error: any) {
+					const message = error.response?.data?.message || error;
+					alert("Error: " + message);	
+				}
+			}
+
+			updateOrder();
+
 			return newList;
 		});
 	}, [reorder]);

@@ -65,7 +65,10 @@ export default function ClientCalendary() {
 			{opendayWorkouts &&
 				<DayWorkoutModal
 					open={opendayWorkouts}
-					onClose={() => setOpenDayWorkouts(false)}
+					onClose={() => {
+						setOpenDayWorkouts(false);
+						setrefresh(!refresh);
+					}}
 					day={workoutday}
 					workoutsDay={workoutSday} 
 					signback={() => setOpenAddNew(true)}
