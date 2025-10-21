@@ -5,5 +5,6 @@ const ClientWorkouts = require('../controllers/clientworkoutController');
 router.post('/assign-workout', ClientWorkouts.assignWorkoutToClient);
 router.get('/client-workouts/:clienteID', ClientWorkouts.getWorkoutsByClientId);
 router.delete('/client-workout/:id', ClientWorkouts.deleteClienteWorkout);
+router.put('/client-workouts/reorder', ClientWorkouts.reorderClientWorkouts);
 
 module.exports = router;

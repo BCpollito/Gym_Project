@@ -32,7 +32,7 @@ const ClientWorkout = sequelize.define("ClientWorkout", {
     },
     orden: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 }, {
     timestamps: false,
