@@ -59,6 +59,7 @@ exports.getWorkoutsByClientId = async (req, res) => {
     }
 }
 
+//reordenar workouts asignados a un cliente
 exports.reorderClientWorkouts = async (req, res) => {
     const { ids = [] } = req.body;
 
@@ -75,6 +76,23 @@ exports.reorderClientWorkouts = async (req, res) => {
         return res.status(200).json({success: true, message: "👍"});
     } catch (error) {
         console.log(error)
+        return res.status(500).json({ message: error.message, success: false });
+    }
+}
+
+//actualizar fecha de asignacion de un workout a un cliente
+exports.updateClientWorkoutDate = async (req, res) => {  
+    const { id } = req.params;  
+    const { dateAssign } = req.body;
+
+    try {
+        await ClientWorkout.update(
+            { dateAssign },
+            { where: { id } }
+        );
+
+        return res.status(200).json({success: true, message: "Fecha de asignación actualizada correctamente"});
+    } catch (error) {
         return res.status(500).json({ message: error.message, success: false });
     }
 }
